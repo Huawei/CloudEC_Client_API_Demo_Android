@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bwhite">
+
+    <include layout="@layout/dial_title"/>
+
+    <LinearLayout android:id="@+id/members_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:paddingLeft="23dp"
+        android:paddingRight="6.67dp"
+        android:paddingTop="@dimen/dp15"
+        android:paddingBottom="@dimen/dp15"
+        android:background="@color/white">
+
+        <ImageView android:id="@+id/contact_head_1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="6.67dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/default_head"/>
+
+        <ImageView android:id="@+id/add_member_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="6.67dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/group_add_selector"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/im_setting_clear_history"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <!--分割线-->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="#e5e5e5" />
+
+
+        <TextView android:id="@+id/im_setting_clear_history_tv"
+            android:background="@drawable/bg_item_selector"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:singleLine="true"
+            android:text="@string/clear_all_history"
+            android:textColor="#333333"
+            android:textSize="15.5sp"
+            android:gravity="center_vertical"
+            android:paddingLeft="25dp"
+            />
+
+    </LinearLayout>
+</LinearLayout>

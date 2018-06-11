@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.huawei.opensdk.ec_sdk_demo"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.BATTERY_STATS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <application android:name=".ECApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/android:Theme.Light.NoTitleBar">
+        <activity android:name=".ui.login.LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.main_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.login.LoginSettingActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.login_setting_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.call.CallOutActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.call_out_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.call.CallInActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.call_in_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.conference.CreateConfActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.create_conf_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.call.VideoActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.video_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.conference.ConfDetailActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_detail_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.conference.ConfManagerActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_manager_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.servicesetting.ServiceSettingActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.service_setting_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.conference.ConfListActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_list_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.conference.OneKeyJoinActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.one_key_join_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.eaddrbook.EnterpriseAddrBookActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.eaddr_book_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.eaddrbook.EnterpriseAddrInfoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.eaddr_info_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.conference.VideoConfActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_video_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.conference.DataConfActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.conf_data_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.servicesetting.IptRegisterActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.ipt_register_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.ImSearchActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_search_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.ChatActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.im_chat_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.contact.GroupsActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.groups_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.contact.TeamsActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.teams_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+
+        </activity>
+
+        <activity android:name=".ui.contact.ContactDetailActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.contact_detail_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.VideoSelectedActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.video_selected_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.GroupDetailSettingActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.group_detail_setting_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.SingleChatSettingActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.single_chat_setting_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.MediaScanActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_media_scan_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.GroupMemberAddActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_group_add_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.GroupMemberActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_group_member_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.CreateGroupActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_group_create_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.SettingMoreActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_setting_more_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.im.SystemHeadIconSelectActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.im_system_head_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
+
+        //IM模块必须添加该服务
+        <service android:name="com.huawei.service.EspaceService"/>
+    </application>
+
+</manifest>

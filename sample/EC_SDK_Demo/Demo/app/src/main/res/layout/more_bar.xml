@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout android:id="@+id/more_area"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView android:id="@+id/btn_picture_send"
+            android:layout_width="50dp"
+            android:layout_margin="@dimen/dp10"
+            android:layout_height="wrap_content"
+            android:src="@drawable/chat_picture"/>
+
+        <ImageView android:id="@+id/btn_video_send"
+            android:layout_margin="@dimen/dp10"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/chat_video"/>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/record_audio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView android:id="@+id/btn_say_pressed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp9"
+            android:layout_marginTop="@dimen/dp9"
+            android:background="@drawable/voice_input_selector"
+            android:scaleType="fitXY"/>
+
+        <TextView android:id="@+id/speak_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp5"
+            android:text="@string/audio_record_begin"
+            android:textSize="@dimen/sp14.5"/>
+    </LinearLayout>
+
+    <FrameLayout android:id="@+id/more_emotion_layout"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/chat_bottom_layout"/>
+</FrameLayout>

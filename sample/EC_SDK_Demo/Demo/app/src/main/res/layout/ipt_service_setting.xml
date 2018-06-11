@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+    <include layout="@layout/dial_title"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_dnd_setting"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/tv_dnd"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:text="Do Not Disturb"
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="24dp" />
+
+        <ImageView
+            android:id="@+id/imageButton_dnd"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_cw_setting"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:id="@+id/tv_callwait"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:text="Call Wait"
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="24dp" />
+
+        <ImageView
+            android:id="@+id/imageButton_cw"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp" />
+    </RelativeLayout>
+
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_cfu_setting"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/tv_cfu"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center_vertical"
+            android:text="CFU"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageButton_cfu"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp" />
+
+        <EditText
+            android:id="@+id/et_cfu_num"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/tv_cfu"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/tv_cfu"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:hint="no number"
+            android:textSize="18sp"
+            android:layout_alignRight="@+id/imageButton_cfu"
+            android:layout_alignEnd="@+id/imageButton_cfu" />
+
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_cfb_setting"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center_vertical"
+            android:text="CFB"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageButton_cfb"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="36dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off" />
+
+        <EditText
+            android:id="@+id/et_cfb_num"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignEnd="@+id/imageButton_cfb"
+            android:layout_alignLeft="@+id/textView6"
+            android:layout_alignParentBottom="true"
+            android:layout_alignRight="@+id/imageButton_cfb"
+            android:layout_alignStart="@+id/textView6"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:hint="no number"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_cfna_setting"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center_vertical"
+            android:text="CFNA"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageButton_cfna"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp" />
+
+        <EditText
+            android:id="@+id/et_cfna_num"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/textView10"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/textView10"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:hint="no number"
+            android:textSize="18sp"
+            android:layout_alignRight="@+id/imageButton_cfna"
+            android:layout_alignEnd="@+id/imageButton_cfna" />
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_cfnr_setting"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:gravity="center_vertical"
+            android:text="CFNR"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageButton_cfnr"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="28dp"
+            android:src="@drawable/setting_switch_off"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp" />
+
+        <EditText
+            android:id="@+id/et_cfnr_num"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/textView3"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/textView3"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:gravity="center_vertical"
+            android:hint="no number"
+            android:textSize="18sp"
+            android:layout_alignRight="@+id/imageButton_cfnr"
+            android:layout_alignEnd="@+id/imageButton_cfnr" />
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+
+</LinearLayout>

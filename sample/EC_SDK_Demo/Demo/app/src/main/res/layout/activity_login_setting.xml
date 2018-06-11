@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <include layout="@layout/main_title"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:paddingBottom="100dp">
+
+            <LinearLayout
+                android:id="@+id/llTextContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/register_server_address" />
+
+                <EditText
+                    android:id="@+id/et_register_server_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/register_server_address"
+                    android:inputType="textVisiblePassword"
+                    android:maxLength="30"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/service_port" />
+
+                <EditText
+                    android:id="@+id/et_server_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:digits="0123456789"
+                    android:hint="@string/service_port"
+                    android:maxLength="30"
+                    android:paddingEnd="10dp"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/check_vpn_connect"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/vpn_connect" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/l2TextContainer"
+                android:layout_below="@+id/llTextContainer"
+                android:layout_marginTop="25dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="Security" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="#dddddd" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="15dp"
+                        android:text="SRTP" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_srtp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_srtp_mandatory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Mandatory"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_srtp_optional"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Optional"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_srtp_disable"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="Disable"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="15dp"
+                        android:text="SIP Transport" />
+
+                    <RadioGroup
+                        android:id="@+id/rg_sip_transport"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rb_sip_transport_udp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="UDP"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_sip_transport_tls"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TLS"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/rb_sip_transport_tcp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="TCP"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+                </LinearLayout>
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_marginEnd="15dp"-->
+                        <!--android:layout_marginStart="15dp"-->
+                        <!--android:text="Priority" />-->
+
+                    <!--<RadioGroup-->
+                        <!--android:id="@+id/app_config_enable"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<RadioButton-->
+                            <!--android:id="@+id/app_config_auth"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:checked="true"-->
+                            <!--android:text="SystemPush"-->
+                            <!--android:textSize="13sp" />-->
+
+                        <!--<RadioButton-->
+                            <!--android:id="@+id/app_config_default"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:text="ApplyProgramConfig"-->
+                            <!--android:textSize="13sp" />-->
+                    <!--</RadioGroup>-->
+                <!--</LinearLayout>-->
+            </LinearLayout>
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_alignParentStart="true"-->
+                <!--android:layout_below="@+id/l2TextContainer"-->
+                <!--android:layout_marginTop="25dp"-->
+                <!--android:orientation="vertical">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_marginEnd="15dp"-->
+                    <!--android:layout_marginStart="15dp"-->
+                    <!--android:text="Network" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="0.5dp"-->
+                    <!--android:background="#dddddd" />-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
+                        <!--<TextView-->
+                            <!--android:layout_width="130dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginStart="15dp"-->
+                            <!--android:text="SIP Server UDP Port" />-->
+
+                        <!--<EditText-->
+                            <!--android:id="@+id/sip_server_udp_port"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginEnd="35dp"-->
+                            <!--android:layout_marginStart="15dp"-->
+                            <!--android:background="@drawable/chat_bottom_type3"-->
+                            <!--android:digits="0123456789"-->
+                            <!--android:hint="@string/service_port"-->
+                            <!--android:maxLength="30"-->
+                            <!--android:paddingEnd="10dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:singleLine="true"-->
+                            <!--android:textSize="13sp" />-->
+
+                    <!--</LinearLayout>-->
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<TextView-->
+                            <!--android:layout_width="130dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginStart="15dp"-->
+                            <!--android:text="SIP Server TLS Port" />-->
+
+                        <!--<EditText-->
+                            <!--android:id="@+id/sip_server_tls_port"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_centerVertical="true"-->
+                            <!--android:layout_marginEnd="35dp"-->
+                            <!--android:layout_marginStart="15dp"-->
+                            <!--android:background="@drawable/chat_bottom_type3"-->
+                            <!--android:digits="0123456789"-->
+                            <!--android:hint="@string/service_port"-->
+                            <!--android:maxLength="30"-->
+                            <!--android:paddingEnd="10dp"-->
+                            <!--android:paddingLeft="10dp"-->
+                            <!--android:singleLine="true"-->
+                            <!--android:textSize="13sp" />-->
+                    <!--</LinearLayout>-->
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_marginEnd="15dp"-->
+                        <!--android:layout_marginStart="15dp"-->
+                        <!--android:text="Priority" />-->
+
+                    <!--<RadioGroup-->
+                        <!--android:id="@+id/port_config_priority"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<RadioButton-->
+                            <!--android:id="@+id/system_push_port"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:checked="true"-->
+                            <!--android:text="SystemPush"-->
+                            <!--android:textSize="13sp" />-->
+
+                        <!--<RadioButton-->
+                            <!--android:id="@+id/app_config_port"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:text="ApplyProgramConfig"-->
+                            <!--android:textSize="13sp" />-->
+                    <!--</RadioGroup>-->
+                <!--</LinearLayout>-->
+            <!--</LinearLayout>-->
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

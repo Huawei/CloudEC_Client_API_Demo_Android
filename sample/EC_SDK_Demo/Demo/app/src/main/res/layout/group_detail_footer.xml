@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--转换成固定群或临时群-->
+    <RelativeLayout android:id="@+id/im_setting_lock"
+        android:layout_width="fill_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_item_selector"
+        >
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="95dp"
+            android:background="#e5e5e5"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="35dp"
+            android:clickable="false"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_detail_lock"/>
+
+        <TextView android:id="@+id/transform_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="95dp"
+            android:paddingLeft="0dp"
+            android:text="@string/group_transform"
+            android:textColor="#333333"
+            android:textSize="15.5sp"/>
+
+        <ImageView
+            android:id="@+id/lock_img"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:paddingRight="16dp"
+            android:src="@drawable/selector"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.5dp"
+        android:background="#e5e5e5"/>
+
+    <!--模块分割线-->
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="14dp"
+        >
+    </RelativeLayout>
+
+    <!--清空历史记录-->
+    <LinearLayout android:id="@+id/im_setting_clear_history"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        >
+        <!--分割线-->
+        <!--<View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="#e5e5e5"/>
+
+
+        <TextView android:id="@+id/im_setting_clear_history_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="54.5dp"
+            android:background="@drawable/bg_item_selector"
+            android:gravity="center_vertical|center_horizontal"
+            android:singleLine="true"
+            android:text="@string/clear_all_history"
+            android:textColor="@color/primary"
+            android:textSize="15.5sp"
+            />-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/quit"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <!--分割线-->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="#e5e5e5"/>
+
+        <Button
+            android:id="@+id/quit_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/bg_item_selector"
+            android:gravity="center_vertical|center_horizontal"
+            android:singleLine="true"
+            android:text="@string/discussion_exit"
+            android:textColor="@color/chat_red"
+            android:textSize="15.5sp"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="#e5e5e5"/>
+    </LinearLayout>
+</LinearLayout>

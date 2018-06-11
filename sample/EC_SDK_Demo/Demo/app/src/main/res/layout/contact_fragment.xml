@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <com.huawei.opensdk.ec_sdk_demo.widget.BottomLineLayout
+        android:id="@+id/contact_item_group"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp55"
+        app:lineColor="#e5e5e5"
+        app:linePaddingLeft="@dimen/dp70">
+
+        <ImageView android:id="@+id/group_iv"
+            android:layout_width="@dimen/dp35"
+            android:layout_height="@dimen/dp35"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp15"
+            android:layout_marginRight="@dimen/dp23"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_groups_im"/>
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/group_iv"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/chat_groups"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp"/>
+    </com.huawei.opensdk.ec_sdk_demo.widget.BottomLineLayout>
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e5e5e5"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp55"
+        android:id="@+id/all_teams_iv">
+
+        <ImageView android:id="@+id/team_iv"
+            android:layout_width="@dimen/dp35"
+            android:layout_height="@dimen/dp35"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dp15"
+            android:layout_marginRight="@dimen/dp23"
+            android:scaleType="fitXY"
+            android:src="@drawable/icon_team"/>
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contacts_iv"
+            android:layout_toRightOf="@id/team_iv"
+            android:layout_alignTop="@id/team_iv"
+            android:text="@string/contact"
+            android:textColor="@color/textPrimary"
+            android:textSize="16sp"/>
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/contacts_iv"
+            android:layout_alignBottom="@id/team_iv"
+            android:text="@string/team"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#e5e5e5"/>
+
+    <ListView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contacts_list">
+    </ListView>
+
+</LinearLayout>

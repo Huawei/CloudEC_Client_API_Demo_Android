@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.huawei.opensdk.ec_sdk_demo.widget.BottomLineLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:id="@+id/group_item"
+        android:layout_height="@dimen/heightItem"
+        android:paddingRight="14dp"
+        android:minHeight="@dimen/heightItem"
+        app:lineColor="#e5e5e5"
+        app:linePaddingLeft="@dimen/dp15"
+        app:linePaddingRight="@dimen/dp15"
+        android:background="@drawable/bg_item_selector">
+
+    <com.huawei.opensdk.ec_sdk_demo.widget.RoundCornerPhotoView
+               android:id="@+id/group_head"
+               android:layout_width="40dp"
+               android:layout_height="40dp"
+               android:scaleType="fitXY"
+               android:layout_centerVertical="true"
+               android:layout_marginLeft="15dp"/>
+
+    <TextView android:id="@+id/group_name"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:ellipsize="end"
+              android:layout_marginLeft="9.3dp"
+              android:layout_centerVertical="true"
+              android:layout_marginRight="9.3dp"
+              android:gravity="center_vertical"
+              android:singleLine="true"
+              android:textColor="@color/textPrimary"
+              android:layout_toRightOf="@+id/group_head"
+              android:layout_toLeftOf="@+id/member_count"
+              android:textSize="16sp">
+    </TextView>
+    
+    <TextView android:id="@+id/member_count"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="9.3dp"
+              android:layout_centerVertical="true"
+              android:layout_marginRight="9.3dp"
+              android:gravity="center_vertical"
+              android:singleLine="true"
+              android:textColor="@color/textPrimary"
+              android:layout_toLeftOf="@+id/group_type_img"
+              android:layout_alignWithParentIfMissing="true"
+              android:textSize="16sp">
+    </TextView>
+
+    <ImageView android:id="@+id/group_type_img"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_alignParentRight="true"
+               android:layout_centerVertical="true"
+               android:src="@drawable/icon_lock"/>
+
+</com.huawei.opensdk.ec_sdk_demo.widget.BottomLineLayout>

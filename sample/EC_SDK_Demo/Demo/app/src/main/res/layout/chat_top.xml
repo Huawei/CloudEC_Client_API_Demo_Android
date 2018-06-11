@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/im_title_bar"
+    style="@style/title_style"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent">
+
+    <LinearLayout android:id="@+id/right_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal">
+        <!-- linear layout is redundant -->
+        <LinearLayout android:id="@+id/top_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+            <!-- only for single -->
+            <ImageView android:id="@+id/call_top"
+                android:layout_width="@dimen/nav_h"
+                android:layout_height="@dimen/nav_h"
+                android:background="@drawable/bg_title_icon"
+                android:padding="@dimen/dp16.5"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:src="@drawable/im_call"/>
+
+            <ImageView android:id="@+id/right_img"
+                android:layout_width="@dimen/nav_h"
+                android:layout_height="@dimen/nav_h"
+                android:background="@drawable/bg_title_icon"
+                android:padding="@dimen/dp16.5"
+                android:scaleType="fitCenter"
+                android:src="@drawable/im_setting_selector"/>
+
+        </LinearLayout>
+<!--
+        <TextView android:id="@+id/right_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_title_icon"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/dp10"
+            android:paddingRight="@dimen/dp10"
+            android:text="@string/all_select"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp16"
+            android:visibility="gone"/>-->
+    </LinearLayout>
+
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/right_layout">
+
+        <include layout="@layout/single_left"/>
+    </FrameLayout>
+</RelativeLayout>
