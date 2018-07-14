@@ -104,6 +104,9 @@
     <string name="conf_id_input">Conference id</string>
     <string name="access_code_input">Access code</string>
     <string name="password_code_input">Password</string>
+    <string name="broadcast_contact">Broadcast Attendee</string>
+    <string name="cancel_broadcast_contact">Cancel Broadcast</string>
+    <string name="watch_contact">Watch Attendee</string>
 
 
     <string name="btn_sure">OK</string>

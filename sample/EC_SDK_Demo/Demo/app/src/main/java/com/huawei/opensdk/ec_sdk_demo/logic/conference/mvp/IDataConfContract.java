@@ -31,5 +31,7 @@ public interface IDataConfContract
         void finishConf();
 
         void attachSurfaceView(ViewGroup container, Context context);
+
+        void sendChatMsg(String content);
     }
 }

@@ -25,6 +25,11 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
     }
 
     @Override
+    public void sendChatMsg(String content) {
+        MeetingMgr.getInstance().sendConfMessage(content);
+    }
+
+    @Override
     public void setConfID(String confID) {
         this.confID = confID;
     }
@@ -60,6 +65,10 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
     {
         Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
 
+        if (self == null)
+        {
+            return false;
+        }
         int result = MeetingMgr.getInstance().muteAttendee(self, !self.isMute());
         if (result != 0)
         {

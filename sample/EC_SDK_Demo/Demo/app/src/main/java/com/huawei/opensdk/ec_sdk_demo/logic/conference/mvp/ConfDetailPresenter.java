@@ -44,10 +44,12 @@ public class ConfDetailPresenter extends MVPBasePresenter<ICreateConfContract.Co
         boolean isVideo = false;
         switch (confDetailInfo.getMediaType()){
             case TSDK_E_CONF_MEDIA_VOICE:
+            case TSDK_E_CONF_MEDIA_VOICE_DATA:
                 isVideo = false;
                 break;
 
             case TSDK_E_CONF_MEDIA_VIDEO:
+            case TSDK_E_CONF_MEDIA_VIDEO_DATA:
                 isVideo = true;
                 break;
 

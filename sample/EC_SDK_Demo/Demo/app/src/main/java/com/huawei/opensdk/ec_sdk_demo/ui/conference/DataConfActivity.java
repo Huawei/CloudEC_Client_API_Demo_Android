@@ -1,7 +1,10 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +34,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     private FrameLayout mConfHangup;
     private FrameLayout mConfMute;
     private FrameLayout mConfSpeaker;
+    private FrameLayout mConfChat;
     private String mSubject;
     private String confID;
     private DataConfPresenter mPresenter;
@@ -67,10 +71,12 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         mConfHangup = (FrameLayout) findViewById(R.id.conf_hangup);
         mConfMute = (FrameLayout) findViewById(R.id.conf_mute);
         mConfSpeaker = (FrameLayout) findViewById(R.id.conf_loud_speaker);
+        mConfChat = (FrameLayout) findViewById(R.id.conf_date_chat);
 
         mConfHangup.setOnClickListener(this);
         mConfMute.setOnClickListener(this);
         mConfSpeaker.setOnClickListener(this);
+        mConfChat.setOnClickListener(this);
 
         mPresenter.attachSurfaceView(mConfShareLayout, this);
     }
@@ -139,6 +145,29 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
                 LogUtil.i(UIConstants.DEMO_TAG, "conference speaker!");
                 updateLoudSpeakerButton(mPresenter.switchLoudSpeaker());
                 break;
+
+            case R.id.conf_date_chat:
+                LogUtil.i(UIConstants.DEMO_TAG, "conference chat message!");
+                final EditText msgInfo = new EditText(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setView(msgInfo);
+                builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (null == msgInfo.getText().toString().trim() || "".equals(msgInfo.getText().toString().trim()))
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            mPresenter.sendChatMsg(msgInfo.getText().toString());
+                        }
+                    }
+                });
+                builder.create();
+                builder.show();
+                break;
+
             default:
                 break;
         }

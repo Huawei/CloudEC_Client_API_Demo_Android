@@ -11,7 +11,10 @@ import com.huawei.ecterminalsdk.base.TsdkBookConfInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfAttendeeUpdateType;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfChatType;
 import com.huawei.ecterminalsdk.base.TsdkConfDetailInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfEnvType;
 import com.huawei.ecterminalsdk.base.TsdkConfJoinParam;
 import com.huawei.ecterminalsdk.base.TsdkConfLanguage;
 import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
@@ -37,6 +40,8 @@ import com.huawei.tup.confctrl.sdk.TupConfParam;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 /**
  * This class is about meeting function management.
@@ -71,6 +76,16 @@ public class MeetingMgr implements IMeetingMgr{
      */
     private List<Member> memberList;
     private Member self;
+
+    /**
+     * SMC组网下静音会场标识
+     */
+    private boolean isMuteConf;
+
+    /**
+     *组网模式，为适配SMC组网配置
+     */
+    private TsdkConfEnvType confEnvType;
 
 
     /**
@@ -222,6 +237,13 @@ public class MeetingMgr implements IMeetingMgr{
         return false;
     }
 
+    public TsdkConfEnvType getConfEnvType() {
+        return confEnvType;
+    }
+
+    public void setConfEnvType(TsdkConfEnvType confEnvType) {
+        this.confEnvType = confEnvType;
+    }
 
     /**
      * This method is used to update conf info
@@ -230,6 +252,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void updateConfInfo(TsdkConference conference)
     {
+        this.confEnvType = conference.getConfEnvType();
         confBaseInfo.setSize(conference.getSize());
         confBaseInfo.setConfID(conference.getConfId());
         confBaseInfo.setSubject(conference.getSubject());
@@ -237,7 +260,13 @@ public class MeetingMgr implements IMeetingMgr{
         confBaseInfo.setConfState(ConfConvertUtil.convertConfctrlConfState(conference.getConfState()));
         confBaseInfo.setMediaType(conference.getConfMediaType());
         confBaseInfo.setLock(conference.isLock());
-        confBaseInfo.setMuteAll(conference.isAllMute());
+
+        if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == conference.getConfEnvType()){
+            confBaseInfo.setMuteAll(conference.isAllMute());
+        }else {
+            confBaseInfo.setMuteAll(this.isMuteConf);
+        }
+
 
 
         LogUtil.i(TAG, "ConfState." + confBaseInfo.getConfState());
@@ -718,9 +747,9 @@ public class MeetingMgr implements IMeetingMgr{
             return -1;
         }
 
-        //int result =  currentConference.se(attendee);
+        int result = currentConference.setPresenter(attendee.getNumber());
 
-        return 0;
+        return result;
     }
 
     /**
@@ -819,9 +848,18 @@ public class MeetingMgr implements IMeetingMgr{
             return -1;
         }
 
-        int result =  currentConference.broadcastAttendee(attendee.getNumber(), isBroadcast);
+        int result;
 
-        //TODO
+        if (isBroadcast)
+        {
+            result = currentConference.broadcastAttendee(attendee.getNumber(), isBroadcast);
+        }
+        else
+        {
+            //取消广播在mediaX环境下必须填空 SMC下才需要写与会者号码
+            result = currentConference.broadcastAttendee("", isBroadcast);
+        }
+
         return result;
     }
 
@@ -946,6 +984,20 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
         currentConference.attachSurfaceView(container, context);
+    }
+
+    public void sendConfMessage(String message)
+    {
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "send chat failed, currentConference is null ");
+            return;
+        }
+        TsdkConfChatMsgInfo chatMsgInfo = new TsdkConfChatMsgInfo();
+        chatMsgInfo.setChatType(TsdkConfChatType.TSDK_E_CONF_CHAT_PUBLIC);
+        chatMsgInfo.setChatMsg(message);
+        chatMsgInfo.setSenderDisplayName(self.getDisplayName());
+        currentConference.sendChatMsg(chatMsgInfo);
     }
 
 
@@ -1177,7 +1229,6 @@ public class MeetingMgr implements IMeetingMgr{
         if (ret != 0)
         {
             Log.e(TAG, "conf ctrl operation failed: " + result.getDescription());
-            return;
         }
         int confOperationType = result.getOperationType();
         switch (confOperationType)
@@ -1188,10 +1239,12 @@ public class MeetingMgr implements IMeetingMgr{
                 break;
             //闭音会场
             case 2:
+                this.isMuteConf = true;
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.MUTE_CONF_RESULT, ret);
                 break;
             //取消闭音
             case 3:
+                this.isMuteConf = false;
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.UN_MUTE_CONF_RESULT, ret);
                 break;
             //锁定会议
@@ -1231,7 +1284,18 @@ public class MeetingMgr implements IMeetingMgr{
             case 14:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SET_CONF_MODE_RESULT, ret);
                 break;
-
+            //选看与会者
+            case 15:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.WATCH_ATTENDEE_RESULT, ret);
+                break;
+            //广播与会者
+            case 16:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BROADCAST_ATTENDEE_RESULT, ret);
+                break;
+            //取消广播与会者
+            case 17:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CANCEL_BROADCAST_RESULT, ret);
+                break;
             //申请主席权限
             case 18:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.REQUEST_CHAIRMAN_RESULT, ret);
@@ -1326,6 +1390,17 @@ public class MeetingMgr implements IMeetingMgr{
             default:
                 break;
         }
+    }
+
+    /**
+     * This method is used to handle receive chat message notify in conf.
+     * 处理接收到的聊天消息
+     * @param confChatMsgInfo    Indicates chat message info.
+     *                           聊天信息
+     */
+    public void handleRecvChatMsg(TsdkConfChatMsgInfo confChatMsgInfo)
+    {
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CONF_CHAT_MSG, confChatMsgInfo);
     }
 
 }

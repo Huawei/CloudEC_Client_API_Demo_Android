@@ -8,12 +8,18 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.VideoMgr;
+import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
+import com.huawei.opensdk.ec_sdk_demo.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class VideoConfPresenter extends VideoConfBasePresenter
 {
@@ -43,7 +49,8 @@ public class VideoConfPresenter extends VideoConfBasePresenter
     {
         broadcastNames = new String[]{CustomBroadcastConstants.CONF_STATE_UPDATE,
                 CustomBroadcastConstants.ADD_LOCAL_VIEW,
-                CustomBroadcastConstants.DEL_LOCAL_VIEW};
+                CustomBroadcastConstants.DEL_LOCAL_VIEW,
+                CustomBroadcastConstants.GET_CONF_END};
     }
 
     @Override
@@ -180,6 +187,32 @@ public class VideoConfPresenter extends VideoConfBasePresenter
         return VideoMgr.getInstance().getRemoteVideoView();
     }
 
+    @Override
+    public void onItemClick(int position) {
+        List<Object> items = new ArrayList<>();
+        addLabel(items, position);
+        if (!items.isEmpty())
+        {
+            getView().showItemClickDialog(items, MeetingMgr.getInstance().getCurrentConferenceMemberList().get(position));
+        }
+    }
+
+    @Override
+    public void onItemDetailClick(String clickedItem, Member conferenceMemberEntity) {
+        if (LocContext.getString(R.string.broadcast_contact).equals(clickedItem))
+        {
+            broadcastAttendee(conferenceMemberEntity, true);
+        }
+        else if (LocContext.getString(R.string.cancel_broadcast_contact).equals(clickedItem))
+        {
+            broadcastAttendee(conferenceMemberEntity, false);
+        }
+        else if (LocContext.getString(R.string.watch_contact).equals(clickedItem))
+        {
+            watchAttendee(conferenceMemberEntity);
+        }
+    }
+
     private void addSurfaceView(ViewGroup container, SurfaceView child)
     {
         if (child == null)
@@ -192,6 +225,30 @@ public class VideoConfPresenter extends VideoConfBasePresenter
             vGroup.removeAllViews();
         }
         container.addView(child);
+    }
+
+    private void addLabel(List<Object> items, int position)
+    {
+        Member member = MeetingMgr.getInstance().getCurrentConferenceMemberList().get(position);
+
+        switch (member.getStatus())
+        {
+            case IN_CONF:
+                if (isChairMan())
+                {
+                    items.add(LocContext.getString(R.string.broadcast_contact));
+                    items.add(LocContext.getString(R.string.cancel_broadcast_contact));
+                    items.add(LocContext.getString(R.string.watch_contact));
+                }
+                else
+                {
+                    items.add(LocContext.getString(R.string.watch_contact));
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 
 }

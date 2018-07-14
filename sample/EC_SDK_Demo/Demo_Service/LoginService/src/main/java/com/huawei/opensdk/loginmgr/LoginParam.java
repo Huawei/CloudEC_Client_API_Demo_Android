@@ -63,6 +63,11 @@ public class LoginParam {
     private int enableConfigApplication = 1;
 
     /**
+     * Enable security tunnel mode
+     */
+    private int securityTunnelMode = 0;
+
+    /**
      * Udp port value
      */
     private int udpPort;
@@ -193,6 +198,14 @@ public class LoginParam {
 
     public void setEnableConfigApplication(int enableConfigApplication) {
         this.enableConfigApplication = enableConfigApplication;
+    }
+
+    public int getSecurityTunnelMode() {
+        return securityTunnelMode;
+    }
+
+    public void setSecurityTunnelMode(int securityTunnelMode) {
+        this.securityTunnelMode = securityTunnelMode;
     }
 
     public int getUdpPort() {

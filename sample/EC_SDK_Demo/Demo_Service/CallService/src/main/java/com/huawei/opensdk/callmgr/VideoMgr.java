@@ -724,7 +724,10 @@ public class VideoMgr {
                 // do nothing
             }
 
-            TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId).setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL, windowsDisplayRotation);
+            if (null != TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId)){
+                TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId)
+                        .setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL, windowsDisplayRotation);
+            }
             setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE, windowsDisplayRotation);
         }
 

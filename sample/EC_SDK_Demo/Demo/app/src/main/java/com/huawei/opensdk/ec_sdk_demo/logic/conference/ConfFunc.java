@@ -227,6 +227,18 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.SET_CONF_MODE_RESULT, params);
                 break;
 
+            case WATCH_ATTENDEE_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT, params);
+                break;
+
+            case BROADCAST_ATTENDEE_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT, params);
+                break;
+
+            case CANCEL_BROADCAST_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT, params);
+                break;
+
             case GET_DATA_CONF_PARAM_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT, params);
                 break;
@@ -253,6 +265,10 @@ public class ConfFunc implements IConfNotification
 
             case LEAVE_CONF:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_CONF_END, params);
+                break;
+				
+			case CONF_CHAT_MSG:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG, params);
                 break;
 
 

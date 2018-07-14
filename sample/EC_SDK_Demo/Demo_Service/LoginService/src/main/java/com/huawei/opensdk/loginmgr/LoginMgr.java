@@ -10,8 +10,11 @@ import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkLoginParam;
+import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.ecterminalsdk.base.TsdkMediaSrtpMode;
-//import com.huawei.ecterminalsdk.base.TsdkNetworkInfoParam;
+import com.huawei.ecterminalsdk.base.TsdkNetworkInfoParam;
+import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
+import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelMode;
 import com.huawei.ecterminalsdk.base.TsdkServiceSecurityParam;
 import com.huawei.ecterminalsdk.base.TsdkSipTransportMode;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
@@ -120,17 +123,30 @@ public class LoginMgr {
                 serviceSecurityParam.setSipTransportMode(sipTransportMode);
             }
 
-//            serviceSecurityParam.setIsApplyConfigPriority(loginParam.getEnableConfigApplication());
+            serviceSecurityParam.setIsApplyConfigPriority(loginParam.getEnableConfigApplication());
+
+            TsdkSecurityTunnelMode tunnelMode = TsdkSecurityTunnelMode.enumOf(loginParam.getSecurityTunnelMode());
+            if (null != tunnelMode)
+            {
+                serviceSecurityParam.setSecurityTunnelMode(tunnelMode);
+            }
             
             TsdkManager.getInstance().setConfigParam(serviceSecurityParam);
 
             //Set network param
-//            TsdkNetworkInfoParam networkInfoParam = new TsdkNetworkInfoParam();
-//            networkInfoParam.setIsApplyConfigPriority(loginParam.getPortPriority());
-//            networkInfoParam.setSipServerUdpPort(loginParam.getUdpPort());
-//            networkInfoParam.setSipServerTlsPort(loginParam.getTlsPort());
-//
-//            TsdkManager.getInstance().setConfigParam(networkInfoParam);
+            TsdkNetworkInfoParam networkInfoParam = new TsdkNetworkInfoParam();
+            if (1 == loginParam.getPortPriority())
+            {
+                networkInfoParam.setSipServerUdpPort(loginParam.getUdpPort());
+                networkInfoParam.setSipServerTlsPort(loginParam.getTlsPort());
+            }
+            else
+            {
+                networkInfoParam.setSipServerUdpPort(0);
+                networkInfoParam.setSipServerTlsPort(0);
+            }
+
+            TsdkManager.getInstance().setConfigParam(networkInfoParam);
         }
 
         TsdkLocalAddress localAddress = new TsdkLocalAddress(localIpAddress);
@@ -240,7 +256,7 @@ public class LoginMgr {
      * @param userId            [en]Indicates user id
      *                          [cn]用户标识
      */
-    public void handleLoginSuccess(int userId) {
+    public void handleLoginSuccess(int userId, TsdkLoginSuccessInfo successInfo) {
         LogUtil.i(TAG, "voip login success");
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_SUCCESS, userId, "voip login success");
     }
@@ -318,22 +334,57 @@ public class LoginMgr {
         }
     }
 
-    public void handleImAccountStatus(Object notify ) {
+    public void handleImAccountStatus(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "im account status: " );
         //Reserved, temporarily not supported
     }
 
-    public void handleFirewallDetectFailed(Object notify ) {
-        LogUtil.e(TAG, "firewall detect failed:");
-        //Reserved, temporarily not supported
+    /**
+     * [en]This method is used to handle the failed firewall detect.
+     * [cn]处理防火墙探测失败事件
+     *
+     * @param userId            [en]Indicates user id
+     *                          [cn]用户标识
+     * @param result            [en]Indicates response results
+     *                          [cn]响应结果
+     */
+    public void handleFirewallDetectFailed(int userId, TsdkCommonResult result) {
+        LogUtil.e(TAG, "firewall detect failed: " + result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.FIREWALL_DETECT_FAILED, result.getResult(), result.getReasonDescription());
     }
 
-    public void handleBuildStgTunnelFailed(Object notify) {
-        LogUtil.e(TAG, "build stg failed:" );
-        //Reserved, temporarily not supported
-
+    /**
+     * [en]This method is used to handle the failed build stg.
+     * [cn]处理创建stg通道失败事件
+     *
+     * @param userId            [en]Indicates user id
+     *                          [cn]用户标识
+     * @param result            [en]Indicates response results
+     *                          [cn]响应结果
+     */
+    public void handleBuildStgTunnelFailed(int userId, TsdkCommonResult result) {
+        LogUtil.e(TAG, "build stg failed: " + result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.BUILD_STG_FAILED, result.getResult(), result.getReasonDescription());
     }
 
+    /**
+     * [en]This method is used to handle the security tunnel info
+     * [cn]处理安全隧道信息事件
+     *
+     * @param userId             [en]Indicates user id
+     *                           [cn]用户标识
+     * @param firewallMode       [en]Indicates firewall mode
+     *                           [cn]防火墙模式
+     * @param securityTunnelInfo [en]Indicates security tunnel info
+     *                           [cn]安全隧道信息
+     */
+    public void handleSecurityTunnelInfoInd(int userId, int firewallMode, TsdkSecurityTunnelInfo securityTunnelInfo) {
+        LogUtil.i(TAG, "firewall mode: " + firewallMode + ", user id: " + userId);
+        if (null == securityTunnelInfo)
+        {
+            LogUtil.i(TAG, "security tunnel info is null.");
+        }
+    }
 
     public void setTerminal(String terminal) {
         this.terminal = terminal;

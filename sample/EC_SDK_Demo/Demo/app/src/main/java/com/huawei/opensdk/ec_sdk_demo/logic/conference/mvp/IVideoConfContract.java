@@ -21,6 +21,8 @@ public interface IVideoConfContract
         void updateLocalVideo();
 
         void refreshMemberList(final List<Member> list);
+
+        void showItemClickDialog(List<Object> items, Member member);
     }
 
     interface VideoConfPresenter
@@ -75,5 +77,9 @@ public interface IVideoConfContract
         SurfaceView getLocalVideoView();
 
         SurfaceView getRemoteVideoView();
+
+        void onItemClick(int position);
+
+        void onItemDetailClick(String clickedItem, Member conferenceMemberEntity);
     }
 }

@@ -64,7 +64,11 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
                     }
                     getView().refreshMemberList(MeetingMgr.getInstance().getCurrentConferenceMemberList());
 
-                    return;
+                    break;
+
+                case CustomBroadcastConstants.GET_CONF_END:
+                    getView().finishActivity();
+                    break;
 
                 default:
                     break;
@@ -129,6 +133,10 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
     {
         Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
 
+        if (self == null)
+        {
+            return false;
+        }
         int result = MeetingMgr.getInstance().muteAttendee(self, !self.isMute());
         if (result != 0)
         {

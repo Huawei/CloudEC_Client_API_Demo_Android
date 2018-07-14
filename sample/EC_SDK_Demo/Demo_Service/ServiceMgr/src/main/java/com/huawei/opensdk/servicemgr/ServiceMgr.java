@@ -136,7 +136,9 @@ public class ServiceMgr
         /* Step 2, init sdk */
         TsdkAppInfoParam appInfoParam = new TsdkAppInfoParam();
         appInfoParam.setClientType(TSDK_E_CLIENT_MOBILE);
-        appInfoParam.setProductName("Huawei TE Mobile");
+        //appInfoParam.setProductName("Huawei TE Mobile");
+        //appInfoParam.setProductName("SoftClient On Mobile");
+        appInfoParam.setProductName("WeLink-Mobile");
         appInfoParam.setDeviceSn("123");
         appInfoParam.setSupportAudioAndVideoCall(this.isSupportAudioAndVideoCall?1:0);
         appInfoParam.setSupportAudioAndVideoConf(this.isSupportAudioAndVideoConf?1:0);

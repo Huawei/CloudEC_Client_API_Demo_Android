@@ -23,6 +23,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
     private RadioGroup mSrtpGroup;
     private RadioGroup mSipTransportGroup;
     private RadioGroup mAppConfigGroup;
+    private RadioGroup mSecurityTunnelGroup;
     private EditText mUdpPortEditText;
     private EditText mTlsPortEditText;
     private RadioGroup mPriorityGroup;
@@ -32,6 +33,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
     private int mSrtpMode = 0;
     private int mSipTransport = 0;
     private int mAppConfig = 1;
+    private int mSecurityMode = 0;
     private int mPriorityGroupPort = 0;
     private String mUdpPort;
     private String mTlsPort;
@@ -44,10 +46,11 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mVpnCheckBox = (CheckBox) findViewById(R.id.check_vpn_connect);
         mSrtpGroup = (RadioGroup)findViewById(R.id.rg_srtp);
         mSipTransportGroup = (RadioGroup)findViewById(R.id.rg_sip_transport);
-//        mAppConfigGroup = (RadioGroup) findViewById(R.id.app_config_enable);
-//        mUdpPortEditText = (EditText) findViewById(R.id.sip_server_udp_port);
-//        mTlsPortEditText = (EditText) findViewById(R.id.sip_server_tls_port);
-//        mPriorityGroup = (RadioGroup) findViewById(R.id.port_config_priority);
+        mAppConfigGroup = (RadioGroup) findViewById(R.id.app_config_enable);
+        mSecurityTunnelGroup = (RadioGroup) findViewById(R.id.security_tunnel_mode);
+        mUdpPortEditText = (EditText) findViewById(R.id.sip_server_udp_port);
+        mTlsPortEditText = (EditText) findViewById(R.id.sip_server_tls_port);
+        mPriorityGroup = (RadioGroup) findViewById(R.id.port_config_priority);
 
         ImageView searchButton = (ImageView) findViewById(R.id.right_img);
         ImageView navImage = (ImageView) findViewById(R.id.nav_iv);
@@ -64,10 +67,11 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mServerPortEditText.setText(mSharedPreferences.getString(LoginConstant.TUP_PORT, LoginConstant.BLANK_STRING));
         mSrtpGroup.check(getSrtpGroupCheckedId(mSharedPreferences.getInt(LoginConstant.TUP_SRTP, 0)));
         mSipTransportGroup.check(getSipTransportGroupCheckedId(mSharedPreferences.getInt(LoginConstant.TUP_SIP_TRANSPORT, 0)));
-//        mAppConfigGroup.check(getEnableConfigDefaultCheckedId(mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 1)));
-//        mPriorityGroup.check(getPortConfigPriorityCheckedId(mSharedPreferences.getInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)));
-//        mUdpPortEditText.setText(mSharedPreferences.getString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT));
-//        mTlsPortEditText.setText(mSharedPreferences.getString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT));
+        mAppConfigGroup.check(getEnableConfigDefaultCheckedId(mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 1)));
+        mSecurityTunnelGroup.check(getSecurityTunnelModeCheckedId(mSharedPreferences.getInt(LoginConstant.SECURITY_TUNNEL, 0)));
+        mPriorityGroup.check(getPortConfigPriorityCheckedId(mSharedPreferences.getInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)));
+        mUdpPortEditText.setText(mSharedPreferences.getString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT));
+        mTlsPortEditText.setText(mSharedPreferences.getString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT));
     }
 
     @Override
@@ -81,13 +85,14 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 mIsVpn = mVpnCheckBox.isChecked();
                 mSrtpMode = getSrtpMode(mSrtpGroup.getCheckedRadioButtonId());
                 mSipTransport = getSipTransportMode(mSipTransportGroup.getCheckedRadioButtonId());
-//                mAppConfig = getEnableAppConfig(mAppConfigGroup.getCheckedRadioButtonId());
-//                mPriorityGroupPort = getPortConfigPriority(mPriorityGroup.getCheckedRadioButtonId());
-//                mUdpPort = mUdpPortEditText.getText().toString().trim();
-//                mTlsPort = mTlsPortEditText.getText().toString().trim();
+                mAppConfig = getEnableAppConfig(mAppConfigGroup.getCheckedRadioButtonId());
+                mSecurityMode = getSecurityMode(mSecurityTunnelGroup.getCheckedRadioButtonId());
+                mPriorityGroupPort = getPortConfigPriority(mPriorityGroup.getCheckedRadioButtonId());
+                mUdpPort = mUdpPortEditText.getText().toString().trim();
+                mTlsPort = mTlsPortEditText.getText().toString().trim();
                 saveLoginSetting(mIsVpn, mRegServerAddress, mServerPort);
-                saveSecuritySetting(mSrtpMode, mSipTransport, mAppConfig);
-//                saveNetworkSetting(mUdpPort, mTlsPort, mPriorityGroupPort);
+                saveSecuritySetting(mSrtpMode, mSipTransport, mAppConfig, mSecurityMode);
+                saveNetworkSetting(mUdpPort, mTlsPort, mPriorityGroupPort);
                 showToast(R.string.save_success);
                 finish();
                 break;
@@ -154,39 +159,56 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
             }
         });
 
-//        mAppConfigGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-//                switch (checkedId)
-//                {
-//                    case R.id.app_config_auth:
-//                        mAppConfig = 0;
-//                        break;
-//                    case R.id.app_config_default:
-//                        mAppConfig = 1;
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//        });
+        mAppConfigGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId)
+                {
+                    case R.id.app_config_auth:
+                        mAppConfig = 0;
+                        break;
+                    case R.id.app_config_default:
+                        mAppConfig = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
-//        mPriorityGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-//                switch (checkedId)
-//                {
-//                    case R.id.system_push_port:
-//                        mPriorityGroupPort = 0;
-//                        break;
-//                    case R.id.app_config_port:
-//                        mPriorityGroupPort = 1;
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//        });
+        mSecurityTunnelGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId)
+                {
+                    case R.id.security_tunnel_default:
+                        mSecurityMode = 0;
+                        break;
+                    case R.id.security_tunnel_disable:
+                        mSecurityMode = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        mPriorityGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId)
+                {
+                    case R.id.system_push_port:
+                        mPriorityGroupPort = 0;
+                        break;
+                    case R.id.app_config_port:
+                        mPriorityGroupPort = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -208,11 +230,12 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 .commit();
     }
 
-    private void saveSecuritySetting(int srtpMode, int sipTransport, int appConfig)
+    private void saveSecuritySetting(int srtpMode, int sipTransport, int appConfig, int securityMode)
     {
         mSharedPreferences.edit().putInt(LoginConstant.TUP_SRTP, srtpMode)
                 .putInt(LoginConstant.TUP_SIP_TRANSPORT, sipTransport)
                 .putInt(LoginConstant.APPLY_CONFIG_PRIORITY, appConfig)
+                .putInt(LoginConstant.SECURITY_TUNNEL, securityMode)
                 .commit();
     }
 
@@ -260,36 +283,52 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         return id;
     }
     
-//    private int getEnableConfigDefaultCheckedId(int isEnable) {
-//        int id = R.id.app_config_default;
-//        switch (isEnable) {
-//            case 0:
-//                id = R.id.app_config_auth;
-//                break;
-//            case 1:
-//                id = R.id.app_config_default;
-//                break;
-//            default:
-//                break;
-//        }
-//        return id;
-//    }
+    private int getEnableConfigDefaultCheckedId(int isEnable) {
+        int id = R.id.app_config_default;
+        switch (isEnable) {
+            case 0:
+                id = R.id.app_config_auth;
+                break;
+            case 1:
+                id = R.id.app_config_default;
+                break;
+            default:
+                break;
+        }
+        return id;
+    }
 
-//    private int getPortConfigPriorityCheckedId(int priority) {
-//        int id = R.id.system_push_port;
-//        switch (priority)
-//        {
-//            case 0:
-//                id = R.id.system_push_port;
-//                break;
-//            case 1:
-//                id = R.id.app_config_port;
-//                break;
-//            default:
-//                break;
-//        }
-//        return id;
-//    }
+    private int getSecurityTunnelModeCheckedId(int tunnelMode) {
+        int id = R.id.security_tunnel_default;
+        switch (tunnelMode)
+        {
+            case 0:
+                id = R.id.security_tunnel_default;
+                break;
+            case 1:
+                id = R.id.security_tunnel_disable;
+                break;
+            default:
+                break;
+        }
+        return id;
+    }
+
+    private int getPortConfigPriorityCheckedId(int priority) {
+        int id = R.id.system_push_port;
+        switch (priority)
+        {
+            case 0:
+                id = R.id.system_push_port;
+                break;
+            case 1:
+                id = R.id.app_config_port;
+                break;
+            default:
+                break;
+        }
+        return id;
+    }
 
     private int getSrtpMode(int checkedId) {
         int srtpMode = 0;
@@ -329,35 +368,51 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         return sipTransport;
     }
     
-//    private int getEnableAppConfig(int checkedId) {
-//        int appConfig = 1;
-//        switch (checkedId)
-//        {
-//            case R.id.app_config_auth:
-//                appConfig = 0;
-//                break;
-//            case R.id.app_config_default:
-//                appConfig = 1;
-//                break;
-//            default:
-//                break;
-//        }
-//        return appConfig;
-//    }
-//
-//    private int getPortConfigPriority(int checkedId) {
-//        int portConfig = 0;
-//        switch (checkedId)
-//        {
-//            case R.id.system_push_port:
-//                portConfig = 0;
-//                break;
-//            case R.id.app_config_port:
-//                portConfig = 1;
-//                break;
-//            default:
-//                break;
-//        }
-//        return portConfig;
-//    }
+    private int getEnableAppConfig(int checkedId) {
+        int appConfig = 1;
+        switch (checkedId)
+        {
+            case R.id.app_config_auth:
+                appConfig = 0;
+                break;
+            case R.id.app_config_default:
+                appConfig = 1;
+                break;
+            default:
+                break;
+        }
+        return appConfig;
+    }
+
+    private int getSecurityMode(int checkedId) {
+        int securityMode = 0;
+        switch (checkedId)
+        {
+            case R.id.security_tunnel_default:
+                securityMode = 0;
+                break;
+            case R.id.security_tunnel_disable:
+                securityMode = 1;
+                break;
+            default:
+                break;
+        }
+        return securityMode;
+    }
+
+    private int getPortConfigPriority(int checkedId) {
+        int portConfig = 0;
+        switch (checkedId)
+        {
+            case R.id.system_push_port:
+                portConfig = 0;
+                break;
+            case R.id.app_config_port:
+                portConfig = 1;
+                break;
+            default:
+                break;
+        }
+        return portConfig;
+    }
 }

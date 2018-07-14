@@ -76,6 +76,11 @@ public class LoginModel
         return mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 0);
     }
 
+    public int getTunnelMode()
+    {
+        return mSharedPreferences.getInt(LoginConstant.SECURITY_TUNNEL, 0);
+    }
+
     public String getUdpPort()
     {
         return mSharedPreferences.getString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT);
@@ -118,6 +123,7 @@ public class LoginModel
                     .putInt(LoginConstant.TUP_SRTP, 0)
                     .putInt(LoginConstant.TUP_SIP_TRANSPORT, 0)
                     .putInt(LoginConstant.APPLY_CONFIG_PRIORITY, 1)
+                    .putInt(LoginConstant.SECURITY_TUNNEL, 0)
                     .putString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT)
                     .putString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT)
                     .putInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)

@@ -30,6 +30,8 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     private static final int LOGIN_SUCCESS = 100;
     private static final int LOGIN_FAILED = 101;
     private static final int LOGOUT = 102;
+    private static final int FIREWALL_DETECT_FAILED = 103;
+    private static final int BUILD_STG_FAILED = 104;
 
     private int mSeqNo = -1;
 
@@ -80,6 +82,14 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 LogUtil.i(UIConstants.DEMO_TAG, "login fail");
                 sendHandlerMessage(LOGIN_FAILED, description);
                 break;
+            case FIREWALL_DETECT_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "firewall detect fail");
+                sendHandlerMessage(FIREWALL_DETECT_FAILED, description);
+                break;
+            case BUILD_STG_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "build stg fail");
+                sendHandlerMessage(BUILD_STG_FAILED, description);
+                break;
 
             case LOGOUT:
                 LogUtil.i(UIConstants.DEMO_TAG, "logout");
@@ -122,6 +132,14 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 LogUtil.i(UIConstants.DEMO_TAG, "logout success,notify UI!");
                 ActivityStack.getIns().popupAbove(LoginActivity.class);
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGOUT, null);
+                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                break;
+            case FIREWALL_DETECT_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "firewall detect failed,notify UI!");
+                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                break;
+            case BUILD_STG_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "build stg failed,notify UI!");
                 Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                 break;
             default:

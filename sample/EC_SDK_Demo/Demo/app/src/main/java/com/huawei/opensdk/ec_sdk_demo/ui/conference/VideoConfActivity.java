@@ -31,6 +31,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
+import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
 
 import java.util.List;
@@ -270,14 +271,7 @@ public class VideoConfActivity extends MVPBaseActivity<IVideoConfContract.VideoC
                     {
                         Member conferenceMemberEntity = memberList.get(position);
                         CameraEntity cameraEntity = conferenceMemberEntity.getOpenedCamera();
-                        if (confMode == 0 && conferenceMemberEntity != null)
-                        {
-                            mPresenter.broadcastAttendee(conferenceMemberEntity, true);
-                        }
-                        else if (confMode == 2 && conferenceMemberEntity != null)
-                        {
-                            mPresenter.watchAttendee(conferenceMemberEntity);
-                        }
+                        mPresenter.onItemClick(position);
                         if (cameraEntity  != null)
                         {
                             mPresenter.attachRemoteVideo(cameraEntity.getUserID(), cameraEntity.getDeviceID());
@@ -287,17 +281,6 @@ public class VideoConfActivity extends MVPBaseActivity<IVideoConfContract.VideoC
                             LogUtil.i(UIConstants.DEMO_TAG,  "can't open remote camera :cameraEntity is null ");
                         }
                         mPopupWindow.dismiss();
-                    }
-                });
-                mConfMemberListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        Member conferenceMemberEntity = memberList.get(position);
-                        if (confMode == 0 && conferenceMemberEntity != null)
-                        {
-                            mPresenter.broadcastAttendee(conferenceMemberEntity, false);
-                        }
-                        return false;
                     }
                 });
                 break;
@@ -362,6 +345,21 @@ public class VideoConfActivity extends MVPBaseActivity<IVideoConfContract.VideoC
             }
         });
 
+    }
+
+    @Override
+    public void showItemClickDialog(final List<Object> items, final Member member) {
+        final SimpleListDialog dialog = new SimpleListDialog(this, items);
+        dialog.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                dialog.dismiss();
+                mPresenter.onItemDetailClick((String) items.get(position), member);
+            }
+        });
+        dialog.show();
     }
 
     private void showLeaveConfDialog()

@@ -29,6 +29,7 @@ public class LoginConstant {
     public static final String PORT_CONFIG_PRIORITY = "portConfigPriority";
     public static final String UDP_DEFAULT = "5060";
     public static final String TLS_DEFAULT = "5061";
+    public static final String SECURITY_TUNNEL = "securityTunnel";
 
     /**
      * The constant of Thread pool Size
@@ -46,7 +47,11 @@ public class LoginConstant {
 
         LOGIN_FAILED(),
 
-        LOGOUT();
+        FIREWALL_DETECT_FAILED(),
+
+        BUILD_STG_FAILED(),
+
+        LOGOUT(),
     }
 
 }

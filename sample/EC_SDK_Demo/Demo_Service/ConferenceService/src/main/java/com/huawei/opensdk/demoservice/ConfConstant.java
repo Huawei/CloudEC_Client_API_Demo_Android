@@ -81,6 +81,10 @@ public class ConfConstant {
         SET_CONF_MODE_RESULT(),
         GET_DATA_CONF_PARAM_RESULT(),
 
+        WATCH_ATTENDEE_RESULT(),
+        BROADCAST_ATTENDEE_RESULT(),
+        CANCEL_BROADCAST_RESULT(),
+
         UPGRADE_CONF_RESULT(),
 
         SPEAKER_LIST_IND(),
@@ -96,6 +100,8 @@ public class ConfConstant {
         CONF_INCOMING_TO_CALL_INCOMING(),//会议来电转到呼叫来电 为了显示呼叫界面
 
         LEAVE_CONF(),
+		
+		CONF_CHAT_MSG(),
 
         BUTT()
     }

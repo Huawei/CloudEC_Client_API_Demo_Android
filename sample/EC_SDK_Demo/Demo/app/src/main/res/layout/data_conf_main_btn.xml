@@ -54,6 +54,21 @@
                 android:src="@drawable/audio_bg_loudhailer"/>
         </FrameLayout>
 
+        <FrameLayout android:id="@+id/conf_date_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.0">
+
+            <ImageView android:id="@+id/conf_date_chat_iv"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:focusable="false"
+                android:padding="6dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/contact_detail_enter_chat"/>
+        </FrameLayout>
+
         <FrameLayout android:id="@+id/switch_camera"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

@@ -3,7 +3,6 @@ package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -13,11 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
+import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.adapter.ConfManagerAdapter;
@@ -35,6 +36,8 @@ import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
 
 import java.util.List;
+
+import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 
 public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IConfManagerView, ConfManagerPresenter> implements IConfManagerContract.IConfManagerView, View.OnClickListener
@@ -56,6 +59,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
     PopupWindow mPopupWindow;
 
     private String confID;
+    boolean isVideoIV = false;
+    boolean isShareIV = false;
 
     @Override
     protected IConfManagerContract.IConfManagerView createView()
@@ -86,6 +91,13 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
         btnShareIV = (ImageView) findViewById(R.id.share_view);
 
         updateConfIV.setVisibility(View.GONE);
+
+        //为兼容SMC组网下，与会者列表更新不及时，导致会控功能崩溃，这里先隐藏按钮，与会者列表报上来之后再显示按钮。
+        muteSelfIV.setVisibility(View.GONE);
+        loudSpeakerIV.setVisibility(View.GONE);
+        btnMoreIV.setVisibility(View.GONE);
+        btnVideoIV.setVisibility(View.GONE);
+        btnShareIV.setVisibility(View.GONE);
 
         existConfIV.setOnClickListener(this);
         muteSelfIV.setOnClickListener(this);
@@ -246,6 +258,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                 requestChairManLayout.setVisibility(View.GONE);
                 releaseChairManLayout.setVisibility(View.VISIBLE);
 
+            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()){
                 if (mPresenter.isConfLock()) {
                     unlockLayout.setVisibility(View.VISIBLE);
                     lockLayout.setVisibility(View.GONE);
@@ -253,6 +266,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                     unlockLayout.setVisibility(View.GONE);
                     lockLayout.setVisibility(View.VISIBLE);
                 }
+            }else {
+                unlockLayout.setVisibility(View.GONE);
+                lockLayout.setVisibility(View.GONE);
+            }
+
 
                 handUpLayout.setVisibility(View.GONE);
 //            } else {
@@ -264,6 +282,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
 //                handUpLayout.setVisibility(View.GONE);
 //            }
         } else {
+            addAttendeeLayout.setVisibility(View.GONE);
             cancelMuteAllLayout.setVisibility(View.GONE);
             muteAllLayout.setVisibility(View.GONE);
             unlockLayout.setVisibility(View.GONE);
@@ -273,6 +292,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                 requestChairManLayout.setVisibility(View.VISIBLE);
                 releaseChairManLayout.setVisibility(View.GONE);
 
+            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()){
                 if (mPresenter.isHandUp()) {
                     handUpIV.setActivated(false);
                     handUpTV.setText(R.string.conf_cancel_hand_up);
@@ -280,6 +300,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                     handUpIV.setActivated(true);
                     handUpTV.setText(R.string.conf_hand_up);
                 }
+            }else {
+                handUpLayout.setVisibility(View.GONE);
+            }
+
+
 //            } else {
 //                // Cloud PBX 下不支持相关功能
 //                requestChairManLayout.setVisibility(View.GONE);
@@ -351,11 +376,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
             public void onClick(View v)
             {
                 CommonUtil.hideSoftInput(ConfManagerActivity.this);
-                if (TextUtils.isEmpty(dialog.getText()))
-                {
-                    showToast(R.string.invalid_password);
-                    return;
-                }
+                //SMC组网下不需要密码，为兼容SMC
+//                if (TextUtils.isEmpty(dialog.getText()))
+//                {
+//                    showToast(R.string.invalid_password);
+//                    return;
+//                }
                 mPresenter.requestChairman(dialog.getText());
             }
         });
@@ -416,6 +442,18 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
         editDialog.show();
     }
 
+    private void showAllButton(){
+        muteSelfIV.setVisibility(View.VISIBLE);
+        loudSpeakerIV.setVisibility(View.VISIBLE);
+        btnMoreIV.setVisibility(View.VISIBLE);
+        if(isVideoIV){
+            btnVideoIV.setVisibility(View.VISIBLE);
+        }
+        if (isShareIV){
+            btnShareIV.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void refreshMemberList(final List<Member> list)
     {
@@ -424,6 +462,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
             @Override
             public void run()
             {
+                if (MeetingMgr.getInstance().getCurrentConferenceSelf()!=null){
+                    showAllButton();
+                }
+
                 adapter.setData(list);
                 adapter.notifyDataSetChanged();
             }
@@ -444,7 +486,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                 if ((TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO == confEntity.getMediaType())
                         || (TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA == confEntity.getMediaType()))
                 {
-                    btnVideoIV.setVisibility(View.VISIBLE);
+                    isVideoIV = true;
+//                    btnVideoIV.setVisibility(View.VISIBLE);
                 }
 
 
@@ -452,7 +495,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                         || (TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA == confEntity.getMediaType()))
                 {
                     if (mPresenter.isInDataConf()) {
-                        btnShareIV.setVisibility(View.VISIBLE);
+                        isShareIV = true;
+//                        btnShareIV.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -502,6 +546,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                 }
             });
         }
+    }
+
+    @Override
+    public void showMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ConfManagerActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

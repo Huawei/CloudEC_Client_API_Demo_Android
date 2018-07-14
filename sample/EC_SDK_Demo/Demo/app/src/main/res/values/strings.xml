@@ -102,6 +102,9 @@
     <string name="cancel_handup_fail">Cancel hand up failed</string>
     <string name="set_conf_mode_fail">Set conference mode failed</string>
     <string name="upgrade_conf_fail">Upgrade conference failed</string>
+    <string name="watch_conf_fail">Watch attendee failed</string>
+    <string name="broadcast_conf_fail">Broadcast attendee failed</string>
+    <string name="cancel_broadcast_fail">Cancel broadcast attendee failed</string>
 
     <string name="add_attendee_success">Add attendee success</string>
     <string name="del_attendee_success">Del attendee success</string>
@@ -144,6 +147,9 @@
     <string name="conf_id_input">Input conference id</string>
     <string name="access_code_input">Input access code</string>
     <string name="password_code_input">Input password</string>
+    <string name="broadcast_contact">Broadcast Attendee</string>
+    <string name="cancel_broadcast_contact">Cancel Broadcast</string>
+    <string name="watch_contact">Watch Attendee</string>
 
 
     <string name="btn_sure">OK</string>

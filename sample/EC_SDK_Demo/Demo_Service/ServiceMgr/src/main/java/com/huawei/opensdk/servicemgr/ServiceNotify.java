@@ -17,9 +17,11 @@ import com.huawei.ecterminalsdk.base.TsdkGetIconResult;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkIptServiceInfoSet;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
+import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.ecterminalsdk.base.TsdkOnEvtAsStateChange;
 import com.huawei.ecterminalsdk.base.TsdkSearchContactsResult;
 import com.huawei.ecterminalsdk.base.TsdkSearchDepartmentResult;
+import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
 import com.huawei.ecterminalsdk.base.TsdkSessionCodec;
 import com.huawei.ecterminalsdk.base.TsdkSessionModified;
 import com.huawei.ecterminalsdk.base.TsdkSetIptServiceResult;
@@ -71,10 +73,9 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtLoginSuccess(int userId) {
+    public void onEvtLoginSuccess(int userId, TsdkLoginSuccessInfo loginSuccessInfo) {
         Log.i(TAG, "onEvtLoginSuccess notify.");
-        LoginMgr.getInstance().handleLoginSuccess(userId);
-
+        LoginMgr.getInstance().handleLoginSuccess(userId, loginSuccessInfo);
     }
 
     @Override
@@ -110,6 +111,23 @@ public class ServiceNotify implements TsdkNotify{
         LoginMgr.getInstance().handleVoipAccountStatus(userId, voipAccountInfo);
     }
 
+    @Override
+    public void onEvtFirewallDetectFailed(int userId, TsdkCommonResult result) {
+        Log.i(TAG, "onEvtFirewallDetectFailed notify.");
+        LoginMgr.getInstance().handleFirewallDetectFailed(userId, result);
+    }
+
+    @Override
+    public void onEvtBuildStgTunnelFailed(int userId, TsdkCommonResult result) {
+        Log.i(TAG, "onEvtBuildStgTunnelFailed notify.");
+        LoginMgr.getInstance().handleBuildStgTunnelFailed(userId, result);
+    }
+
+    @Override
+    public void onEvtSecurityTunnelInfoInd(int userId, int firewallMode, TsdkSecurityTunnelInfo securityTunnelInfo) {
+        Log.i(TAG, "onEvtSecurityTunnelInfoInd notify.");
+        LoginMgr.getInstance().handleSecurityTunnelInfoInd(userId, firewallMode, securityTunnelInfo);
+    }
 
     @Override
     public void onEvtCallStartResult(TsdkCall call, TsdkCommonResult result) {
@@ -359,10 +377,11 @@ public class ServiceNotify implements TsdkNotify{
         MeetingMgr.getInstance().handleAsStateChange(asStateInfo);
     }
 
-//    @Override
-//    public void onEvtRecvChatMsg(TsdkConference tsdkConference, TsdkConfChatMsgInfo tsdkConfChatMsgInfo) {
-//
-//    }
+    @Override
+    public void onEvtRecvChatMsg(TsdkConference tsdkConference, TsdkConfChatMsgInfo tsdkConfChatMsgInfo) {
+        Log.i(TAG, "onEvtRecvChatMsg notify.");
+        MeetingMgr.getInstance().handleRecvChatMsg(tsdkConfChatMsgInfo);
+    }
 
     @Override
     public void onEvtCtdStartCallResult(int callId, TsdkCommonResult result) {

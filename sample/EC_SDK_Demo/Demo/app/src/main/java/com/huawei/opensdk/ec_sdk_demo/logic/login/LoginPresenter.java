@@ -107,6 +107,7 @@ public class LoginPresenter extends MVPBasePresenter<ILoginContract.LoginBaseVie
         loginParam.setSrtpMode(mLoginModel.getSrtpMode());
         loginParam.setSipTransportMode(mLoginModel.getSipTransport());
         loginParam.setEnableConfigApplication(mLoginModel.getAppConfig());
+        loginParam.setSecurityTunnelMode(mLoginModel.getTunnelMode());
 
         loginParam.setPortPriority(mLoginModel.getPriority());
         String udpPort = mLoginModel.getUdpPort();

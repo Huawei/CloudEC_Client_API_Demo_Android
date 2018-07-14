@@ -1,5 +1,8 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
+import android.widget.Toast;
+
+import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallInfo;
@@ -42,6 +45,9 @@ public class ConfManagerPresenter extends MVPBasePresenter<IConfManagerContract.
             CustomBroadcastConstants.HAND_UP_RESULT,
             CustomBroadcastConstants.CANCEL_HAND_UP_RESULT,
             CustomBroadcastConstants.SET_CONF_MODE_RESULT,
+            CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT,
+            CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT,
+            CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT,
             CustomBroadcastConstants.CONF_INFO_PARAM,
             CustomBroadcastConstants.UPGRADE_CONF_RESULT,
             CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT,
@@ -56,7 +62,8 @@ public class ConfManagerPresenter extends MVPBasePresenter<IConfManagerContract.
             CustomBroadcastConstants.DATA_CONFERENCE_EXTEND_DEVICE_INFO,
             CustomBroadcastConstants.DATA_CONFERENCE_CAMERA_STATUS_UPDATE,
             CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE,
-            CustomBroadcastConstants.GET_CONF_END};
+            CustomBroadcastConstants.GET_CONF_END,
+			CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG};
 
     private LocBroadcastReceiver receiver = new LocBroadcastReceiver()
     {
@@ -278,6 +285,33 @@ public class ConfManagerPresenter extends MVPBasePresenter<IConfManagerContract.
                     }
                     break;
 
+                case CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.watch_conf_fail);
+                        return;
+                    }
+                    break;
+
+                case CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.broadcast_conf_fail);
+                        return;
+                    }
+                    break;
+
+                case CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.cancel_broadcast_fail);
+                        return;
+                    }
+                    break;
+
                 case CustomBroadcastConstants.UPGRADE_CONF_RESULT:
                     result = (int) obj;
                     if (result != 0) {
@@ -321,6 +355,23 @@ public class ConfManagerPresenter extends MVPBasePresenter<IConfManagerContract.
 
                 case CustomBroadcastConstants.GET_CONF_END:
                     getView().finishActivity();
+					break;
+					
+                case CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG:
+                    TsdkConfChatMsgInfo chatMsgInfo = (TsdkConfChatMsgInfo) obj;
+                    String msgInfo = chatMsgInfo.getChatMsg();
+                    String userName = chatMsgInfo.getSenderDisplayName();
+                    if (null == userName || "".equals(userName))
+                    {
+                        String userNumber = chatMsgInfo.getSenderNumber();
+                        if (null == userNumber || "".equals(userNumber))
+                        {
+                            getView().showMessage("The sender's name was not obtained.");
+                            return;
+                        }
+                        getView().showMessage(userNumber + ": " + msgInfo);
+                    }
+                    getView().showMessage(userName + ": " + msgInfo);
                     break;
 
                 default:

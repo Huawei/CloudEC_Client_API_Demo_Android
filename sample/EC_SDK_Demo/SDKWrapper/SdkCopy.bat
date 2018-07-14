@@ -64,6 +64,8 @@ del ".\libs\armeabi\libtup_so"cket_stg.so"
 del ".\libs\armeabi\libtup_xml.so"
 del ".\libs\armeabi\libtupService.so"
 del ".\libs\armeabi\libuspsdk.so"
+del ".\libs\armeabi\libwebsockets.so"
+del ".\libs\armeabi\libtup_support.so"
 
 del ".\open_src\android-support-v7-recyclerview.jar"
 del ".\open_src\android-support-v13.jar"

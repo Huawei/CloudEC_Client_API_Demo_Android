@@ -32,6 +32,8 @@ public interface IConfManagerContract
         void updateVideoBtn(boolean show);
 
         void updateUpgradeConfBtn(boolean isInDataConf);
+
+        void showMessage(String message);
     }
 
     interface IConfManagerPresenter
