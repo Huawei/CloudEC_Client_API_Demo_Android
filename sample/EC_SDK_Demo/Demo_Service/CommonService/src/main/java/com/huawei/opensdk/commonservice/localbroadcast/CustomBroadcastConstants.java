@@ -9,6 +9,7 @@ public interface CustomBroadcastConstants
     String ACTION_CALL_CONNECTED = "com.huawei.opensdk.call.connected";
     String CALL_MEDIA_CONNECTED = "com.huawei.opensdk.call.mediaconnected";
     String ACTION_CALL_END = "com.huawei.opensdk.call.end";
+    String ACTION_CALL_END_FAILED = "com.huawei.opensdk.call.end.failed";
     String ADD_LOCAL_VIEW = "com.huawei.opensdk.call.addlocalview";
     String DEL_LOCAL_VIEW = "com.huawei.opensdk.call.dellocalview";
     //String BOOK_RESERVED_CONF_RESULT = "com.huawei.opensdk.conf.bookconfresult";
@@ -56,6 +57,8 @@ public interface CustomBroadcastConstants
     String CANCEL_BROADCAST_CONF_RESULT = "com.huawei.opensdk.conf.cancelbroadcastconfresult";
 
     String ACCESS_RESERVED_CONF = "com.huawei.opensdk.conf.accessreservedconf";
+
+    String GET_TEMP_USER_RESULT = "com.huawei.opensdk.conf.gettempuserresult";
 
     //DataConf
     String CONF_INFO_PARAM = "com.huawei.opensdk.conf.dataconfparam";

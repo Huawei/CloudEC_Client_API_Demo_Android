@@ -79,6 +79,11 @@ public class AddGroupMemberListAdapter extends BaseAdapter
         this.mMemberList = members;
     }
 
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
     private static class MemberViewHolder
     {
         public ImageView contactHead;

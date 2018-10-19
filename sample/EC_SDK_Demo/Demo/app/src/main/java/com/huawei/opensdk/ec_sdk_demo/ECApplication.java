@@ -1,17 +1,19 @@
 package com.huawei.opensdk.ec_sdk_demo;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.huawei.common.res.LocContext;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.ctdservice.CtdMgr;
 import com.huawei.opensdk.commonservice.util.CrashUtil;
-//import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
+import com.huawei.opensdk.demoservice.ConfConvertUtil;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.CallFunc;
@@ -19,9 +21,11 @@ import com.huawei.opensdk.ec_sdk_demo.logic.conference.ConfFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.eaddrbook.EnterpriseAddrBookFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.ImFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.login.LoginFunc;
-import com.huawei.opensdk.imservice.ImMgr;
+import com.huawei.opensdk.ec_sdk_demo.logic.login.LoginModel;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.ZipUtil;
+import com.huawei.opensdk.imservice.ImMgr;
+import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
 
@@ -30,11 +34,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+//import com.huawei.opensdk.commonservice.common.LocContext;
+
 public class ECApplication extends Application
 {
     private static final int EXPECTED_FILE_LENGTH = 7;
 
     private static final String FRONT_PKG = "com.huawei.opensdk.ec_sdk_demo";
+
+    private int mIdoProtocol = 0;
+    private SharedPreferences mSharedPreferences;
+    private LoginModel mSettingPresenter;
 
     @Override
     public void onCreate()
@@ -47,8 +57,9 @@ public class ECApplication extends Application
             Log.i("SDKDemo", "onCreate: PUSH Process.");
             return;
         }
+        initConfCtrlProtocol();
         String appPath = getApplicationInfo().dataDir + "/lib";
-        ServiceMgr.getServiceMgr().startService(this, appPath);
+        ServiceMgr.getServiceMgr().startService(this, appPath, mIdoProtocol);
         Log.i("SDKDemo", "onCreate: MAIN Process.");
 
         LoginMgr.getInstance().regLoginEventNotification(LoginFunc.getInstance());
@@ -58,8 +69,26 @@ public class ECApplication extends Application
         ImMgr.getInstance().regImServiceNotification(ImFunc.getInstance());
         EnterpriseAddressBookMgr.getInstance().registerNotification(EnterpriseAddrBookFunc.getInstance());
 
+        ServiceMgr.getServiceMgr().securityParam(
+                mSettingPresenter.getSrtpMode(),
+                mSettingPresenter.getSipTransport(),
+                mSettingPresenter.getAppConfig(),
+                mSettingPresenter.getTunnelMode());
+        ServiceMgr.getServiceMgr().networkParam(
+                mSettingPresenter.getUdpPort(),
+                mSettingPresenter.getTlsPort(),
+                mSettingPresenter.getPriority());
+
         initResourceFile();
         //Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+    }
+
+    private void initConfCtrlProtocol()
+    {
+        mSharedPreferences = getSharedPreferences(LoginConstant.FILE_NAME, Activity.MODE_PRIVATE);
+        mSettingPresenter = new LoginModel(mSharedPreferences);
+        mIdoProtocol = mSharedPreferences.getInt(LoginConstant.CONF_CTRL_PROTOCOL, 0);
+        MeetingMgr.getInstance().setConfProtocol(ConfConvertUtil.convertConfctrlProtocol(mIdoProtocol));
     }
 
     private void initResourceFile()

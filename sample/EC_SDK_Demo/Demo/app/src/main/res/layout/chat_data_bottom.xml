@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/chat_data_meeting_layout"
+    android:background="@drawable/chat_im_bottom_bg"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/dp52">
+
+    <ImageView android:id="@+id/chat_logo_iv"
+        android:layout_width="@dimen/dp41"
+        android:layout_height="@dimen/dp41"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerInside"
+        android:layout_marginLeft="@dimen/dp10"
+        android:src="@drawable/conf_chat_logo"/>
+
+    <EditText android:id="@+id/message_input_et"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/dp5"
+        android:background="@null"
+        android:maxLines="4"
+        android:textColor="#333333"
+        android:layout_weight="1"
+        android:textSize="@dimen/sp16"/>
+
+    <ImageView android:id="@+id/chat_send_iv"
+        android:layout_width="@dimen/dp41"
+        android:layout_height="@dimen/dp41"
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerInside"
+        android:layout_marginRight="@dimen/dp10"
+        android:src="@drawable/send_selector"/>
+</LinearLayout>

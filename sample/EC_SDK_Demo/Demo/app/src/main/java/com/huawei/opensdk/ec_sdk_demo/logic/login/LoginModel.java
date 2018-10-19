@@ -127,6 +127,7 @@ public class LoginModel
                     .putString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT)
                     .putString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT)
                     .putInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)
+                    .putBoolean(LoginConstant.AUTO_LOGIN, false)
                     .commit();
         }
     }

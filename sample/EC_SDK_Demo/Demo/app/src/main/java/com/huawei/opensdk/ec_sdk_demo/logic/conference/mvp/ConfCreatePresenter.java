@@ -82,11 +82,11 @@ public class ConfCreatePresenter implements ConfCreateContract.IConfCreatePresen
     @Override
     public void receiveBroadcast(String broadcastName, Object obj)
     {
-        switch (broadcastName)
-        {
-            default:
-                break;
-        }
+//        switch (broadcastName)
+//        {
+//            default:
+//                break;
+//        }
     }
 
     @Override

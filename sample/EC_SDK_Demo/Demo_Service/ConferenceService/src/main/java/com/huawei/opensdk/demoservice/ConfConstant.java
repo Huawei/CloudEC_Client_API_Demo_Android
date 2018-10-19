@@ -1,6 +1,9 @@
 package com.huawei.opensdk.demoservice;
 
-
+/**
+ * This class is about conference module constants, unified management Meeting constants
+ * 会议模块常量类，统一管理会议常量
+ */
 public class ConfConstant {
 
     public static final int PAGE_SIZE = 20;
@@ -27,6 +30,9 @@ public class ConfConstant {
         DESTROYED()
     }
 
+    /**
+     * participant status
+     */
     public enum ParticipantStatus
     {
         IN_CONF(),
@@ -41,6 +47,9 @@ public class ConfConstant {
         UNKNOWN()
     }
 
+    /**
+     * Meeting Message Distribution constants
+     */
     public enum CONF_EVENT {
         BOOK_CONF_SUCCESS(),    //预约会议成功
         BOOK_CONF_FAILED(),     //预约会议失败
@@ -51,7 +60,8 @@ public class ConfConstant {
         QUERY_CONF_DETAIL_SUCCESS(), //获取会议详情成功
         QUERY_CONF_DETAIL_FAILED(), //获取会议详情失败
 
-        JOIN_CONF_SUCCESS(),
+        JOIN_VOICE_CONF_SUCCESS(),
+        JOIN_VIDEO_CONF_SUCCESS(),
         JOIN_CONF_FAILED(),
 
         REQUEST_RIGHT_FAILED(),
@@ -103,6 +113,8 @@ public class ConfConstant {
 		
 		CONF_CHAT_MSG(),
 
+        GET_TEMP_USER_RESULT(),//匿名会议临时账户结果
+
         BUTT()
     }
 
@@ -131,6 +143,23 @@ public class ConfConstant {
         MY_CREATE(),
         MY_JOIN(),
         MY_CREATE_AND_JOIN()
+    }
+
+    /**
+     * Conference protocol type
+     */
+    public enum ConfProtocol {
+        IDO_PROTOCOL(),
+        REST_PROTOCOL()
+    }
+
+    /**
+     * Conference video mode
+     */
+    public enum ConfVideoMode {
+        CONF_VIDEO_BROADCAST(),
+        CONF_VIDEO_VAS(),
+        CONF_VIDEO_FREE()
     }
 
 }

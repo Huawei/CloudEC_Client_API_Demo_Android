@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * The type contact info adapter.
+ * 联系人信息适配层
  */
 public class ContactAdapter extends BaseAdapter
 {
@@ -77,6 +78,11 @@ public class ContactAdapter extends BaseAdapter
         this.contactList = contactList;
     }
 
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
     public static class ViewHolder
     {
         public ImageView headIv;

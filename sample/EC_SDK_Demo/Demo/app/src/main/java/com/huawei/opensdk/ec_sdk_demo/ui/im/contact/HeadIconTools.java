@@ -73,7 +73,7 @@ public class HeadIconTools
     /**
      * The System head icons.
      */
-    public static final int[] systemHeadIcons = {R.drawable.head0, R.drawable.head1, R.drawable.head2, R.drawable.head3, R.drawable.head4, R.drawable.head5,
+    protected static int[] systemHeadIcons = {R.drawable.head0, R.drawable.head1, R.drawable.head2, R.drawable.head3, R.drawable.head4, R.drawable.head5,
             R.drawable.head6, R.drawable.head7, R.drawable.head8, R.drawable.head9};
     private static final String ECSDKDemo = "/ECSDKDemo";
     private static final String HEAD_PHOTO = "/headphoto";

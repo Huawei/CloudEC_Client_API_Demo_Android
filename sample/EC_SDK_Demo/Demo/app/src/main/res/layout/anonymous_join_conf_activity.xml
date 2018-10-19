@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/dial_title"/>
+
+            <LinearLayout
+                android:id="@+id/llTextContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/conference_id" />
+
+                <EditText
+                    android:id="@+id/anonymous_conf_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/conference_id"
+                    android:maxLength="30"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/conference_password" />
+
+                <EditText
+                    android:id="@+id/anonymous_conf_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/conference_password"
+                    android:maxLength="30"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/nick_name" />
+
+                <EditText
+                    android:id="@+id/anonymous_conf_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/nick_name"
+                    android:maxLength="30"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/server_address" />
+
+                <EditText
+                    android:id="@+id/anonymous_service_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/server_address"
+                    android:maxLength="30"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginStart="15dp"
+                    android:text="@string/server_port" />
+
+                <EditText
+                    android:id="@+id/anonymous_service_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/te_mobile_login_input_line"
+                    android:hint="@string/server_port"
+                    android:maxLength="30"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btn_join_anonymous"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/login_btn"
+                    android:text="@string/anonymous"
+                    android:textSize="16sp" />
+            </LinearLayout>
+</LinearLayout>

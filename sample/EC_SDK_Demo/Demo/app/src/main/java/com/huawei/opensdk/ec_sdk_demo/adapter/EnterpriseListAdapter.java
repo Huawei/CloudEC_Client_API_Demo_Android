@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * The type enterprise adapter.
+ * 企业通讯录适配层
  */
 public class EnterpriseListAdapter extends BaseAdapter {
 
@@ -39,6 +40,11 @@ public class EnterpriseListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+	/**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
     static class ContactViewHolder
     {
         private ImageView ivHead;

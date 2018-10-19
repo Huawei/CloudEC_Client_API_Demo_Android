@@ -1,7 +1,5 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
-import android.content.Context;
-
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.ec_sdk_demo.logic.BaseView;
 

@@ -2,11 +2,19 @@ package com.huawei.opensdk.servicemgr;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.huawei.ecterminalsdk.base.TsdkAppFilePathInfo;
 import com.huawei.ecterminalsdk.base.TsdkAppInfoParam;
+import com.huawei.ecterminalsdk.base.TsdkConfCtrlParam;
+import com.huawei.ecterminalsdk.base.TsdkConfCtrlProtocol;
 import com.huawei.ecterminalsdk.base.TsdkLogLevel;
 import com.huawei.ecterminalsdk.base.TsdkLogParam;
+import com.huawei.ecterminalsdk.base.TsdkMediaSrtpMode;
+import com.huawei.ecterminalsdk.base.TsdkNetworkInfoParam;
+import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelMode;
+import com.huawei.ecterminalsdk.base.TsdkServiceSecurityParam;
+import com.huawei.ecterminalsdk.base.TsdkSipTransportMode;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.CrashUtil;
@@ -81,7 +89,7 @@ public class ServiceMgr
      * @param appPath
      * @return
      */
-    public boolean startService(Context context, String appPath)
+    public boolean startService(Context context, String appPath, int isIdo)
     {
         int ret;
 
@@ -111,6 +119,18 @@ public class ServiceMgr
             return false;
         }
 
+        /* set conference control param */
+        if (0 == isIdo)
+        {
+            TsdkConfCtrlParam confCtrlParam = new TsdkConfCtrlParam();
+            confCtrlParam.setProtocol(TsdkConfCtrlProtocol.TSDK_E_CONF_CTRL_PROTOCOL_IDO);
+            ret = tsdkManager.setConfigParam(confCtrlParam);
+            if (ret != 0) {
+                LogUtil.e(TAG, "set conference control param failed." + ret);
+                return false;
+            }
+        }
+
         //企业通讯录配置
         TsdkAppFilePathInfo appFilePathInfo = new TsdkAppFilePathInfo();
         File files = new File(CONTACT_FILE_PATH + File.separator + "dept" + File.separator);
@@ -138,7 +158,8 @@ public class ServiceMgr
         appInfoParam.setClientType(TSDK_E_CLIENT_MOBILE);
         //appInfoParam.setProductName("Huawei TE Mobile");
         //appInfoParam.setProductName("SoftClient On Mobile");
-        appInfoParam.setProductName("WeLink-Mobile");
+        //appInfoParam.setProductName("WeLink-Mobile");
+        appInfoParam.setProductName("eSDK-Mobile");
         appInfoParam.setDeviceSn("123");
         appInfoParam.setSupportAudioAndVideoCall(this.isSupportAudioAndVideoCall?1:0);
         appInfoParam.setSupportAudioAndVideoConf(this.isSupportAudioAndVideoConf?1:0);
@@ -194,5 +215,80 @@ public class ServiceMgr
 
         return 0;
     }
+
+    /**
+     * This method is used to security configuration.
+     * 安全配置
+     *
+     * @param mSrtpMode         SRTP模式
+     * @param mSipTransportMode sip传输模式
+     * @param mAppConfig        应用层配置标识
+     * @param mTunnelMode       安全隧道模式
+     */
+    public void securityParam(int mSrtpMode, int mSipTransportMode,int mAppConfig,int mTunnelMode)
+    {
+        //Set security param
+        if(isSupportAudioAndVideoCall){
+            TsdkServiceSecurityParam serviceSecurityParam = new TsdkServiceSecurityParam();
+
+            TsdkMediaSrtpMode srtpMode = TsdkMediaSrtpMode.enumOf(mSrtpMode);
+            if(null != srtpMode) {
+                serviceSecurityParam.setMediaSrtpMode(srtpMode);
+            }
+
+            TsdkSipTransportMode sipTransportMode = TsdkSipTransportMode.enumOf(mSipTransportMode);
+            if(null != sipTransportMode) {
+                serviceSecurityParam.setSipTransportMode(sipTransportMode);
+            }
+
+            serviceSecurityParam.setIsApplyConfigPriority(mAppConfig);
+
+            TsdkSecurityTunnelMode tunnelMode = TsdkSecurityTunnelMode.enumOf(mTunnelMode);
+            if (null != tunnelMode)
+            {
+                serviceSecurityParam.setSecurityTunnelMode(tunnelMode);
+            }
+
+            TsdkManager.getInstance().setConfigParam(serviceSecurityParam);
+        }
+    }
+
+    /**
+     * This method is used to network param.
+     * 网络参数
+     *
+     * @param mUdpPort          UDP端口号
+     * @param mTlsPort          TLS端口号
+     * @param mPriority         应用层网络端口启用标识
+     */
+    public void networkParam(String mUdpPort,String mTlsPort,int mPriority)
+    {
+        //Set network param
+        if(isSupportAudioAndVideoCall){
+            if (TextUtils.isEmpty(mUdpPort))
+            {
+                mUdpPort = "0";
+            }
+            if (TextUtils.isEmpty(mTlsPort))
+            {
+                mTlsPort = "0";
+            }
+            TsdkNetworkInfoParam networkInfoParam = new TsdkNetworkInfoParam();
+            if (1 == mPriority)
+            {
+                networkInfoParam.setSipServerUdpPort(Integer.parseInt(mUdpPort));
+                networkInfoParam.setSipServerTlsPort(Integer.parseInt(mTlsPort));
+            }
+            else
+            {
+                networkInfoParam.setSipServerUdpPort(0);
+                networkInfoParam.setSipServerTlsPort(0);
+            }
+
+            TsdkManager.getInstance().setConfigParam(networkInfoParam);
+        }
+    }
+
+
 }
 

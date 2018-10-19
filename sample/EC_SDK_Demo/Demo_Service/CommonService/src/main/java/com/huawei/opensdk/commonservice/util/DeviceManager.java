@@ -169,7 +169,7 @@ public final class DeviceManager
                         ip = inetAddress.getHostAddress();
                         if (isIPV4Addr(ip))
                         {
-                            LogUtil.i("getLocalIp", "ip is " + ip);
+//                            LogUtil.i("getLocalIp", "ip is " + ip);
                             return ip;
                         }
                     }

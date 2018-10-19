@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallInfo;
+import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -66,7 +67,9 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
 
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_CALL_END,
             CustomBroadcastConstants.ADD_LOCAL_VIEW,
-            CustomBroadcastConstants.DEL_LOCAL_VIEW};
+            CustomBroadcastConstants.DEL_LOCAL_VIEW,
+            CustomBroadcastConstants.CONF_CALL_CONNECTED,
+            CustomBroadcastConstants.ACTION_CALL_END_FAILED};
 
     private static final int NOT_ALPHA = 255;
     private static final int HALF_ALPHA = 127;
@@ -172,6 +175,20 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 break;
 
             case CustomBroadcastConstants.DEL_LOCAL_VIEW:
+                break;
+
+            case CustomBroadcastConstants.CONF_CALL_CONNECTED:
+                finish();
+                break;
+
+
+            case CustomBroadcastConstants.ACTION_CALL_END_FAILED:
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
                 break;
 
             default:
@@ -282,6 +299,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 LinearLayout switchCameraStatusBtn = (LinearLayout) popupView.findViewById(R.id.switch_camera_status_btn);
                 LinearLayout videoSwitchAudioBtn = (LinearLayout) popupView.findViewById(R.id.video_switch_audio_btn);
                 LinearLayout videoHoldBtn = (LinearLayout) popupView.findViewById(R.id.video_hold);
+                LinearLayout p2pConfBtn = (LinearLayout) popupView.findViewById(R.id.p2p_conf);
 
                 mCameraStatusImage = (ImageView) popupView.findViewById(R.id.iv_camera_status);
                 mCameraStatusText = (TextView) popupView.findViewById(R.id.tv_camera_status);
@@ -295,6 +313,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 mSwitchCameraBtn.setOnClickListener(this);
                 videoSwitchAudioBtn.setOnClickListener(this);
                 videoHoldBtn.setOnClickListener(this);
+                p2pConfBtn.setOnClickListener(this);
                 mPopupWindow = PopupWindowUtil.getInstance().generatePopupWindow(popupView);
                 mPopupWindow.showAtLocation(findViewById(R.id.video_call_area), Gravity.RIGHT | Gravity.BOTTOM, 0, mMediaGroupBtn.getHeight());
                 break;
@@ -321,6 +340,9 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 break;
             case R.id.video_hold:
                 mPresenter.holdVideo();
+                break;
+            case R.id.p2p_conf:
+                mPresenter.transferToConference();
                 break;
             case R.id.video_mute_area:
                 mPresenter.muteCall();

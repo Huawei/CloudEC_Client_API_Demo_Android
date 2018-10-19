@@ -2,6 +2,7 @@ package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -250,25 +251,37 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
     private void showDatePicker()
     {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener()
-        {
+        final DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
-            {
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 dateEntity = new DateEntity();
                 dateEntity.setYear(year);
-                dateEntity.setMonth(monthOfYear);
+                dateEntity.setMonth(month);
                 dateEntity.setDay(dayOfMonth);
                 showTimePicker();
             }
         }, gregorianCalendar.get(Calendar.YEAR), gregorianCalendar.get(Calendar.MONTH), gregorianCalendar.get(Calendar.DATE));
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.sure),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        datePickerDialog.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+                    }
+                });
+        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.exit),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
         datePickerDialog.show();
     }
 
     private void showTimePicker()
     {
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener()
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener()
         {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute)
@@ -281,6 +294,20 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
                 }
             }
         }, gregorianCalendar.get(Calendar.HOUR_OF_DAY), gregorianCalendar.get(Calendar.MINUTE), true);
+        timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.sure),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        timePickerDialog.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
+                    }
+                });
+        timePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.exit),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
         timePickerDialog.show();
     }
 

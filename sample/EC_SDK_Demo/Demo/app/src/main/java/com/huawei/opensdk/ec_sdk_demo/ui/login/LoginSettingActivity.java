@@ -12,8 +12,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.huawei.opensdk.ec_sdk_demo.R;
+import com.huawei.opensdk.ec_sdk_demo.logic.login.LoginModel;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.loginmgr.LoginConstant;
+import com.huawei.opensdk.servicemgr.ServiceMgr;
 
 public class LoginSettingActivity extends BaseActivity implements View.OnClickListener
 {
@@ -27,6 +29,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
     private EditText mUdpPortEditText;
     private EditText mTlsPortEditText;
     private RadioGroup mPriorityGroup;
+    private RadioGroup mProtocolGroup;
     private String mRegServerAddress;
     private String mServerPort;
     private boolean mIsVpn;
@@ -35,9 +38,11 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
     private int mAppConfig = 1;
     private int mSecurityMode = 0;
     private int mPriorityGroupPort = 0;
+    private int mControlProtocol = 0;
     private String mUdpPort;
     private String mTlsPort;
     private SharedPreferences mSharedPreferences;
+    private LoginModel mSettingPresenter;
 
     private void initView()
     {
@@ -51,6 +56,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mUdpPortEditText = (EditText) findViewById(R.id.sip_server_udp_port);
         mTlsPortEditText = (EditText) findViewById(R.id.sip_server_tls_port);
         mPriorityGroup = (RadioGroup) findViewById(R.id.port_config_priority);
+        mProtocolGroup = (RadioGroup) findViewById(R.id.conf_ctrl_protocol);
 
         ImageView searchButton = (ImageView) findViewById(R.id.right_img);
         ImageView navImage = (ImageView) findViewById(R.id.nav_iv);
@@ -70,6 +76,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mAppConfigGroup.check(getEnableConfigDefaultCheckedId(mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 1)));
         mSecurityTunnelGroup.check(getSecurityTunnelModeCheckedId(mSharedPreferences.getInt(LoginConstant.SECURITY_TUNNEL, 0)));
         mPriorityGroup.check(getPortConfigPriorityCheckedId(mSharedPreferences.getInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)));
+        mProtocolGroup.check(getProtocolCheckedId(mSharedPreferences.getInt(LoginConstant.CONF_CTRL_PROTOCOL, 0)));
         mUdpPortEditText.setText(mSharedPreferences.getString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT));
         mTlsPortEditText.setText(mSharedPreferences.getString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT));
     }
@@ -88,11 +95,13 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 mAppConfig = getEnableAppConfig(mAppConfigGroup.getCheckedRadioButtonId());
                 mSecurityMode = getSecurityMode(mSecurityTunnelGroup.getCheckedRadioButtonId());
                 mPriorityGroupPort = getPortConfigPriority(mPriorityGroup.getCheckedRadioButtonId());
+                mControlProtocol = getControlProtocol(mProtocolGroup.getCheckedRadioButtonId());
                 mUdpPort = mUdpPortEditText.getText().toString().trim();
                 mTlsPort = mTlsPortEditText.getText().toString().trim();
-                saveLoginSetting(mIsVpn, mRegServerAddress, mServerPort);
+                saveLoginSetting(mIsVpn, mRegServerAddress, mServerPort, mControlProtocol);
                 saveSecuritySetting(mSrtpMode, mSipTransport, mAppConfig, mSecurityMode);
                 saveNetworkSetting(mUdpPort, mTlsPort, mPriorityGroupPort);
+                updataSecurityNetworkParam();
                 showToast(R.string.save_success);
                 finish();
                 break;
@@ -108,6 +117,8 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.nav_iv:
                 finish();
+                break;
+            default:
                 break;
         }
     }
@@ -209,15 +220,33 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 }
             }
         });
+
+        mProtocolGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId)
+                {
+                    case R.id.ido_protocol:
+                        mControlProtocol = 0;
+                        break;
+                    case R.id.rest_protocol:
+                        mControlProtocol = 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     @Override
     public void initializeData()
     {
         mSharedPreferences = getSharedPreferences(LoginConstant.FILE_NAME, Activity.MODE_PRIVATE);
+        mSettingPresenter = new LoginModel(mSharedPreferences);
     }
 
-    private void saveLoginSetting(boolean isVpn, String regServerAddress, String serverPort)
+    private void saveLoginSetting(boolean isVpn, String regServerAddress, String serverPort, int mControlProtocol)
     {
         if (TextUtils.isEmpty(regServerAddress) || TextUtils.isEmpty(serverPort))
         {
@@ -227,6 +256,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mSharedPreferences.edit().putBoolean(LoginConstant.TUP_VPN, isVpn)
                 .putString(LoginConstant.TUP_REGSERVER, regServerAddress)
                 .putString(LoginConstant.TUP_PORT, serverPort)
+                .putInt(LoginConstant.CONF_CTRL_PROTOCOL, mControlProtocol)
                 .commit();
     }
 
@@ -330,6 +360,22 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         return id;
     }
 
+    private int getProtocolCheckedId(int protocol) {
+        int id = R.id.ido_protocol;
+        switch (protocol)
+        {
+            case 0:
+                id = R.id.ido_protocol;
+                break;
+            case 1:
+                id = R.id.rest_protocol;
+                break;
+            default:
+                break;
+        }
+        return id;
+    }
+
     private int getSrtpMode(int checkedId) {
         int srtpMode = 0;
         switch (checkedId)
@@ -414,5 +460,33 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
                 break;
         }
         return portConfig;
+    }
+
+    private int getControlProtocol(int checkedId) {
+        int confConfig = 0;
+        switch (checkedId)
+        {
+            case R.id.ido_protocol:
+                confConfig = 0;
+                break;
+            case R.id.rest_protocol:
+                confConfig = 1;
+                break;
+            default:
+                break;
+        }
+        return confConfig;
+    }
+
+    private void updataSecurityNetworkParam(){
+        ServiceMgr.getServiceMgr().securityParam(
+                mSettingPresenter.getSrtpMode(),
+                mSettingPresenter.getSipTransport(),
+                mSettingPresenter.getAppConfig(),
+                mSettingPresenter.getTunnelMode());
+        ServiceMgr.getServiceMgr().networkParam(
+                mSettingPresenter.getUdpPort(),
+                mSettingPresenter.getTlsPort(),
+                mSettingPresenter.getPriority());
     }
 }

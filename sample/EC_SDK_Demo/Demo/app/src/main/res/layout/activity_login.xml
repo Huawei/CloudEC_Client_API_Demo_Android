@@ -17,7 +17,7 @@
             android:layout_width="131dp"
             android:layout_height="131dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="70dp"
             android:src="@mipmap/ic_launcher"/>
 
         <RelativeLayout android:layout_width="match_parent"
@@ -77,13 +77,40 @@
                 android:textSize="16sp"/>
         </RelativeLayout>
 
-        <Button android:id="@+id/btn_login"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp10"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/check_auto_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/autologin"
+                android:textSize="@dimen/dp15" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="38dp"
             android:layout_marginTop="22dp"
             android:background="@drawable/login_btn"
             android:text="@string/login"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
+
+        <Button android:id="@+id/btn_anonymous"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/login_btn"
+            android:text="@string/anonymous"
+            android:textSize="16sp" />
 
         <ImageView android:id="@+id/iv_login_setting"
             android:layout_width="30dp"

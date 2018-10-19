@@ -6,6 +6,7 @@
     <string name="account">Account</string>
     <string name="iphonepassword">Password</string>
     <string name="vpn_connect">VPN connect</string>
+    <string name="autologin">Auto Login</string>
     <string name="login">Login</string>
     <string name="save">Save</string>
     <string name="save_success">Save Success</string>
@@ -23,7 +24,7 @@
     <string name="number">number</string>
     <string name="input_call_number">Input your call number</string>
     <string name="audio_call">Audio call</string>
-    <string name="video_call">Video call</string>
+    <string name="video_call">video call</string>
     <string name="ctd_call">Ctd call</string>
     <string name="ipt_config">Ipt config</string>
     <string name="name_label">Name</string>
@@ -46,6 +47,7 @@
     <string name="back">back</string>
 
     <string name="conf_id">Conf id:</string>
+    <string name="conf_type">Conf type:</string>
     <string name="conf_subject">Conf subject:</string>
     <string name="access_number">Access number:</string>
     <string name="chairman_password">Chairman password:</string>
@@ -176,8 +178,8 @@
     <string name="exit">Exit</string>
     <string name="number_empty">call number is empty!</string>
 
-    <string name="un_hold_call">Un Hold Call</string>
-    <string name="hold_call">Hold Call</string>
+    <string name="un_hold_call">un hold call</string>
+    <string name="hold_call">hold call</string>
     <string name="blind_transfer_number">Please enter the number</string>
     <string name="search">Search</string>
     <string name="im_login_success">Login im success</string>
@@ -241,6 +243,14 @@
     <string name="create_group_fail">Create group failed</string>
     <string name="constant_group">Groups</string>
     <string name="my_state">My Status</string>
+
+    <string name="set_mode_failed">Failed to set conference mode.</string>
+    <string name="set_conf_mode">Set Conference Mode</string>
+    <string name="broadcast_mode">Broadcast Mode</string>
+    <string name="voice_control_mode">Voice Control Mode</string>
+    <string name="free_mode">Free Mode</string>
+    <string name="upgrade_conf">Upgrade conference</string>
+    <string name="set_presenter_failed">Set presenter failed</string>
 
 
 </resources>

@@ -29,7 +29,7 @@ public final class ActivityUtil
         }
         catch (ActivityNotFoundException e)
         {
-            Log.i(UIConstants.DEMO_TAG, e.getMessage());
+            Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public final class ActivityUtil
         }
         catch (ActivityNotFoundException e)
         {
-            Log.i(UIConstants.DEMO_TAG, e.getMessage());
+            Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ public final class ActivityUtil
         }
         catch (ActivityNotFoundException e)
         {
-            Log.i(UIConstants.DEMO_TAG, e.getMessage());
+            Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public final class ActivityUtil
         }
         catch (ActivityNotFoundException e)
         {
-            Log.i(UIConstants.DEMO_TAG, e.getMessage());
+            Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public final class ActivityUtil
         }
         catch (ActivityNotFoundException e)
         {
-            Log.i(UIConstants.DEMO_TAG, e.getMessage());
+            Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
     }
 }

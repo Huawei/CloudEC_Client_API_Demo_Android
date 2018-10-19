@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -39,6 +40,8 @@ public class ConfDetailActivity extends MVPBaseActivity<ICreateConfContract.Conf
             mPresenter.receiveBroadcast(broadcastName, obj);
         }
     };
+
+    private int confType;
 
     @Override
     public void initializeComposition()
@@ -154,14 +157,34 @@ public class ConfDetailActivity extends MVPBaseActivity<ICreateConfContract.Conf
         });
     }
 
+    private void updateTypeView(TsdkConfMediaType type)
+    {
+        switch (type)
+        {
+            case TSDK_E_CONF_MEDIA_VOICE:
+                confType = R.string.conference_voice;
+                break;
+            case TSDK_E_CONF_MEDIA_VIDEO:
+                confType = R.string.conference_video;
+                break;
+            case TSDK_E_CONF_MEDIA_VOICE_DATA:
+                confType = R.string.conference_voice_data;
+                break;
+            case TSDK_E_CONF_MEDIA_VIDEO_DATA:
+                confType = R.string.conference_video_data;
+                break;
+            default:
+                break;
+        }
+    }
 
     @Override
-    public void refreshView(final ConfDetailInfo confDetailInfo)
-    {
+    public void refreshView(final ConfDetailInfo confDetailInfo) {
         final String startTime = DateUtil.getInstance().utcToLocalDate(confDetailInfo.getStartTime(),
                 DateUtil.FMT_YMDHM, DateUtil.FMT_YMDHM);
         final String endTime = DateUtil.getInstance().utcToLocalDate(confDetailInfo.getEndTime(),
                 DateUtil.FMT_YMDHM, DateUtil.FMT_YMDHM);
+        updateTypeView(confDetailInfo.getMediaType());
         runOnUiThread(new Runnable()
         {
             @Override
@@ -171,6 +194,7 @@ public class ConfDetailActivity extends MVPBaseActivity<ICreateConfContract.Conf
                 ((TextView) findViewById(R.id.conference_start_time_tv)).setText(startTime);
                 ((TextView) findViewById(R.id.conference_end_time_tv)).setText(endTime);
                 ((TextView) findViewById(R.id.conference_id_content)).setText(confDetailInfo.getConfID());
+                ((TextView) findViewById(R.id.conference_type_content)).setText(confType);
                 ((TextView) findViewById(R.id.conference_access_code_content)).setText(confDetailInfo.getAccessNumber());
                 ((TextView) findViewById(R.id.conference_host_password_content)).setText(confDetailInfo.getChairmanPwd());
                 ((TextView) findViewById(R.id.conference_member_password_content)).setText(confDetailInfo.getGuestPwd());

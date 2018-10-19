@@ -6,6 +6,8 @@ import android.util.Log;
 import com.huawei.ecterminalsdk.base.TsdkMobileAuidoRoute;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
+import com.huawei.ecterminalsdk.base.TsdkVideoViewRefreshEvent;
+import com.huawei.ecterminalsdk.base.TsdkVideoViewType;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
 
@@ -153,6 +155,12 @@ public class CallMgr implements ICallMgr
         //Optional
     }
 
+    /**
+     * This method is used to switching audio routing devices
+     * 切换音频路由设备
+     *
+     * @return
+     */
     @Override
     public int switchAudioRoute()
     {
@@ -299,7 +307,15 @@ public class CallMgr implements ICallMgr
     @Override
     public boolean endCall(int callID)
     {
-        int result = TsdkManager.getInstance().getCallManager().getCallByCallId(callID).endCall();
+
+        TsdkCall tsdkCall = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
+        if (null == tsdkCall)
+        {
+            mCallNotification.onCallEventNotify(CallConstant.CallEvent.CALL_ENDED_FAILED, null);
+            return false;
+        }
+
+        int result = tsdkCall.endCall();
         if (result != 0)
         {
             Log.e(TAG, "endCall return failed, result = " + result);
@@ -563,7 +579,8 @@ public class CallMgr implements ICallMgr
     }
 
     /**
-     * Local preview
+     * This method is used to Local preview
+     * 本地预览
      *
      * @param callID
      * @param visible
@@ -743,6 +760,7 @@ public class CallMgr implements ICallMgr
 
     /**
      * This method is used to sets audio route.
+     * 设置音频路由
      *
      * @param audioSwitch the audio switch
      * @return the audio route
@@ -755,6 +773,8 @@ public class CallMgr implements ICallMgr
 
     /**
      * This method is used to support video.
+     * 是否支持视频功能
+     *
      * @return the boolean
      */
     private boolean isSupportVideo()
@@ -1038,15 +1058,15 @@ public class CallMgr implements ICallMgr
      */
     public void handleRefreshViewInd(TsdkCall call, TsdkVideoViewRefresh refreshInfo){
         Log.i(TAG, "refreshLocalView");
-        int mediaType = refreshInfo.getViewType();
-        int eventType = refreshInfo.getEvent();
+        TsdkVideoViewType mediaType = TsdkVideoViewType.enumOf(refreshInfo.getViewType());
+        TsdkVideoViewRefreshEvent eventType = TsdkVideoViewRefreshEvent.enumOf(refreshInfo.getEvent());
         int callId = call.getCallInfo().getCallId();
 
         switch (mediaType)
         {
-            case 1: //local video preview
-            case 2: //general video
-                if (eventType == 1) //add local view
+            case TSDK_E_VIEW_LOCAL_PREVIEW: //local video preview
+            case TSDK_E_VIEW_VIDEO_VIEW: //general video
+                if (eventType == TsdkVideoViewRefreshEvent.TSDK_E_VIDEO_LOCAL_VIEW_ADD) //add local view
                 {
                     //VideoDeviceManager.getInstance().refreshLocalVideo(true, callId);
                     mCallNotification.onCallEventNotify(CallConstant.CallEvent.ADD_LOCAL_VIEW, callId);
@@ -1058,7 +1078,7 @@ public class CallMgr implements ICallMgr
                 }
                 break;
 
-            case 3: //auxiliary data
+            case TSDK_E_VIEW_AUX_DATA_VIEW: //auxiliary data
                 break;
 
             default:

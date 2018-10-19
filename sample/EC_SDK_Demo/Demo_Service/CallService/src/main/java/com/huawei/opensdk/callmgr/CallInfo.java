@@ -153,12 +153,18 @@ public class CallInfo implements Serializable
 
     public static class Builder
     {
+        //呼叫ID
         private int callID;
+        //会议ID
         private String confID;
+        //对端号码
         private String peerNumber;
+        //对端名称
         private String peerDisplayName;
 
+        //是否是视频呼叫
         private boolean isVideoCall;
+        //是否是会议
         private boolean isFocus;
         private boolean isCaller;
         private Boolean maybeVideoCall;

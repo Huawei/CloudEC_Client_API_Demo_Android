@@ -52,11 +52,11 @@ public class PopupConfListAdapter extends BaseAdapter
     public View getView(int position, View convertView, ViewGroup parent)
     {
         Member entity = memberList.get(position);
-        VideoConfViewHolder viewHolder;
+        ConfManagerViewHolder viewHolder;
         if (convertView == null)
         {
             convertView = LayoutInflater.from(context).inflate(R.layout.popup_video_conf_list_item, null);
-            viewHolder = new VideoConfViewHolder();
+            viewHolder = new ConfManagerViewHolder();
             viewHolder.hostLogo = (ImageView) convertView.findViewById(R.id.host_logo);
             viewHolder.nameTv = (TextView) convertView.findViewById(R.id.name_tv);
             viewHolder.videoStatus = (RelativeLayout) convertView.findViewById(R.id.video_status_layout);
@@ -64,7 +64,7 @@ public class PopupConfListAdapter extends BaseAdapter
         }
         else
         {
-            viewHolder = (VideoConfViewHolder) convertView.getTag();
+            viewHolder = (ConfManagerViewHolder) convertView.getTag();
         }
         String displayName = entity.getDisplayName();
         viewHolder.nameTv.setText(displayName);
@@ -78,7 +78,12 @@ public class PopupConfListAdapter extends BaseAdapter
         this.memberList = memberList;
     }
 
-    private static class VideoConfViewHolder
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
+    private static class ConfManagerViewHolder
     {
         public TextView nameTv;
         public ImageView hostLogo;

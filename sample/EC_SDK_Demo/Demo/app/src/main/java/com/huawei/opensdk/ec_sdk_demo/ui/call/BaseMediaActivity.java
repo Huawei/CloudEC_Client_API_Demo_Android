@@ -18,10 +18,12 @@ import android.widget.Toast;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
+import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
+import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.CallFunc;
@@ -56,6 +58,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected LinearLayout mPlateButton;
     protected LinearLayout mBlindTransferButton;
     protected LinearLayout mHoldCallButton;
+    protected LinearLayout mTransferMeeting;
     protected LinearLayout mMuteArea;
     protected LinearLayout mPlateArea;
     protected ImageView mCloseArea;
@@ -71,7 +74,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected int mCallID;
     protected String mConfID;
     protected boolean mIsConfCall;
-    protected boolean mIsCaller;
 
     protected int mConfToCallHandle;
 
@@ -80,8 +82,10 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_CALL_CONNECTED,
             CustomBroadcastConstants.CALL_MEDIA_CONNECTED,
             CustomBroadcastConstants.CONF_CALL_CONNECTED,
-            CustomBroadcastConstants.ACTION_CALL_END, CustomBroadcastConstants.CALL_UPGRADE_ACTION,
-            CustomBroadcastConstants.HOLD_CALL_RESULT, CustomBroadcastConstants.BLD_TRANSFER_RESULT};
+            CustomBroadcastConstants.ACTION_CALL_END,
+            CustomBroadcastConstants.CALL_UPGRADE_ACTION,
+            CustomBroadcastConstants.HOLD_CALL_RESULT,
+            CustomBroadcastConstants.BLD_TRANSFER_RESULT};
     private LinearLayout mSpeakerButton;
     private LinearLayout mUpgradeVideoArea;
 
@@ -191,6 +195,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mVideoAcceptCallArea = (FrameLayout) findViewById(R.id.video_accept_call_area);
         mDivertCallArea = (FrameLayout) findViewById(R.id.divert_call_area);
         mCallNumberTv = (TextView) findViewById(R.id.call_number);
+        mTransferMeeting = (LinearLayout) findViewById(R.id.transfer_meeting);
 
         mCloseArea = (ImageView) findViewById(R.id.hide_dial_btn);
         mCallNameTv = (TextView) findViewById(R.id.call_name);
@@ -207,6 +212,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mBlindTransferButton.setOnClickListener(this);
         mHoldCallButton.setOnClickListener(this);
         mHoldCallText.setOnClickListener(this);
+        mTransferMeeting.setOnClickListener(this);
 
         hideViews();
     }
@@ -267,6 +273,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mUpgradeVideoArea.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mBlindTransferButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mHoldCallButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
+        mTransferMeeting.setVisibility(isCall ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -282,7 +289,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mCallID = callInfo.getCallID();
         mConfID = callInfo.getConfID();
         mIsConfCall = callInfo.isFocus();
-        mIsCaller = callInfo.isCaller();
         if ((null != mConfID) && (!callInfo.getConfID().equals(""))) {
             mConfToCallHandle = Integer.parseInt(callInfo.getConfID());
         }
@@ -328,13 +334,16 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                         .show();
                 break;
             case R.id.hold_call:
-                if ("Hold Call".equals(mHoldCallText.getText())) {
+                if (LocContext.getString(R.string.hold_call).equals(mHoldCallText.getText())) {
                     mHoldCallText.setText(R.string.un_hold_call);
                     CallMgr.getInstance().holdCall(mCallID);
-                } else if ("Un Hold Call".equals(mHoldCallText.getText())) {
+                } else if (LocContext.getString(R.string.un_hold_call).equals(mHoldCallText.getText())) {
                     mHoldCallText.setText(R.string.hold_call);
                     CallMgr.getInstance().unHoldCall(mCallID);
                 }
+                break;
+            case R.id.transfer_meeting:
+                MeetingMgr.getInstance().callTransferToConference(mCallID);
                 break;
             default:
                 break;
@@ -418,6 +427,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mUpgradeVideoArea.setVisibility(View.VISIBLE);
         mBlindTransferButton.setVisibility(View.VISIBLE);
         mHoldCallButton.setVisibility(View.VISIBLE);
+        mTransferMeeting.setVisibility(View.VISIBLE);
         mSpeakerButton.setActivated(CallMgr.getInstance().getCurrentAudioRoute() == CallConstant.TYPE_LOUD_SPEAKER);
     }
 

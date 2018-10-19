@@ -8,7 +8,6 @@ import android.os.Message;
 import android.widget.Toast;
 
 import com.huawei.ecterminalsdk.base.TsdkCallInfo;
-import com.huawei.ecterminalsdk.models.call.TsdkCall;
 import com.huawei.ecterminalsdk.models.conference.TsdkConference;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallInfo;
@@ -348,8 +347,13 @@ public class CallFunc implements ICallNotification, ICtdNotification
 
             case CONF_END:
                 break;
+
             case SESSION_MODIFIED:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.SESSION_MODIFIED_RESULT, obj);
+                break;
+
+            case CALL_ENDED_FAILED:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_END_FAILED, obj);
                 break;
 
 

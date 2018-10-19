@@ -3,12 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/conference_data"/>
+    <include
+        android:id="@+id/date_conf_rl"
+        layout="@layout/conference_data"/>
 
     <include layout="@layout/title_transparent"/>
 
-    <include layout="@layout/data_conf_main_btn"
+    <include layout="@layout/chat_data_bottom"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"/>
+
+
+    <FrameLayout
+        android:id="@+id/local_video_view"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="visible"/>
+    <FrameLayout
+        android:id="@+id/hide_video_view"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="visible"/>
 </RelativeLayout>

@@ -1,9 +1,12 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
+import android.content.Context;
+import android.view.SurfaceView;
+import android.view.ViewGroup;
+
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
+import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.Member;
-import com.huawei.opensdk.demoservice.data.ConferenceEntity;
-import com.huawei.opensdk.demoservice.data.ConferenceMemberEntity;
 import com.huawei.opensdk.ec_sdk_demo.logic.BaseView;
 
 import java.util.List;
@@ -11,96 +14,105 @@ import java.util.List;
 
 public interface IConfManagerContract
 {
-    interface IConfManagerView extends BaseView
+    interface ConfManagerView extends BaseView
     {
-        void refreshMemberList(List<Member> list);
+        void finishActivity();
 
-        void updateButtons(Member conferenceMemberEntity);
+        void updateMuteButton(boolean isMute);
 
-        void updateLoudSpeakerButton(int type);
+        void updateAttendeeButton(Member member);
 
-        void updateTitle(String title);
+        void updateLocalVideo();
+
+        void refreshMemberList(final List<Member> list);
 
         void showItemClickDialog(List<Object> items, Member member);
 
-        void finishActivity();
+        void updateUpgradeConfBtn(boolean isInDataConf);
 
         void updateConfTypeIcon(ConfBaseInfo confBaseInfo);
-
-        void updateDataConfBtn(boolean show);
-
-        void updateVideoBtn(boolean show);
-
-        void updateUpgradeConfBtn(boolean isInDataConf);
 
         void showMessage(String message);
     }
 
-    interface IConfManagerPresenter
+    interface ConfManagerPresenter
     {
         void registerBroadcast();
 
-        String getConfID();
+        void unregisterBroadcast();
 
         void setConfID(String confID);
 
-        ConfBaseInfo getConfBaseInfo();
+        boolean muteSelf();
 
-        void leaveConf();
+        int switchLoudSpeaker();
 
-        void endConf();
+        void switchCamera();
 
-        void addMember(String name, String number, String account);
+        boolean isChairMan();
 
-        void delMember(Member member);
+        void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout);
 
-        void muteSelf();
+        void setAutoRotation(Object object, boolean isOpen);
 
-        void muteMember(Member member, boolean isMute);
+        /**
+         * 打开指定与会者的视频
+         * @param userID
+         */
+        void attachRemoteVideo(long userID, long deviceID);
 
-        void muteConf(boolean isMute);
+        void watchAttendee(Member member);
 
-        void lockConf(boolean islock);
+        void setConfMode(ConfConstant.ConfVideoMode confVideoMode);
 
-        void handUpSelf();
+        /**
+         * 共享自己的视频
+         */
+        void shareSelfVideo(long deviceID);
 
-        void cancelMemberHandUp(Member member);
+        void closeConf();
 
-        void requestChairman(String chairmanPassword);
+        void finishConf();
 
-        void releaseChairman();
+        void leaveVideo();
 
-        void postponeConf(int time);
+        List<Member> getMemberList();
 
-        void updateConf();
+        void changeLocalVideoVisible(boolean visible);
 
-        void switchConfMode();
+        boolean closeOrOpenLocalVideo(boolean close);
 
-        void broadcastMember(Member member);
+        SurfaceView getHideVideoView();
 
-        void setPresenter(Member member);
+        SurfaceView getLocalVideoView();
 
-        void setHost(Member member);
-
-        void switchLoudSpeaker();
+        SurfaceView getRemoteVideoView();
 
         void onItemClick(int position);
 
         void onItemDetailClick(String clickedItem, Member conferenceMemberEntity);
 
-        boolean isChairMan();
+        void requestChairman(String chairmanPassword);
+
+        void releaseChairman();
+
+        void muteConf(boolean isMute);
+
+        void lockConf(boolean isLock);
+
+        void handUpSelf();
 
         boolean isHandUp();
-
-        boolean isInDataConf();
-
-        boolean isPresenter();
-
-        boolean isHost();
 
         boolean isConfMute();
 
         boolean isConfLock();
+
+        void updateConf();
+
+        void addMember(String name, String number, String account);
+
+        void setSelfPresenter();
 
     }
 }

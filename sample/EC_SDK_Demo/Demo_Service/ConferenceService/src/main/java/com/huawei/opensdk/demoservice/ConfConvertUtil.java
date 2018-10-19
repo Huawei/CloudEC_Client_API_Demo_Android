@@ -9,7 +9,6 @@ import com.huawei.ecterminalsdk.base.TsdkConfParticipantStatus;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkConfState;
 import com.huawei.tup.confctrl.ConfctrlConfMediatypeFlag;
-import com.huawei.tup.confctrl.ConfctrlConfState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -197,6 +196,29 @@ public class ConfConvertUtil {
         return status;
     }
 
+    /**
+     * This method is used to convert conference protocol
+     * 转换会议协议类型
+     * @param protocol
+     * @return
+     */
+    public static ConfConstant.ConfProtocol convertConfctrlProtocol(int protocol)
+    {
+        ConfConstant.ConfProtocol confProtocol = ConfConstant.ConfProtocol.IDO_PROTOCOL;
+        switch (protocol)
+        {
+            case 0:
+                confProtocol = ConfConstant.ConfProtocol.IDO_PROTOCOL;
+                break;
+            case 1:
+                confProtocol = ConfConstant.ConfProtocol.REST_PROTOCOL;
+                break;
+            default:
+                break;
+        }
+        return confProtocol;
+    }
+
     public static List<TsdkAttendee> convertMemberList(List<Member> memberList)
     {
         List<TsdkAttendee> attendeeInfoList = new ArrayList<>();
@@ -247,6 +269,7 @@ public class ConfConvertUtil {
         TsdkConfRole role = ((attendeeBaseInfo.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN.getIndex()) ?
                 TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN : TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
         member.setRole(role);
+        member.setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
 
         TsdkConfParticipantStatus participantStatus = convertAttendStatus(attendeeStatusInfo.getState());
         if (participantStatus != null) {
@@ -260,7 +283,12 @@ public class ConfConvertUtil {
         return member;
     }
 
-
+    /**
+	 * This method is used to convert attendee information list
+     * 转换与会者信息列表
+     * @param attendeeInfoList
+     * @return
+     */
     public static List<Member> convertAttendeeInfoList(List<TsdkAttendeeBaseInfo> attendeeInfoList)
     {
         List<Member> memberList = new ArrayList<>();

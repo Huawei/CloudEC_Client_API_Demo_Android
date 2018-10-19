@@ -46,6 +46,8 @@ public class CallConstant {
 
         CALL_ENDED(),
 
+        CALL_ENDED_FAILED(),
+
         SESSION_MODIFIED(),
 
         RTP_CREATED(),

@@ -1,12 +1,6 @@
 package com.huawei.opensdk.callmgr;
 
-import com.huawei.ecterminalsdk.base.TsdkCallInfo;
 import com.huawei.ecterminalsdk.base.TsdkDtmfTone;
-import com.huawei.ecterminalsdk.base.TsdkVideoRenderInfo;
-import com.huawei.ecterminalsdk.base.TsdkVideoWndDisplayMode;
-import com.huawei.ecterminalsdk.base.TsdkVideoWndMirrorType;
-import com.huawei.ecterminalsdk.base.TsdkVideoWndType;
-import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 
@@ -130,7 +124,9 @@ public class Session {
 
 
     /**
+     * This method is used to launched divert Call
      *  发起偏转呼叫
+     *
      * divert call
      * @param divertNumber
      * @return
@@ -149,6 +145,7 @@ public class Session {
     /**
      * start blind transfer request
      * 发起盲转呼叫请求
+     *
      * @param transferNumber 盲转号码
      * @return
      */
@@ -165,6 +162,8 @@ public class Session {
 
     /**
      * Call hold
+     * 呼叫保持
+     *
      * @return
      */
     public boolean holdCall()
@@ -181,6 +180,8 @@ public class Session {
 
     /**
      * Cancel Call hold
+     * 取消呼叫保持
+     *
      * @return
      */
     public boolean unHoldCall()
@@ -197,6 +198,7 @@ public class Session {
     /**
      * send DTMF during call
      * 二次拨号
+     *
      * @param code  （0到9，*为10,#为11）
      * @return
      */
@@ -221,6 +223,7 @@ public class Session {
     /**
      * add video
      * 音频转视频请求
+     *
      * @return
      */
     public boolean addVideo()
@@ -241,6 +244,7 @@ public class Session {
     /**
      * delet video
      * 删除视频请求
+     *
      * @return
      */
     public boolean delVideo()
@@ -260,6 +264,7 @@ public class Session {
     /**
      * Reject Audio Transfer Video Call
      * 拒绝音频转视频呼叫
+     *
      * @return
      */
     public boolean rejectAddVideo()
@@ -276,6 +281,7 @@ public class Session {
     /**
      * Agree to Audio transfer video Call
      * 同意音频转视频呼叫
+     *
      * @return
      */
     public boolean acceptAddVideo()
@@ -295,6 +301,7 @@ public class Session {
     /**
      * set media microphone mute
      * 设置(或取消)麦克风静音
+     *
      * @param mute
      * @return
      */
@@ -313,6 +320,7 @@ public class Session {
     /**
      * set media speaker mute
      * 设置(或取消)扬声器静音
+     *
      * @param mute
      * @return
      */
@@ -323,13 +331,21 @@ public class Session {
     }
 
 
-
+    /**
+     * switch Camera
+     * 切换摄像头
+     *
+     * @param cameraIndex       设备下标
+     */
     public void switchCamera(int cameraIndex)
     {
 
     }
 
-
+    /**
+     * Initializing the video window
+     * 初始化视频窗口
+     */
     public void initVideoWindow()
     {
         VideoMgr.getInstance().initVideoWindow(getCallID());

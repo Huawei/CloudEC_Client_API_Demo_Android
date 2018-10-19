@@ -19,6 +19,8 @@ public interface IVideoCallContract
 
         void endCall();
 
+        void transferToConference();
+
         String getOppositeNumber();
 
         boolean getIsSpeakerRoute();

@@ -47,42 +47,6 @@ public class LoginParam {
      */
     private boolean isVPN = false;
 
-    /**
-     * SRTP mode
-     */
-    private int srtpMode = 0;
-
-    /**
-     * Sip signaling transport mode
-     */
-    private int sipTransportMode = 0;
-
-    /**
-     * Enable config application
-     */
-    private int enableConfigApplication = 1;
-
-    /**
-     * Enable security tunnel mode
-     */
-    private int securityTunnelMode = 0;
-
-    /**
-     * Udp port value
-     */
-    private int udpPort;
-
-    /**
-     * Tls port value
-     */
-    private int tlsPort;
-
-    /**
-     * the port priority
-
-     */
-    private int portPriority = 0;
-
 
     public LoginParam(){
 
@@ -174,61 +138,5 @@ public class LoginParam {
 
     public void setVPN(boolean VPN) {
         isVPN = VPN;
-    }
-
-    public int getSrtpMode() {
-        return srtpMode;
-    }
-
-    public void setSrtpMode(int srtpMode) {
-        this.srtpMode = srtpMode;
-    }
-
-    public int getSipTransportMode() {
-        return sipTransportMode;
-    }
-
-    public void setSipTransportMode(int sipTransportMode) {
-        this.sipTransportMode = sipTransportMode;
-    }
-
-    public int getEnableConfigApplication() {
-        return enableConfigApplication;
-    }
-
-    public void setEnableConfigApplication(int enableConfigApplication) {
-        this.enableConfigApplication = enableConfigApplication;
-    }
-
-    public int getSecurityTunnelMode() {
-        return securityTunnelMode;
-    }
-
-    public void setSecurityTunnelMode(int securityTunnelMode) {
-        this.securityTunnelMode = securityTunnelMode;
-    }
-
-    public int getUdpPort() {
-        return udpPort;
-    }
-
-    public void setUdpPort(int udpPort) {
-        this.udpPort = udpPort;
-    }
-
-    public int getTlsPort() {
-        return tlsPort;
-    }
-
-    public void setTlsPort(int tlsPort) {
-        this.tlsPort = tlsPort;
-    }
-
-    public int getPortPriority() {
-        return portPriority;
-    }
-
-    public void setPortPriority(int portPriority) {
-        this.portPriority = portPriority;
     }
 }

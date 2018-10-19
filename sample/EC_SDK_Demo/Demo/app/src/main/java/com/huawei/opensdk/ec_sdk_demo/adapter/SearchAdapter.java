@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * The type search contact adapter.
+ * 查询联系人列表适配层
  */
 public class SearchAdapter extends BaseAdapter
 {
@@ -78,6 +79,11 @@ public class SearchAdapter extends BaseAdapter
         return convertView;
     }
 
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
     public static class ViewHolder
     {
         public ImageView headIv;

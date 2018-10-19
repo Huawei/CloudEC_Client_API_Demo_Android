@@ -7,116 +7,178 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
+import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
+import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.opensdk.ec_sdk_demo.adapter.ConfManagerAdapter;
+import com.huawei.opensdk.ec_sdk_demo.adapter.PopupConfListAdapter;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfManagerBasePresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfManagerPresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IConfManagerContract;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
-
-public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IConfManagerView, ConfManagerPresenter> implements IConfManagerContract.IConfManagerView, View.OnClickListener
+public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.ConfManagerView, ConfManagerBasePresenter>
+        implements IConfManagerContract.ConfManagerView, View.OnClickListener
 {
+    private RelativeLayout mVideoConfLayout;
+    private FrameLayout mConfRemoteVideoLayout;
+    private FrameLayout mConfSmallLayout;
+    private FrameLayout mHideVideoLayout;
 
-    private ConfManagerPresenter mPresenter;
-    private ConfManagerAdapter adapter;
+    private FrameLayout mHideLocalVideoBtn;
+    private FrameLayout mShowLocalVideoBtn;
 
-    private LinearLayout confButtonGroup;
-    private ListView confListView;
-    private ImageView existConfIV;
-    private ImageView muteSelfIV;
-    private ImageView loudSpeakerIV;
-    private ImageView updateConfIV;
-    private ImageView btnMoreIV;
-    private TextView titleTV;
-    private ImageView btnShareIV;
-    private ImageView btnVideoIV;
-    PopupWindow mPopupWindow;
+    private LinearLayout mConfButton;
+    private ImageView mLeaveIV;
+    private TextView mTitleTV;
+    private ImageView mRightIV;
+    private ImageView mShareIV;
+    private FrameLayout mConfHangup;
+    private FrameLayout mConfMute;
+    private FrameLayout mConfSpeaker;
+    private FrameLayout mConfAddAttendee;
+    private FrameLayout mConfAttendee;
+    private PopupWindow mPopupWindow;
+    private ListView mConfMemberListView;
+    private PopupConfListAdapter mAdapter;
+    private FrameLayout mConfMore;
+    private ImageView cameraStatusIV;
+    private TextView cameraStatusTV;
 
     private String confID;
-    boolean isVideoIV = false;
-    boolean isShareIV = false;
+    private boolean isCameraClose = false;
+    private boolean isVideo = false;
+    private boolean isDateConf = false;
+    private List<Object> items = new ArrayList<>();
 
     @Override
-    protected IConfManagerContract.IConfManagerView createView()
+    protected IConfManagerContract.ConfManagerView createView()
     {
         return this;
     }
 
     @Override
-    protected ConfManagerPresenter createPresenter()
+    protected ConfManagerBasePresenter createPresenter()
     {
-        mPresenter = new ConfManagerPresenter();
-        return mPresenter;
+        return new ConfManagerPresenter();
     }
 
     @Override
     public void initializeComposition()
     {
-        setContentView(R.layout.conf_manager_layout);
-        confButtonGroup = (LinearLayout) findViewById(R.id.media_btn_group);
-        confListView = (ListView) findViewById(R.id.member_list);
-        existConfIV = (ImageView) findViewById(R.id.conf_hangup_iv);
-        muteSelfIV = (ImageView) findViewById(R.id.conf_mute_iv);
-        loudSpeakerIV = (ImageView) findViewById(R.id.conf_loud_speaker_iv);
-        updateConfIV = (ImageView) findViewById(R.id.conf_update_iv);
-        btnMoreIV = (ImageView) findViewById(R.id.conf_btn_more);
-        titleTV = (TextView) findViewById(R.id.title_text);
-        btnVideoIV = (ImageView) findViewById(R.id.video_view);
-        btnShareIV = (ImageView) findViewById(R.id.share_view);
+        setContentView(R.layout.conf_manager_activity);
+        mConfButton = (LinearLayout) findViewById(R.id.media_btn_group);
+        mVideoConfLayout = (RelativeLayout) findViewById(R.id.conference_video_layout);
 
-        updateConfIV.setVisibility(View.GONE);
+        //title
+        mLeaveIV = (ImageView) findViewById(R.id.leave_iv);
+        mTitleTV = (TextView) findViewById(R.id.conf_title);
+        mRightIV = (ImageView) findViewById(R.id.right_iv);
+        mShareIV = (ImageView) findViewById(R.id.share_iv);
 
-        //为兼容SMC组网下，与会者列表更新不及时，导致会控功能崩溃，这里先隐藏按钮，与会者列表报上来之后再显示按钮。
-        muteSelfIV.setVisibility(View.GONE);
-        loudSpeakerIV.setVisibility(View.GONE);
-        btnMoreIV.setVisibility(View.GONE);
-        btnVideoIV.setVisibility(View.GONE);
-        btnShareIV.setVisibility(View.GONE);
+        //main tab
+        mConfHangup = (FrameLayout) findViewById(R.id.conf_hangup);
+        mConfMute = (FrameLayout) findViewById(R.id.conf_mute);
+        mConfSpeaker = (FrameLayout) findViewById(R.id.conf_loud_speaker);
+        mConfAddAttendee = (FrameLayout) findViewById(R.id.conf_add_attendee);
+        mConfAttendee = (FrameLayout) findViewById(R.id.conf_attendee);
+        mConfMore = (FrameLayout) findViewById(R.id.btn_conf_more);
 
-        existConfIV.setOnClickListener(this);
-        muteSelfIV.setOnClickListener(this);
-        loudSpeakerIV.setOnClickListener(this);
-        updateConfIV.setOnClickListener(this);
-        btnMoreIV.setOnClickListener(this);
-        btnVideoIV.setOnClickListener(this);
-        btnShareIV.setOnClickListener(this);
+        // 在与会者列表上报之前会控按钮全部屏蔽
+        mConfMute.setVisibility(View.GONE);
+        mConfAddAttendee.setVisibility(View.GONE);
+        mConfAttendee.setVisibility(View.GONE);
+        mConfMore.setVisibility(View.GONE);
 
-        confListView.setAdapter(adapter);
-
-        confListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        if (isVideo)
         {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                mPresenter.onItemClick(position);
-            }
-        });
+            //video layout
+            mVideoConfLayout.setVisibility(View.VISIBLE);
+            mConfRemoteVideoLayout = (FrameLayout) findViewById(R.id.conf_remote_video_layout);
+            mHideLocalVideoBtn = (FrameLayout) findViewById(R.id.local_video_hide);
+            mHideVideoLayout = (FrameLayout) findViewById(R.id.hide_video_view);
+            mShowLocalVideoBtn = (FrameLayout) findViewById(R.id.local_video_hide_cancel);
+            mConfSmallLayout = (FrameLayout) findViewById(R.id.conf_video_small_logo);
+
+            //title
+            mRightIV.setVisibility(View.VISIBLE);
+
+            mHideLocalVideoBtn.setOnClickListener(this);
+            mShowLocalVideoBtn.setOnClickListener(this);
+            mRightIV.setOnClickListener(this);
+        }
+        else
+        {
+            mVideoConfLayout.setVisibility(View.INVISIBLE);
+
+            //title
+            mRightIV.setVisibility(View.GONE);
+        }
+
+        mConfHangup.setOnClickListener(this);
+        mConfMute.setOnClickListener(this);
+        mConfSpeaker.setOnClickListener(this);
+        mConfAddAttendee.setOnClickListener(this);
+        mConfAttendee.setOnClickListener(this);
+        mConfMore.setOnClickListener(this);
+        mLeaveIV.setOnClickListener(this);
+        mShareIV.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        mPresenter.registerBroadcast();
+        if (isVideo)
+        {
+            mPresenter.setVideoContainer(this, mConfSmallLayout, mConfRemoteVideoLayout, mHideVideoLayout);
+        }
+        mPresenter.setAutoRotation(this, true);
+
+        // 以下处理用于PBX下的视频会议
+        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+        if (self == null || self.getCameraEntityList().isEmpty())
+        {
+            LogUtil.i(UIConstants.DEMO_TAG,  "no camera--------- ");
+        }
+        else
+        {
+            //打开前置摄像头
+            mPresenter.shareSelfVideo(self.getCameraEntityList().get(1).getDeviceID());
+        }
+
+        // 刷新当前扬声器状态
+        updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
     }
 
     @Override
@@ -124,29 +186,45 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
     {
         Intent intent = getIntent();
         confID = intent.getStringExtra(UIConstants.CONF_ID);
+        isVideo = intent.getBooleanExtra(UIConstants.IS_VIDEO_CONF, false);
+        if (confID == null)
+        {
+            showToast(R.string.empty_conf_id);
+            return;
+        }
 
         mPresenter.setConfID(confID);
-        mPresenter.registerBroadcast();
-        adapter = new ConfManagerAdapter(this);
+        mAdapter = new PopupConfListAdapter(this);
+
+        if (!isVideo)
+        {
+            return;
+        }
+        if (ConfConstant.ConfProtocol.IDO_PROTOCOL == MeetingMgr.getInstance().getConfProtocol())
+        {
+            items.add(getString(R.string.voice_control_mode));
+        }
+        else
+        {
+            items.add(getString(R.string.broadcast_mode));
+            items.add(getString(R.string.voice_control_mode));
+            items.add(getString(R.string.free_mode));
+        }
     }
 
     @Override
-    protected void onResume()
+    public void finishActivity()
     {
-        super.onResume();
-
-        updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
+        finish();
     }
 
     @Override
-    public void showLoading()
-    {
+    public void showLoading() {
 
     }
 
     @Override
-    public void dismissLoading()
-    {
+    public void dismissLoading() {
 
     }
 
@@ -164,181 +242,128 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
     }
 
     @Override
-    protected void onBack()
-    {
-        mPresenter.leaveConf();
-        super.onBack();
-    }
-
-    @Override
     public void onClick(View v)
     {
         switch (v.getId())
         {
-            case R.id.conf_hangup_iv:
+            case R.id.conf_hangup:
+                LogUtil.i(UIConstants.DEMO_TAG, "conference hangup!");
                 if (!mPresenter.isChairMan())
                 {
                     showLeaveConfDialog();
-                    break;
                 }
-                showEndConfDialog();
+                else
+                {
+                    showEndConfDialog();
+                }
                 break;
-            case R.id.conf_mute_iv:
+            case R.id.conf_mute:
+                LogUtil.i(UIConstants.DEMO_TAG, "conference mute!");
                 mPresenter.muteSelf();
                 break;
-            case R.id.conf_loud_speaker_iv:
-                mPresenter.switchLoudSpeaker();
+            case R.id.conf_loud_speaker:
+                LogUtil.i(UIConstants.DEMO_TAG, "conference speaker!");
+                updateLoudSpeakerButton(mPresenter.switchLoudSpeaker());
                 break;
-            case R.id.conf_update_iv:
-                mPresenter.updateConf();
-                break;
-            case R.id.conf_btn_more:
-                showMoreButton();
-                break;
+            case R.id.local_video_hide:
+                mPresenter.changeLocalVideoVisible(false);
 
-            case R.id.video_view:
-                Intent intent = new Intent(IntentConstant.VIDEO_CONF_ACTIVITY_ACTION);
-                intent.putExtra(UIConstants.CONF_ID, mPresenter.getConfID());
+                mHideLocalVideoBtn.setVisibility(View.GONE);
+                mShowLocalVideoBtn.setVisibility(View.VISIBLE);
+
+                mConfSmallLayout.setVisibility(View.GONE);
+                mHideVideoLayout.setVisibility(View.VISIBLE);
+                break;
+            case R.id.local_video_hide_cancel:
+                mPresenter.changeLocalVideoVisible(true);
+
+                mHideLocalVideoBtn.setVisibility(View.VISIBLE);
+                mShowLocalVideoBtn.setVisibility(View.GONE);
+
+                mHideVideoLayout.setVisibility(View.GONE);
+                mConfSmallLayout.setVisibility(View.VISIBLE);
+
+                break;
+            case R.id.right_iv:
+                final List<Member> memberList = mPresenter.getMemberList();
+                if (null == memberList || memberList.size()<=0){
+                    return;
+                }
+                final View popupView = getLayoutInflater().inflate(R.layout.popup_conf_list, null);
+                mConfMemberListView = (ListView) popupView.findViewById(R.id.popup_conf_member_list);
+                mAdapter.setData(memberList);
+                mConfMemberListView.setAdapter(mAdapter);
+                mPopupWindow = PopupWindowUtil.getInstance().generatePopupWindow(popupView);
+                mPopupWindow.showAsDropDown(findViewById(R.id.right_iv));
+                mConfMemberListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        Member conferenceMemberEntity = memberList.get(position);
+
+                        if (null != conferenceMemberEntity)
+                        {
+                            mPresenter.watchAttendee(conferenceMemberEntity);
+                        }
+                        mPopupWindow.dismiss();
+                    }
+                });
+                break;
+            case R.id.conf_add_attendee:
+                showAddMemberDialog();
+                break;
+            case R.id.conf_attendee:
+                Intent intent = new Intent(IntentConstant.CONF_MEMBER_LIST_ACTIVITY_ACTION);
+                intent.putExtra(UIConstants.CONF_ID, confID);
+                intent.putExtra(UIConstants.IS_VIDEO_CONF, isVideo);
+                intent.putExtra(UIConstants.IS_DATE_CONF, isDateConf);
                 ActivityUtil.startActivity(this, intent);
                 break;
-
-            case R.id.share_view:
-                Intent intent1 = new Intent(IntentConstant.Conf_DATA_ACTIVITY_ACTION);
-                intent1.putExtra(UIConstants.CONF_ID, mPresenter.getConfID());
-                ActivityUtil.startActivity(this, intent1);
+            case R.id.btn_conf_more:
+                showMoreConfCtrl();
+                break;
+            case R.id.leave_iv:
+                if (!mPresenter.isChairMan())
+                {
+                    showLeaveConfDialog();
+                }
+                else
+                {
+                    showEndConfDialog();
+                }
+                break;
+            case R.id.share_iv:
+                Intent shareIntent = new Intent(IntentConstant.CONF_DATA_ACTIVITY_ACTION);
+                shareIntent.putExtra(UIConstants.CONF_ID, confID);
+                shareIntent.putExtra(UIConstants.IS_VIDEO_CONF, isVideo);
+                ActivityUtil.startActivity(this, shareIntent);
                 break;
             default:
                 break;
         }
     }
 
-    private void showLeaveConfDialog()
-    {
-        ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
-        dialog.setRightButtonListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.leaveConf();
-                finish();
-            }
-        });
-        dialog.show();
-    }
-
-    private void showMoreButton()
-    {
-//        int solution = LoginCenter.getInstance().getSolution();
-        int wrap = LinearLayout.LayoutParams.WRAP_CONTENT;
-        View popupView = getLayoutInflater().inflate(R.layout.popup_conf_btn_list, null);
-
-        LinearLayout addAttendeeLayout = (LinearLayout) popupView.findViewById(R.id.add_attendee_ll);
-        LinearLayout handUpLayout = (LinearLayout) popupView.findViewById(R.id.hand_up_ll);
-        LinearLayout muteAllLayout = (LinearLayout) popupView.findViewById(R.id.mute_all_ll);
-        LinearLayout cancelMuteAllLayout = (LinearLayout) popupView.findViewById(R.id.cancel_mute_all_ll);
-        LinearLayout lockLayout = (LinearLayout) popupView.findViewById(R.id.lock_conf_ll);
-        LinearLayout unlockLayout = (LinearLayout) popupView.findViewById(R.id.un_lock_conf_ll);
-        LinearLayout requestChairManLayout = (LinearLayout) popupView.findViewById(R.id.request_chairman_ll);
-        LinearLayout releaseChairManLayout = (LinearLayout) popupView.findViewById(R.id.release_chairman_ll);
-        ImageView handUpIV = (ImageView) popupView.findViewById(R.id.hand_up_iv);
-        TextView handUpTV = (TextView) popupView.findViewById(R.id.hand_up_tv);
-        if (mPresenter.isChairMan()) {
-
-            if (mPresenter.isConfMute()) {
-                cancelMuteAllLayout.setVisibility(View.VISIBLE);
-                muteAllLayout.setVisibility(View.GONE);
-            } else {
-                cancelMuteAllLayout.setVisibility(View.GONE);
-                muteAllLayout.setVisibility(View.VISIBLE);
-            }
-
-//            if (solution == LoginCenter.getInstance().CLOUD_EC) {
-
-                requestChairManLayout.setVisibility(View.GONE);
-                releaseChairManLayout.setVisibility(View.VISIBLE);
-
-            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()){
-                if (mPresenter.isConfLock()) {
-                    unlockLayout.setVisibility(View.VISIBLE);
-                    lockLayout.setVisibility(View.GONE);
-                } else {
-                    unlockLayout.setVisibility(View.GONE);
-                    lockLayout.setVisibility(View.VISIBLE);
-                }
-            }else {
-                unlockLayout.setVisibility(View.GONE);
-                lockLayout.setVisibility(View.GONE);
-            }
-
-
-                handUpLayout.setVisibility(View.GONE);
-//            } else {
-//                // Cloud PBX 下不支持相关功能
-//                requestChairManLayout.setVisibility(View.GONE);
-//                releaseChairManLayout.setVisibility(View.GONE);
-//                unlockLayout.setVisibility(View.GONE);
-//                lockLayout.setVisibility(View.GONE);
-//                handUpLayout.setVisibility(View.GONE);
-//            }
-        } else {
-            addAttendeeLayout.setVisibility(View.GONE);
-            cancelMuteAllLayout.setVisibility(View.GONE);
-            muteAllLayout.setVisibility(View.GONE);
-            unlockLayout.setVisibility(View.GONE);
-            lockLayout.setVisibility(View.GONE);
-
-//            if (solution == LoginCenter.getInstance().CLOUD_EC) {
-                requestChairManLayout.setVisibility(View.VISIBLE);
-                releaseChairManLayout.setVisibility(View.GONE);
-
-            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()){
-                if (mPresenter.isHandUp()) {
-                    handUpIV.setActivated(false);
-                    handUpTV.setText(R.string.conf_cancel_hand_up);
-                } else {
-                    handUpIV.setActivated(true);
-                    handUpTV.setText(R.string.conf_hand_up);
-                }
-            }else {
-                handUpLayout.setVisibility(View.GONE);
-            }
-
-
-//            } else {
-//                // Cloud PBX 下不支持相关功能
-//                requestChairManLayout.setVisibility(View.GONE);
-//                releaseChairManLayout.setVisibility(View.GONE);
-//                handUpLayout.setVisibility(View.GONE);
-//            }
-        }
-
-        addAttendeeLayout.setOnClickListener(moreButtonListener);
-        handUpLayout.setOnClickListener(moreButtonListener);
-        muteAllLayout.setOnClickListener(moreButtonListener);
-        cancelMuteAllLayout.setOnClickListener(moreButtonListener);
-        lockLayout.setOnClickListener(moreButtonListener);
-        unlockLayout.setOnClickListener(moreButtonListener);
-        requestChairManLayout.setOnClickListener(moreButtonListener);
-        releaseChairManLayout.setOnClickListener(moreButtonListener);
-
-        mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
-        mPopupWindow.showAtLocation(findViewById(R.id.conf_manager_ll), Gravity.RIGHT | Gravity.BOTTOM, 0, confButtonGroup.getHeight());
-    }
-
-    private View.OnClickListener moreButtonListener = new View.OnClickListener()
-    {
+    private View.OnClickListener moreButtonListener = new View.OnClickListener() {
         @Override
-        public void onClick(View v)
-        {
+        public void onClick(View v) {
             if (mPopupWindow != null && mPopupWindow.isShowing())
             {
                 mPopupWindow.dismiss();
             }
             switch (v.getId())
             {
-                case R.id.add_attendee_ll:
-                    showAddMemberDialog();
+                case R.id.switch_camera_ll:
+                    LogUtil.i(UIConstants.DEMO_TAG, "conference switch camera!");
+                    mPresenter.switchCamera();
+                    break;
+                case R.id.close_camera_ll:
+                    isCameraClose = !isCameraClose;
+                    boolean result = mPresenter.closeOrOpenLocalVideo(isCameraClose);
+                    if (!result)
+                    {
+                        showToast(cameraStatusIV.isActivated() ? R.string.close_video_failed : R.string.open_video_failed);
+                    }
                     break;
                 case R.id.hand_up_ll:
                     mPresenter.handUpSelf();
@@ -355,11 +380,17 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
                 case R.id.un_lock_conf_ll:
                     mPresenter.lockConf(false);
                     break;
+                case R.id.upgrade_conf_ll:
+                    mPresenter.updateConf();
+                    break;
                 case R.id.request_chairman_ll:
                     showRequestChairmanDialog();
                     break;
                 case R.id.release_chairman_ll:
                     mPresenter.releaseChairman();
+                    break;
+                case R.id.set_conf_mode_ll:
+                    showConfMode();
                     break;
                 default:
                     break;
@@ -376,16 +407,207 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
             public void onClick(View v)
             {
                 CommonUtil.hideSoftInput(ConfManagerActivity.this);
-                //SMC组网下不需要密码，为兼容SMC
-//                if (TextUtils.isEmpty(dialog.getText()))
-//                {
-//                    showToast(R.string.invalid_password);
-//                    return;
-//                }
                 mPresenter.requestChairman(dialog.getText());
             }
         });
         dialog.show();
+    }
+
+    private void showConfMode()
+    {
+        final SimpleListDialog dialog = new SimpleListDialog(this, items);
+        dialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dialog.dismiss();
+                mPresenter.onItemDetailClick((String) items.get(position), null);
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void refreshMemberList(final List<Member> list)
+    {
+        if (null == list || list.size() <= 0)
+        {
+            return;
+        }
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                showMoreButton();
+                mAdapter.setData(list);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void showMoreButton()
+    {
+        mConfAttendee.setVisibility(View.VISIBLE);
+        if(!MeetingMgr.getInstance().isAnonymous()){
+            mConfMore.setVisibility(View.VISIBLE);
+        }
+        if (mPresenter.isChairMan())
+        {
+            mConfAddAttendee.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            mConfAddAttendee.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showItemClickDialog(final List<Object> items, final Member member) {
+        final SimpleListDialog dialog = new SimpleListDialog(this, items);
+        dialog.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                dialog.dismiss();
+                mPresenter.onItemDetailClick((String) items.get(position), member);
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void updateUpgradeConfBtn(final boolean isInDataConf) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                isDateConf = isInDataConf;
+                mShareIV.setVisibility(isInDataConf ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void updateConfTypeIcon(final ConfBaseInfo confBaseInfo) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTitleTV.setText(mPresenter.getSubject());
+            }
+        });
+    }
+
+    @Override
+    public void showMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ConfManagerActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showLeaveConfDialog()
+    {
+        ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
+        dialog.setRightButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mPresenter.closeConf();
+                ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                finish();
+            }
+        });
+        dialog.show();
+    }
+
+    private void showEndConfDialog()
+    {
+        TripleDialog dialog = new TripleDialog(this);
+        dialog.setRightButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mPresenter.closeConf();
+                ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                finish();
+            }
+        });
+        dialog.setLeftButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mPresenter.finishConf();
+                ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                finish();
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    protected void onBack() {
+        super.onBack();
+        mPresenter.closeConf();
+        mPresenter.unregisterBroadcast();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mPresenter.closeConf();
+        mPresenter.unregisterBroadcast();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mPresenter.leaveVideo();
+        mPresenter.unregisterBroadcast();
+        mPresenter.setAutoRotation(this, false);
+        PopupWindowUtil.getInstance().dismissPopupWindow(mPopupWindow);
+    }
+
+    @Override
+    public void updateMuteButton(final boolean isMute)
+    {
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mConfMute.setVisibility(View.VISIBLE);
+                mConfMute.setActivated(isMute);
+            }
+        });
+    }
+
+    @Override
+    public void updateAttendeeButton(Member member) {
+
+    }
+
+    @Override
+    public void updateLocalVideo()
+    {
+        mPresenter.setVideoContainer(this, mConfSmallLayout, mConfRemoteVideoLayout, mHideVideoLayout);
+    }
+
+    private void updateLoudSpeakerButton(int type)
+    {
+        if (type == CallConstant.TYPE_LOUD_SPEAKER)
+        {
+            mConfSpeaker.setActivated(true);
+        }
+        else
+        {
+            mConfSpeaker.setActivated(false);
+        }
     }
 
     private synchronized PopupWindow generatePopupWindow(View view, int width, int height)
@@ -411,19 +633,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
         return popupWindow;
     }
 
-
-    public void updateMuteButton(final boolean mute)
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                muteSelfIV.setActivated(mute);
-            }
-        });
-    }
-
     private void showAddMemberDialog()
     {
         final ThreeInputDialog editDialog = new ThreeInputDialog(this);
@@ -442,212 +651,141 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.IC
         editDialog.show();
     }
 
-    private void showAllButton(){
-        muteSelfIV.setVisibility(View.VISIBLE);
-        loudSpeakerIV.setVisibility(View.VISIBLE);
-        btnMoreIV.setVisibility(View.VISIBLE);
-        if(isVideoIV){
-            btnVideoIV.setVisibility(View.VISIBLE);
-        }
-        if (isShareIV){
-            btnShareIV.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void refreshMemberList(final List<Member> list)
+    private void showMoreConfCtrl()
     {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (MeetingMgr.getInstance().getCurrentConferenceSelf()!=null){
-                    showAllButton();
-                }
+        int wrap = LinearLayout.LayoutParams.WRAP_CONTENT;
+        View popupView = getLayoutInflater().inflate(R.layout.popup_conf_btn_list, null);
 
-                adapter.setData(list);
-                adapter.notifyDataSetChanged();
+        LinearLayout switchCameraBtn = (LinearLayout) popupView.findViewById(R.id.switch_camera_ll);
+        LinearLayout closeCameraBtn = (LinearLayout) popupView.findViewById(R.id.close_camera_ll);
+        LinearLayout handUpLayout = (LinearLayout) popupView.findViewById(R.id.hand_up_ll);
+        LinearLayout muteAllLayout = (LinearLayout) popupView.findViewById(R.id.mute_all_ll);
+        LinearLayout cancelMuteAllLayout = (LinearLayout) popupView.findViewById(R.id.cancel_mute_all_ll);
+        LinearLayout lockLayout = (LinearLayout) popupView.findViewById(R.id.lock_conf_ll);
+        LinearLayout unlockLayout = (LinearLayout) popupView.findViewById(R.id.un_lock_conf_ll);
+        LinearLayout upgradeLayout = (LinearLayout) popupView.findViewById(R.id.upgrade_conf_ll);
+        LinearLayout requestChairManLayout = (LinearLayout) popupView.findViewById(R.id.request_chairman_ll);
+        LinearLayout releaseChairManLayout = (LinearLayout) popupView.findViewById(R.id.release_chairman_ll);
+        LinearLayout seConfModeLayout = (LinearLayout) popupView.findViewById(R.id.set_conf_mode_ll);
+        cameraStatusIV = (ImageView) popupView.findViewById(R.id.iv_camera_status);
+        cameraStatusTV = (TextView) popupView.findViewById(R.id.tv_camera_status);
+        ImageView handUpIV = (ImageView) popupView.findViewById(R.id.hand_up_iv);
+        TextView handUpTV = (TextView) popupView.findViewById(R.id.hand_up_tv);
+
+        cameraStatusIV.setActivated(isCameraClose);
+        cameraStatusTV.setText(isCameraClose ? getString(R.string.open_local_camera) :
+                getString(R.string.close_local_camera));
+
+        // 主席：会场静音、锁定、释放主席权限； 普通与会者：举手、申请主席
+        if (mPresenter.isChairMan())
+        {
+            if (mPresenter.isConfMute())
+            {
+                cancelMuteAllLayout.setVisibility(View.VISIBLE);
+                muteAllLayout.setVisibility(View.GONE);
             }
-        });
-
-    }
-
-    @Override
-    public void updateConfTypeIcon(final ConfBaseInfo confEntity)
-    {
-//        final int solution = LoginCenter.getInstance().getSolution();
-
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
+            else
             {
-                if ((TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO == confEntity.getMediaType())
-                        || (TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA == confEntity.getMediaType()))
+                cancelMuteAllLayout.setVisibility(View.GONE);
+                muteAllLayout.setVisibility(View.VISIBLE);
+            }
+
+            if (isDateConf)
+            {
+                upgradeLayout.setVisibility(View.GONE);
+            }
+            else
+            {
+                upgradeLayout.setVisibility(View.VISIBLE);
+            }
+
+            // 融合会议显示锁定
+            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType())
+            {
+                if (mPresenter.isConfLock())
                 {
-                    isVideoIV = true;
-//                    btnVideoIV.setVisibility(View.VISIBLE);
+                    unlockLayout.setVisibility(View.VISIBLE);
+                    lockLayout.setVisibility(View.GONE);
                 }
-
-
-                if ((TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA == confEntity.getMediaType())
-                        || (TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA == confEntity.getMediaType()))
+                else
                 {
-                    if (mPresenter.isInDataConf()) {
-                        isShareIV = true;
-//                        btnShareIV.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                if (confEntity != null && confEntity.getSubject() != null)
-                {
-                    titleTV.setVisibility(View.VISIBLE);
-                    titleTV.setText(confEntity.getSubject());
+                    unlockLayout.setVisibility(View.GONE);
+                    lockLayout.setVisibility(View.VISIBLE);
                 }
             }
-        });
-    }
-
-    @Override
-    public void updateDataConfBtn(final boolean show)
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
+            else
             {
-                btnShareIV.setVisibility(show ? View.VISIBLE : View.GONE);
+                unlockLayout.setVisibility(View.GONE);
+                lockLayout.setVisibility(View.GONE);
             }
-        });
-    }
 
-    @Override
-    public void updateVideoBtn(final boolean show)
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                btnVideoIV.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
-    }
-
-    @Override
-    public void updateUpgradeConfBtn(final boolean isDataConf)
-    {
-        if (mPresenter.isChairMan()) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateConfIV.setVisibility(isDataConf ? View.GONE : View.VISIBLE);
-                }
-            });
-        }
-    }
-
-    @Override
-    public void showMessage(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(ConfManagerActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @Override
-    public void updateButtons(Member conferenceMemberEntity)
-    {
-        updateMuteButton(conferenceMemberEntity.isMute());
-    }
-
-    @Override
-    public void updateLoudSpeakerButton(int type)
-    {
-        if (type == CallConstant.TYPE_LOUD_SPEAKER)
-        {
-            loudSpeakerIV.setActivated(true);
+            requestChairManLayout.setVisibility(View.GONE);
+            releaseChairManLayout.setVisibility(View.VISIBLE);
+            handUpLayout.setVisibility(View.GONE);
         }
         else
         {
-            loudSpeakerIV.setActivated(false);
+            cancelMuteAllLayout.setVisibility(View.GONE);
+            muteAllLayout.setVisibility(View.GONE);
+            unlockLayout.setVisibility(View.GONE);
+            lockLayout.setVisibility(View.GONE);
+            upgradeLayout.setVisibility(View.GONE);
+
+            requestChairManLayout.setVisibility(View.VISIBLE);
+            releaseChairManLayout.setVisibility(View.GONE);
+            seConfModeLayout.setVisibility(View.GONE);
+
+            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType())
+            {
+                if (mPresenter.isHandUp())
+                {
+                    handUpIV.setActivated(false);
+                    handUpTV.setText(R.string.conf_cancel_hand_up);
+                }
+                else
+                {
+                    handUpIV.setActivated(true);
+                    handUpTV.setText(R.string.conf_hand_up);
+                }
+            }
+            else
+            {
+                handUpLayout.setVisibility(View.GONE);
+            }
         }
-    }
 
-    @Override
-    public void updateTitle(final String title)
-    {
-        runOnUiThread(new Runnable()
+        // 音频不显示关闭、切换摄像头、选看和广播以及设置会议模式
+        if (!isVideo)
         {
-            @Override
-            public void run()
-            {
-                titleTV.setText(title);
-                titleTV.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    @Override
-    public void showItemClickDialog(final List<Object> items, final Member member)
-    {
-        final SimpleListDialog dialog = new SimpleListDialog(this, items);
-        dialog.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            switchCameraBtn.setVisibility(View.GONE);
+            closeCameraBtn.setVisibility(View.GONE);
+            seConfModeLayout.setVisibility(View.GONE);
+        }
+        else
         {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                dialog.dismiss();
-                mPresenter.onItemDetailClick((String) items.get(position), member);
-            }
-        });
-        dialog.show();
-    }
+            switchCameraBtn.setOnClickListener(moreButtonListener);
+            closeCameraBtn.setOnClickListener(moreButtonListener);
+            seConfModeLayout.setOnClickListener(moreButtonListener);
+        }
 
-    @Override
-    public void finishActivity()
-    {
-        finish();
-    }
-
-    public void showEndConfDialog()
-    {
-        TripleDialog dialog = new TripleDialog(this);
-        dialog.setRightButtonListener(new View.OnClickListener()
+        // ido 不显示举手、静音(取消静音)会场
+        if (ConfConstant.ConfProtocol.IDO_PROTOCOL == MeetingMgr.getInstance().getConfProtocol())
         {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.leaveConf();
-                finish();
-            }
-        });
-        dialog.setLeftButtonListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.endConf();
-                finish();
-            }
-        });
-        dialog.show();
-    }
+            handUpLayout.setVisibility(View.GONE);
+            cancelMuteAllLayout.setVisibility(View.GONE);
+            muteAllLayout.setVisibility(View.GONE);
+        }
 
-    @Override
-    public void onBackPressed()
-    {
-        mPresenter.leaveConf();
-        super.onBackPressed();
-    }
+        handUpLayout.setOnClickListener(moreButtonListener);
+        muteAllLayout.setOnClickListener(moreButtonListener);
+        cancelMuteAllLayout.setOnClickListener(moreButtonListener);
+        lockLayout.setOnClickListener(moreButtonListener);
+        unlockLayout.setOnClickListener(moreButtonListener);
+        upgradeLayout.setOnClickListener(moreButtonListener);
+        requestChairManLayout.setOnClickListener(moreButtonListener);
+        releaseChairManLayout.setOnClickListener(moreButtonListener);
 
-    @Override
-    protected void onDestroy()
-    {
-        mPresenter.leaveConf();
-        super.onDestroy();
+        mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
+        mPopupWindow.showAtLocation(findViewById(R.id.media_btn_group), Gravity.RIGHT | Gravity.BOTTOM, 0, mConfButton.getHeight());
     }
 }

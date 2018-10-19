@@ -1,6 +1,10 @@
 package com.huawei.opensdk.ec_sdk_demo.common;
 
 
+/**
+ * This class is about UI module constants, unified management Interface constants
+ * UI层常量类，统一管理界面常量
+ */
 public final class UIConstants
 {
 
@@ -25,6 +29,9 @@ public final class UIConstants
 
     public static final int IM_TEAM_CHECKED = 7;
 
+    public static final String IS_VIDEO_CONF = "is_video_conf";
+    public static final String IS_DATE_CONF = "is_date_conf";
+
     /**
      * Obtaining user avatars and info
      */
@@ -37,5 +44,23 @@ public final class UIConstants
     public static final int ENTERPRISE_SEARCH_FAILED = 2;
     public static final int ENTERPRISE_SELF_TERMINAL = 25;
     public static final int ENTERPRISE_SEARCH_DEPT = 105;
+
+    public static final int SET_SYSTEM_HEAD_PHOTO_CODE = 101;
+    public static final int LOAD_ALL_HEAD_ICON = 100;
+    public static final int PRO_LOAD_HEADICON = 101;
+    public static final int LOAD_SELF_HEADIMAGE = 102;
+
+    /**
+     * Avatar Image source
+     */
+    public static final int SYSTEM_PICTURE = 0;
+    public static final int ALBUM_PICTURE = 1;
+
+    /**
+     * Online status
+     */
+    public static final int STATUS_ON_LINE = 0;
+    public static final int STATUS_BUSY = 1;
+    public static final int STATUS_XA = 2;
 
 }

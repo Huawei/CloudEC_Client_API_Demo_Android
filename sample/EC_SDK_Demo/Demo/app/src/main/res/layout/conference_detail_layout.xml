@@ -202,6 +202,37 @@
             android:visibility="visible"/>
 
             <RelativeLayout
+                android:id="@+id/conference_type_view"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/conf_create_up"
+                android:visibility="visible"
+                android:layout_marginBottom="@dimen/dp10">
+
+                <TextView
+                    android:id="@+id/conference_type_tag"
+                    android:layout_width="85dip"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:gravity="right"
+                    android:paddingLeft="4dp"
+                    android:text="@string/conf_type"
+                    android:textColor="#999999"
+                    android:textSize="15sp"/>
+
+                <TextView
+                    android:id="@+id/conference_type_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/conference_type_tag"
+                    android:textColor="#333333"
+                    android:textSize="15sp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/conference_id_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

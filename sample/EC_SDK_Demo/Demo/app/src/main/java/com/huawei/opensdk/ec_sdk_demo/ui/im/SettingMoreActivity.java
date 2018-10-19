@@ -44,10 +44,6 @@ import java.util.List;
  */
 public class SettingMoreActivity extends BaseActivity implements View.OnClickListener, LocBroadcastReceiver
 {
-    private static final int SET_SYSTEM_HEAD_PHOTO_CODE = 101;
-    private static final int LOAD_ALL_HEAD_ICON = 100;
-    private static final int PRO_LOAD_HEADICON = 101;
-    private static final int LOAD_SELF_HEADIMAGE = 102;
     private RelativeLayout personalHeadLayout;
     private TextView statusDesc;//状态描述(在线、忙碌、离开，免打扰)
     private PersonalContact mSelfContact;
@@ -55,11 +51,6 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
 
     private List<PersonalContact> mContacts = new ArrayList<>();
 
-    private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_SET_STATUS,
-            CustomBroadcastConstants.ACTION_IM_LOGIN_SUCCESS,
-            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED,
-            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_PHOTO_RESULT
-    };
     private SimpleListDialog mStatusDialog;
     private SimpleListDialog mPhotoDialog;
     private String mMyAccount;
@@ -67,6 +58,11 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
     private String mIconPath;
     private int mIconId;
     private static int[] mSystemIcon = EnterpriseAddrTools.getSystemIcon();
+    private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_SET_STATUS,
+            CustomBroadcastConstants.ACTION_IM_LOGIN_SUCCESS,
+            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED,
+            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_PHOTO_RESULT
+    };
 
     private Handler mHandler = new Handler()
     {
@@ -75,15 +71,15 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
         {
             switch (msg.what)
             {
-                case LOAD_ALL_HEAD_ICON:
+                case UIConstants.LOAD_ALL_HEAD_ICON:
                     Bitmap myHeadIcon = HeadIconTools.getInstance().getHeadImage(mMyAccount);
                     headImg.setImageBitmap(myHeadIcon);
                     break;
-                case PRO_LOAD_HEADICON:
+                case UIConstants.PRO_LOAD_HEADICON:
                     mContacts.clear();
                     mContacts.add(mSelfContact);
                     break;
-                case LOAD_SELF_HEADIMAGE:
+                case UIConstants.LOAD_SELF_HEADIMAGE:
                     mContacts.clear();
                     mContacts.add(mSelfContact);
                     LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_SET_HEAD_PHOTO, null);
@@ -134,7 +130,7 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
         ViewGroup statusVG = (ViewGroup) findViewById(R.id.status_setting_layout);
         statusDesc = (TextView) findViewById(R.id.mystate_txt);
         updateMyStatus();
-        mHandler.sendEmptyMessageDelayed(PRO_LOAD_HEADICON, 1000);
+        mHandler.sendEmptyMessageDelayed(UIConstants.PRO_LOAD_HEADICON, 1000);
         statusVG.setOnClickListener(this);
         personalHeadLayout.setOnClickListener(this);
         updateMyHeadPhoto();
@@ -217,11 +213,11 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
     {
         switch (position)
         {
-            case 0:
-                ActivityUtil.startActivityForResult(this, IntentConstant.SYSTEM_HEAD_SELETE_ACTIVITY_ACTION,
-                        SET_SYSTEM_HEAD_PHOTO_CODE);
+            case UIConstants.SYSTEM_PICTURE:
+                ActivityUtil.startActivityForResult(this, IntentConstant.SYSTEM_HEAD_SELECT_ACTIVITY_ACTION,
+                        UIConstants.SET_SYSTEM_HEAD_PHOTO_CODE);
                 break;
-            case 1:
+            case UIConstants.ALBUM_PICTURE:
                 HeadIconTools.selectPicByType(HeadIconTools.SELECT_PICTURE_FROM_LOCAL);
                 break;
             default:
@@ -269,13 +265,13 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
         ImConstant.ImStatus status = ImConstant.ImStatus.ON_LINE;
         switch (position)
         {
-            case 0:
+            case UIConstants.STATUS_ON_LINE:
                 status = ImConstant.ImStatus.ON_LINE;
                 break;
-            case 1:
+            case UIConstants.STATUS_BUSY:
                 status = ImConstant.ImStatus.BUSY;
                 break;
-            case 2:
+            case UIConstants.STATUS_XA:
                 status = ImConstant.ImStatus.XA;
                 break;
             default:
@@ -371,7 +367,7 @@ public class SettingMoreActivity extends BaseActivity implements View.OnClickLis
                     e.printStackTrace();
                 }
                 break;
-            case SET_SYSTEM_HEAD_PHOTO_CODE:
+            case UIConstants.SET_SYSTEM_HEAD_PHOTO_CODE:
                 int position = resultCode;
                 Log.e("position", "" + position);
                 Bitmap bitmap = HeadIconTools.getBitmapByIconId(position);

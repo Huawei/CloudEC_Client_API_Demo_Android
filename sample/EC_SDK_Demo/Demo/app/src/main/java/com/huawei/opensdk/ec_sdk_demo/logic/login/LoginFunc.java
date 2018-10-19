@@ -33,8 +33,6 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     private static final int FIREWALL_DETECT_FAILED = 103;
     private static final int BUILD_STG_FAILED = 104;
 
-    private int mSeqNo = -1;
-
     private static LoginFunc INSTANCE = new LoginFunc();
 
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT};
@@ -119,7 +117,7 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                     @Override
                     public void run()
                     {
-                        mSeqNo = EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
+                        EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
                     }
                 });
                 break;
@@ -162,8 +160,6 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 else {
                     LoginMgr.getInstance().setTerminal(contactInfo.getTerminal2());
                 }
-
-                LogUtil.i(UIConstants.DEMO_TAG, "terminal-->" + contactInfo.getTerminal());
                 break;
             default:
                 break;

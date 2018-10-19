@@ -33,7 +33,12 @@ public class TeamAdapter extends BaseAdapter {
         this.teamsList = date;
     }
 
-    public final class ViewHolder
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
+    public static class ViewHolder
     {
         private TextView tvName;
         private TextView tvCount;

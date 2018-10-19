@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 
-import com.huawei.ecterminalsdk.base.TsdkCallInfo;
 import com.huawei.ecterminalsdk.base.TsdkDeviceInfo;
 import com.huawei.ecterminalsdk.base.TsdkDeviceType;
 import com.huawei.ecterminalsdk.base.TsdkVideoCtrlInfo;
@@ -29,6 +28,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is about video management
+ * 视频管理类
+ */
 public class VideoMgr {
     private static final String TAG = VideoMgr.class.getSimpleName();
     private static VideoMgr instance;
@@ -41,6 +44,8 @@ public class VideoMgr {
 
     private int currentCameraIndex = CallConstant.FRONT_CAMERA;
     private int currentCallId;
+
+    private boolean isInitializedVideoWindows;
 
 
     /**
@@ -94,6 +99,8 @@ public class VideoMgr {
      */
     private void createVideoRenderer()
     {
+        LogUtil.i(TAG, "createVideoRenderer() enter");
+
         // 创建本地视频窗口（本地窗口只能创建一个，底层可以直接获取到这个窗口）
         // 必须存在，否则远端视频无法显示
         localHideView = ViERenderer.createLocalRenderer(context);
@@ -109,20 +116,46 @@ public class VideoMgr {
     }
 
 
-
+    /**
+     * switch camera
+     * 切换摄像头
+     * @param call              呼叫信息
+     * @param cameraIndex       设备下标
+     * @return                  设置结果
+     */
     public int switchCamera(TsdkCall call, int cameraIndex)
     {
         return setVideoOrient(call.getCallInfo().getCallId(), cameraIndex);
     }
 
+    /**
+     * open camera
+     * 打开摄像头
+     * @param call              呼叫信息
+     * @return                  结果
+     */
     public int openCamera(TsdkCall call) {
         return controlLocalCameraMode1(call, true);
     }
 
+    /**
+     * close camera
+     * 关闭摄像头
+     * @param call              呼叫信息
+     * @return                  结果
+     */
     public int closeCamera(TsdkCall call) {
         return controlLocalCameraMode1(call, false);
     }
 
+    /**
+     * Local video capture control
+     * 本地视频采集控制
+     *
+     * @param call              呼叫信息
+     * @param isOpen            是否打开摄像头
+     * @return
+     */
     private int controlLocalCameraMode1(TsdkCall call, boolean isOpen) {
         int result = 0;
 
@@ -193,6 +226,12 @@ public class VideoMgr {
         return 0;
     }
 
+    /**
+     * 设置视频窗口方向
+     * @param callId            0表示全局设置,不为0表示 会话中设置
+     * @param cameraIndex       摄像头index
+     * @return int result       视频角度
+     */
     public int setVideoOrient(int callId, int cameraIndex)
     {
         int orient;
@@ -223,6 +262,7 @@ public class VideoMgr {
          * 横竖屏信息stOrient 设置标志位
          * @param int callId    0表示全局设置,不为0表示 会话中设置
          * @param int index     摄像头index
+         *
          * @param int orient    视频横竖屏情况 1：竖屏；2：横屏；3：反向横屏
          * @param int portrait  竖屏视频捕获（逆时针旋转）角度 0：0度；1：90度；2：180度；3：270度；
          * @param int landscape 横屏视频捕获（逆时针旋转）角度 0：0度；1：90度；2：180度；3：270度；
@@ -237,44 +277,59 @@ public class VideoMgr {
             setCurrentCameraIndex(cameraIndex);
         }
 
+        if (orientationDetector != null)
+        {
+            orientationDetector.updateRotation(true);
+        }
+
         return result;
     }
 
-
+    /**
+     * Initializing the video window
+     * 初始化视频窗口
+     *
+     * @param callId            呼叫id
+     */
     public void initVideoWindow(final int callId)
     {
-        handler.post(new Runnable()
-        {
+        LogUtil.i(TAG, "initVideoWindow() enter" + callId);
+
+
+        handler.post(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
 
+            if (isInitializedVideoWindows == false) {
                 createVideoRenderer();
+            }
+            isInitializedVideoWindows = true;
 
-                setCurrentCallId(callId);
+            setCurrentCallId(callId);
 
-                //设置视频窗口方向参数
-                setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+            //设置视频窗口方向参数
+            setVideoOrient(callId, CallConstant.FRONT_CAMERA);
 
-                // 设置本地视频窗口
-                TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
-                localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
-                localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
-                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+            // 设置本地视频窗口
+            TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
+            localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+            localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
+            localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
 
-                //设置远端视频窗口
-                TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
-                remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
-                remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteVideoView));
-                remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+            //设置远端视频窗口
+            TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
+            remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
+            remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteVideoView));
+            remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
 
-                List<TsdkVideoWndInfo> list = new ArrayList<>();
-                list.add(localWndInfo);
-                list.add(remoteWndInfo);
+            List<TsdkVideoWndInfo> list = new ArrayList<>();
+            list.add(localWndInfo);
+            list.add(remoteWndInfo);
 
-                callManager.getCallByCallId(callId).setVideoWindow(list);
+            callManager.getCallByCallId(callId).setVideoWindow(list);
             }
         });
+
     }
 
     /**
@@ -284,35 +339,31 @@ public class VideoMgr {
     {
         LogUtil.i(TAG, "clearCallVideo() enter");
 
-        handler.post(new Runnable()
-        {
+        handler.post(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
 
-                ViERenderer.freeLocalRenderResource();
-                if (localVideoView != null)
-                {
-                    ViERenderer.setSurfaceNull(localVideoView);
-                    localVideoView = null;
-                }
+            ViERenderer.freeLocalRenderResource();
+            if (localVideoView != null) {
+                ViERenderer.setSurfaceNull(localVideoView);
+                localVideoView = null;
+            }
 
-                if (remoteVideoView != null)
-                {
-                    ViERenderer.setSurfaceNull(remoteVideoView);
-                    remoteVideoView = null;
-                }
+            if (remoteVideoView != null) {
+                ViERenderer.setSurfaceNull(remoteVideoView);
+                remoteVideoView = null;
+            }
 
-                if (auxDataView != null)
-                {
-                    ViERenderer.setSurfaceNull(auxDataView);
-                    auxDataView = null;
-                }
+            if (auxDataView != null) {
+                ViERenderer.setSurfaceNull(auxDataView);
+                auxDataView = null;
+            }
 
-                if (localHideView != null)
-                {
-                    localHideView = null;
-                }
+            if (localHideView != null) {
+                localHideView = null;
+            }
+
+            isInitializedVideoWindows = false;
             }
         });
     }
@@ -524,7 +575,7 @@ public class VideoMgr {
          *
          * @param isForce 是否是强制更新
          */
-        private void updateRotation(boolean isForce) {
+        public void updateRotation(boolean isForce) {
             int deviceOrientation = getOrientation(curOriginalOrientation);
 
             // 强制设置旋转，或与上一次不一样的区间，则进行更新设置旋转角度
@@ -710,25 +761,24 @@ public class VideoMgr {
          */
         private void setRotation(int cameraCaptureRotation, int windowsDisplayRotation) {
 
-            int currentCallId = VideoMgr.getInstance().getCurrentCallId();
+            currentCallId = VideoMgr.getInstance().getCurrentCallId();
 
             if (VideoMgr.getInstance().getCurrentCameraIndex() == CallConstant.FRONT_CAMERA) {
                 // 1表示前置摄像头
                 setCaptureRotation(1, cameraCaptureRotation);
+                setLocalVideoDisplayRotation(1, windowsDisplayRotation);
             } else if (VideoMgr.getInstance().getCurrentCameraIndex() == CallConstant.BACK_CAMERA) {
                 // 0表示后置摄像头
                 setCaptureRotation(0, cameraCaptureRotation);
+                setLocalVideoDisplayRotation(0, windowsDisplayRotation);
             } else
             {
                 // -1表示摄相头关闭
                 // do nothing
             }
 
-            if (null != TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId)){
-                TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId)
-                        .setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL, windowsDisplayRotation);
-            }
-            setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE, windowsDisplayRotation);
+            setRemoteVideoDisplayRotation(windowsDisplayRotation);
+
         }
 
 
@@ -749,36 +799,83 @@ public class VideoMgr {
 
             tsdkCall.setCaptureRotation(index, rotation);
 
+            return true;
+        }
+
+
+        /**
+         * This method is used to set local video window display rotation
+         * 设置本地视频窗口显示方向
+         * @param cameraIndex
+         * @param rotation
+         * @return
+         */
+        public boolean setLocalVideoDisplayRotation(int cameraIndex, int rotation)
+        {
+            TsdkCall tsdkCall = TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId);
+            if (null == tsdkCall)
+            {
+                return false;
+            }
+
             // 前置摄像头
-            if (1 == index)
+            if (1 == cameraIndex)
             {
                 // 窗口镜像模式 0:不做镜像(默认值) 1:上下镜像(目前未支持) 2:左右镜像
                 // 本地视频前置摄像头做左右镜像，所以设置mirror type为 2
                 TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
                 videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_HORIZONTAL);
-                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
 
-                TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId).setVideoRender(videoRenderInfo);
+                tsdkCall.setVideoRender(videoRenderInfo);
             }
+            else{
+                TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
+                videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+                videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_DEFAULE);
+                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+
+                tsdkCall.setVideoRender(videoRenderInfo);
+            }
+
+            tsdkCall.setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL, rotation);
 
             return true;
         }
 
         /**
-         * This method is used to set window display rotation
-         * 设置视频显示方向
-         * @param type
+         * This method is used to set remote video window display rotation
+         * 设置远端视频显示方向
          * @param rotation
          * @return
          */
-        public boolean setDisplayRotation(TsdkVideoWndType type, int rotation)
+        public boolean setRemoteVideoDisplayRotation(int rotation)
         {
+            TsdkCall tsdkCall = TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId);
+            if (null == tsdkCall)
+            {
+                return false;
+            }
 
-            TsdkManager.getInstance().getCallManager().getCallByCallId(currentCallId).setDisplayRotation(type, rotation);
+            TsdkVideoRenderInfo remoteVideoRenderInfo = new TsdkVideoRenderInfo();
+
+            if (isLayoutPortrait()) {
+                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+            } else {
+                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
+            }
+
+            remoteVideoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
+            remoteVideoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_DEFAULE);
+
+            tsdkCall.setVideoRender(remoteVideoRenderInfo);
+
+            tsdkCall.setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE, rotation);
 
             return true;
         }
+
     }
 
 }

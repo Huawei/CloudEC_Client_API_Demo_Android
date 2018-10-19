@@ -87,6 +87,7 @@
                         android:text="@string/vpn_connect" />
                 </LinearLayout>
 
+
             </LinearLayout>
 
             <LinearLayout
@@ -115,7 +116,6 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:orientation="vertical">
 
                     <TextView
@@ -401,6 +401,58 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="ApplyProgramConfig"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp10"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="15dp"
+                        android:text="Conference Control Protocol" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#dddddd" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@color/sketch_color_yellow"
+                        android:text="This configuration needs to restart the application to take effect ."/>
+
+                    <RadioGroup
+                        android:id="@+id/conf_ctrl_protocol"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/ido_protocol"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="iDo"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/rest_protocol"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Rest"
                             android:textSize="13sp" />
                     </RadioGroup>
                 </LinearLayout>

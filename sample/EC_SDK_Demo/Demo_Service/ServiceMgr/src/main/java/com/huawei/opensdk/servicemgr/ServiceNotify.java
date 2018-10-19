@@ -11,14 +11,12 @@ import com.huawei.ecterminalsdk.base.TsdkConfDetailInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
-import com.huawei.ecterminalsdk.base.TsdkConfStatusInfo;
 import com.huawei.ecterminalsdk.base.TsdkCtdCallStatus;
 import com.huawei.ecterminalsdk.base.TsdkGetIconResult;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkIptServiceInfoSet;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
-import com.huawei.ecterminalsdk.base.TsdkOnEvtAsStateChange;
 import com.huawei.ecterminalsdk.base.TsdkSearchContactsResult;
 import com.huawei.ecterminalsdk.base.TsdkSearchDepartmentResult;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
@@ -301,6 +299,12 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
+    public void onEvtGetTempUserResult(int userId, TsdkCommonResult result) {
+        Log.i(TAG, "onEvtGetTempUserResult notify.");
+        MeetingMgr.getInstance().handleGetTempUserResult(userId, result);
+    }
+
+    @Override
     public void onEvtBookConfResult(TsdkCommonResult result, TsdkConfBaseInfo confBaseInfo) {
         Log.i(TAG, "onEvtBookConfResult notify.");
         MeetingMgr.getInstance().handleBookConfResult(result, confBaseInfo);
@@ -345,6 +349,7 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtSpeakerInd(TsdkConference conference, TsdkConfSpeakerInfo speakerList) {
         Log.i(TAG, "onEvtSpeakerInd notify.");
+        MeetingMgr.getInstance().handleSpeakerInd(speakerList);
     }
 
     @Override
@@ -415,5 +420,10 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtGetIconResult(int querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
         Log.i(TAG, "onEvtGetIconResult notify.");
         EnterpriseAddressBookMgr.getInstance().handleGetIconResult(querySeqNo, result, getIconResult);
+    }
+
+    @Override
+    public void onEvtTransToConfResult(TsdkCall call, TsdkCommonResult result) {
+
     }
 }

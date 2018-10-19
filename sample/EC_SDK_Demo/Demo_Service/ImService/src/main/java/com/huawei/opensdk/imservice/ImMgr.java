@@ -322,7 +322,6 @@ public class ImMgr implements IImMgr, TupImCallback, TupUmNotify
             //If the user number is not empty and the avatar is not empty.
             if (!TextUtils.isEmpty(contact.getEspaceNumber()) && !TextUtils.isEmpty(contact.getHead()))
             {
-                Log.d(TAG, "name = " + contact.getEspaceNumber());
                 //Set avatar data param.
                 ViewHeadPhotoParam photoParam = new ViewHeadPhotoParam();
                 //头像宽、高不设置有默认值（120*120）

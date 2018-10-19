@@ -8,8 +8,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
-import com.huawei.ecterminalsdk.models.TsdkManager;
-import com.huawei.ecterminalsdk.models.conference.TsdkConference;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.R;

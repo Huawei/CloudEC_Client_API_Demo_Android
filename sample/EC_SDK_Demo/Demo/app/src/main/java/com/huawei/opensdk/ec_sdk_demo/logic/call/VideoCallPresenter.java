@@ -12,6 +12,7 @@ import com.huawei.opensdk.callmgr.CallInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.VideoMgr;
 import com.huawei.opensdk.commonservice.util.LogUtil;
+import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBasePresenter;
@@ -70,7 +71,7 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
 
     /**
      * formatTimeFString
-     *
+     * 格式化时间字符
      * @param longTime
      * @return String
      */
@@ -99,6 +100,11 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
     @Override
     public void endCall() {
         mCallMgr.endCall(mCallID);
+    }
+
+    @Override
+    public void transferToConference() {
+        MeetingMgr.getInstance().callTransferToConference(mCallID);
     }
 
     @Override

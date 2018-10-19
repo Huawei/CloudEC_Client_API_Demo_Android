@@ -2,11 +2,15 @@ package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
 import android.content.Context;
+import android.view.SurfaceView;
 import android.view.ViewGroup;
 
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallMgr;
-import com.huawei.opensdk.demoservice.ConfConstant;
+import com.huawei.opensdk.callmgr.VideoMgr;
+import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
+import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
+import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
@@ -17,6 +21,30 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
         implements IDataConfContract.IDataConfPresenter
 {
     private String confID;
+
+    private String[] broadcastNames = new String[]{CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE,
+            CustomBroadcastConstants.GET_CONF_END};
+
+    private LocBroadcastReceiver receiver = new LocBroadcastReceiver()
+    {
+        @Override
+        public void onReceive(String broadcastName, Object obj)
+        {
+            switch (broadcastName)
+            {
+                case CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE:
+                    getView().showCustomToast(R.string.share_end);
+                    getView().finishActivity();
+                    break;
+
+                case CustomBroadcastConstants.GET_CONF_END:
+                    getView().finishActivity();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     public void attachSurfaceView(ViewGroup container, Context context)
@@ -89,5 +117,50 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
         Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
 
         return (self.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE ? false:true);
+    }
+
+    @Override
+    public void registerBroadcast() {
+        LocBroadcast.getInstance().registerBroadcast(receiver, broadcastNames);
+    }
+
+    @Override
+    public void unregisterBroadcast() {
+        LocBroadcast.getInstance().unRegisterBroadcast(receiver, broadcastNames);
+    }
+
+    @Override
+    public SurfaceView getHideVideoView() {
+        return VideoMgr.getInstance().getLocalHideView();
+    }
+
+    @Override
+    public SurfaceView getLocalVideoView() {
+        return VideoMgr.getInstance().getLocalVideoView();
+    }
+
+    @Override
+    public void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup hideLayout) {
+        if (smallLayout != null) {
+            addSurfaceView(smallLayout, getLocalVideoView());
+        }
+
+        if (hideLayout != null) {
+            addSurfaceView(hideLayout, getHideVideoView());
+        }
+    }
+
+    private void addSurfaceView(ViewGroup container, SurfaceView child)
+    {
+        if (child == null)
+        {
+            return;
+        }
+        if (child.getParent() != null)
+        {
+            ViewGroup vGroup = (ViewGroup) child.getParent();
+            vGroup.removeAllViews();
+        }
+        container.addView(child);
     }
 }

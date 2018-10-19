@@ -94,7 +94,7 @@ public class SystemHeadIconSelectActivity extends BaseActivity implements View.O
     /**
      * The type System picture adapter.
      */
-    class SystemPictureAdapter extends BaseAdapter
+    static class SystemPictureAdapter extends BaseAdapter
     {
         private LayoutInflater inflater;
         private int[] images;

@@ -7,11 +7,11 @@ import android.os.Environment;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBasePresenter;
-import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
@@ -103,31 +103,6 @@ public class LoginPresenter extends MVPBasePresenter<ILoginContract.LoginBaseVie
         loginParam.setPassword(password);
 
         loginParam.setVPN(sharedPreferences.getBoolean(LoginConstant.TUP_VPN, false));
-
-        loginParam.setSrtpMode(mLoginModel.getSrtpMode());
-        loginParam.setSipTransportMode(mLoginModel.getSipTransport());
-        loginParam.setEnableConfigApplication(mLoginModel.getAppConfig());
-        loginParam.setSecurityTunnelMode(mLoginModel.getTunnelMode());
-
-        loginParam.setPortPriority(mLoginModel.getPriority());
-        String udpPort = mLoginModel.getUdpPort();
-        String tlsPort = mLoginModel.getTlsPort();
-        if (TextUtils.isEmpty(udpPort))
-        {
-            loginParam.setUdpPort(0);
-        }
-        else
-        {
-            loginParam.setUdpPort(Integer.parseInt(udpPort));
-        }
-        if (TextUtils.isEmpty(tlsPort))
-        {
-            loginParam.setTlsPort(0);
-        }
-        else
-        {
-            loginParam.setTlsPort(Integer.parseInt(mLoginModel.getTlsPort()));
-        }
 
         LoginMgr.getInstance().login(loginParam);
 

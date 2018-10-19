@@ -20,30 +20,34 @@ public interface ICallMgr
     void regCallServiceNotification(ICallNotification callNotification);
 
     /**
+     * This method is used to switching audio routing devices
      *
      * @return
      */
     int switchAudioRoute();
 
     /**
+     * This method is used to get mobile audio route
      *
-     * @return
+     * @return the audio route
      */
     int getCurrentAudioRoute();
 
     /**
+     * This method is used to get call status
      *
-     * @param callID
+     * @param callID            call id
      * @return
      */
     CallConstant.CallStatus getCallStatus(int callID);
 
 
     /**
+     * This method is used to make call or make video call
      *
      * @param toNumber
      * @param isVideoCall
-     * @return
+     * @return int 0 success
      */
     int startCall(String toNumber, boolean isVideoCall);
 
@@ -86,6 +90,7 @@ public interface ICallMgr
     boolean holdCall(int callID);
 
     /**
+     * This method is used to hold the video Call
      *
      * @param callID
      * @return
@@ -93,6 +98,7 @@ public interface ICallMgr
     boolean holdVideoCall(int callID);
 
     /**
+     * This method is used to unhold call
      *
      * @param callID
      * @return
@@ -144,6 +150,7 @@ public interface ICallMgr
     boolean muteMic(int callID, boolean mute);
 
     /**
+     * This method is used to set media speaker mute
      *
      * @param callID
      * @param mute
@@ -152,6 +159,7 @@ public interface ICallMgr
     boolean muteSpeak(int callID, boolean mute);
 
     /**
+     * This method is used to switch Local View
      *
      * @param callID
      * @param isClose
@@ -159,6 +167,7 @@ public interface ICallMgr
     void switchLocalView(int callID, boolean isClose);
 
     /**
+     * This method is used to switch Camera
      *
      * @param callID
      * @param cameraIndex

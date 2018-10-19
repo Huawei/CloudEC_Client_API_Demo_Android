@@ -174,7 +174,7 @@ public class RecentChatAdapter extends BaseAdapter
             logoIv = (ImageView) container.findViewById(R.id.recent_logo);
             dateTv = (TextView) container.findViewById(R.id.recent_date);
             nameTv = (TextView) container.findViewById(R.id.recent_name);
-            notifyIv = (ImageView) container.findViewById(R.id.recent_notify);
+//            notifyIv = (ImageView) container.findViewById(R.id.recent_notify);
             countTv = (TextView) container.findViewById(R.id.recent_count);
             infoTv = (TextView) container.findViewById(R.id.recent_info);
         }

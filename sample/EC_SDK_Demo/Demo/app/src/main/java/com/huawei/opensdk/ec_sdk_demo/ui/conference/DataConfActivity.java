@@ -1,24 +1,23 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.huawei.opensdk.callmgr.CallConstant;
-import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.DataConfPresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IDataConfContract;
-import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
-import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
-import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This class is about data conf Activity.
@@ -28,16 +27,34 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
 {
 
     private FrameLayout mConfShareLayout;
-    private ImageView mBackIV;
+    private ImageView mLeaveIV;
     private TextView mTitleTV;
     private ImageView mRightIV;
-    private FrameLayout mConfHangup;
-    private FrameLayout mConfMute;
-    private FrameLayout mConfSpeaker;
-    private FrameLayout mConfChat;
     private String mSubject;
     private String confID;
     private DataConfPresenter mPresenter;
+    private FrameLayout mHideVideoView;
+    private FrameLayout mLocalVideoView;
+    private RelativeLayout mTitleBar;
+    private LinearLayout mChatBottom;
+    private EditText mChatMsg;
+    private ImageView mChatSend;
+
+    private boolean isVideo;
+    private MyTimerTask myTimerTask;
+    private Timer timer;
+    /**
+     * 是否第一次执行计时器
+     */
+    private boolean isFirstStart = true;
+    /**
+     * 是否触发触摸屏幕事件
+     */
+    private boolean isPressTouch = false;
+    /**
+     * 控件是否显示
+     */
+    private boolean isShowBar = false;
 
     @Override
     protected IDataConfContract.DataConfView createView()
@@ -59,24 +76,29 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         //video layout
         mConfShareLayout = (FrameLayout) findViewById(R.id.conf_share_layout);
 
+        // 需要隐藏的标题栏
+        mTitleBar = (RelativeLayout) findViewById(R.id.title_layout_transparent);
+        mChatBottom = (LinearLayout) findViewById(R.id.chat_data_meeting_layout);
+
+        //采集视频
+        mHideVideoView = (FrameLayout) findViewById(R.id.hide_video_view);
+        mLocalVideoView = (FrameLayout) findViewById(R.id.local_video_view);
+
         //title
-        mBackIV = (ImageView) findViewById(R.id.back_iv);
         mRightIV = (ImageView) findViewById(R.id.right_iv);
         mTitleTV = (TextView) findViewById(R.id.conf_title);
+        mLeaveIV = (ImageView) findViewById(R.id.leave_iv);
+
+        // chat
+        mChatMsg = (EditText) findViewById(R.id.message_input_et);
+        mChatSend = (ImageView) findViewById(R.id.chat_send_iv);
 
         mTitleTV.setText(mSubject);
         mRightIV.setVisibility(View.GONE);
 
-        //main tab
-        mConfHangup = (FrameLayout) findViewById(R.id.conf_hangup);
-        mConfMute = (FrameLayout) findViewById(R.id.conf_mute);
-        mConfSpeaker = (FrameLayout) findViewById(R.id.conf_loud_speaker);
-        mConfChat = (FrameLayout) findViewById(R.id.conf_date_chat);
-
-        mConfHangup.setOnClickListener(this);
-        mConfMute.setOnClickListener(this);
-        mConfSpeaker.setOnClickListener(this);
-        mConfChat.setOnClickListener(this);
+        mConfShareLayout.setOnClickListener(this);
+        mLeaveIV.setOnClickListener(this);
+        mChatSend.setOnClickListener(this);
 
         mPresenter.attachSurfaceView(mConfShareLayout, this);
     }
@@ -86,6 +108,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     {
         Intent intent = getIntent();
         confID = intent.getStringExtra(UIConstants.CONF_ID);
+        isVideo = intent.getBooleanExtra(UIConstants.IS_VIDEO_CONF, false);
         if (confID == null)
         {
             showToast(R.string.empty_conf_id);
@@ -99,6 +122,46 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     @Override
     public void showLoading() {
 
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.registerBroadcast();
+
+        if (isVideo)
+        {
+            mPresenter.setVideoContainer(this, mLocalVideoView, mHideVideoView);
+        }
+
+        // 第一次启动界面让所有按钮显示5s
+        if (isFirstStart)
+        {
+            startTimer();
+        }
+    }
+
+    /**
+     * 这个方法的作用是把触摸事件的分发方法，其返回值代表触摸事件是否被当前 View 处理完成(true/false)。
+     * @param ev
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        mConfShareLayout.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.unregisterBroadcast();
+        stopTimer();
     }
 
     @Override
@@ -124,48 +187,35 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     {
         switch (v.getId())
         {
-            case R.id.conf_hangup:
-                LogUtil.i(UIConstants.DEMO_TAG, "conference hangup!");
-                if (!mPresenter.isChairMan())
+            case R.id.conf_share_layout:
+                // 按钮显示，不执行
+                if (isFirstStart)
                 {
-                    showLeaveConfDialog();
+                    return;
+                }
+                // 点击动作太多，不执行
+                if (isPressTouch)
+                {
+                    return;
                 }
                 else
                 {
-                    showEndConfDialog();
+                    isPressTouch = true;
+                    startTimer();
                 }
                 break;
 
-            case R.id.conf_mute:
-                LogUtil.i(UIConstants.DEMO_TAG, "conference mute!");
-                mPresenter.muteSelf();
+            case R.id.chat_send_iv:
+                if (null == mChatMsg.getText().toString().trim() || "".equals(mChatMsg.getText().toString().trim()))
+                {
+                    return;
+                }
+                mPresenter.sendChatMsg(mChatMsg.getText().toString());
+                mChatMsg.setText("");
                 break;
 
-            case R.id.conf_loud_speaker:
-                LogUtil.i(UIConstants.DEMO_TAG, "conference speaker!");
-                updateLoudSpeakerButton(mPresenter.switchLoudSpeaker());
-                break;
-
-            case R.id.conf_date_chat:
-                LogUtil.i(UIConstants.DEMO_TAG, "conference chat message!");
-                final EditText msgInfo = new EditText(this);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setView(msgInfo);
-                builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (null == msgInfo.getText().toString().trim() || "".equals(msgInfo.getText().toString().trim()))
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            mPresenter.sendChatMsg(msgInfo.getText().toString());
-                        }
-                    }
-                });
-                builder.create();
-                builder.show();
+            case R.id.leave_iv:
+                finish();
                 break;
 
             default:
@@ -173,58 +223,107 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         }
     }
 
-
-    private void showLeaveConfDialog()
+    /**
+     * Show title bar and bottom controls.
+     */
+    private void showBar()
     {
-        ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
-        dialog.setRightButtonListener(new View.OnClickListener()
+        if (mTitleBar.getVisibility() == View.GONE || mChatBottom.getVisibility() == View.GONE)
         {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.closeConf();
-                ActivityStack.getIns().popup(ConfManagerActivity.class);
-                finish();
-            }
-        });
-        dialog.show();
-    }
-
-    private void showEndConfDialog()
-    {
-        TripleDialog dialog = new TripleDialog(this);
-        dialog.setRightButtonListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.closeConf();
-                ActivityStack.getIns().popup(ConfManagerActivity.class);
-                finish();
-            }
-        });
-        dialog.setLeftButtonListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                mPresenter.finishConf();
-                ActivityStack.getIns().popup(ConfManagerActivity.class);
-                finish();
-            }
-        });
-        dialog.show();
-    }
-
-    private void updateLoudSpeakerButton(int type)
-    {
-        if (type == CallConstant.TYPE_LOUD_SPEAKER)
-        {
-            mConfSpeaker.setActivated(true);
+            mTitleBar.setVisibility(View.VISIBLE);
+            mChatBottom.setVisibility(View.VISIBLE);
+            isShowBar = true;
         }
-        else
+    }
+
+    /**
+     * Hide title bar and bottom controls.
+     */
+    private void hideBar()
+    {
+        if (mTitleBar.getVisibility() == View.VISIBLE || mChatBottom.getVisibility() == View.VISIBLE)
         {
-            mConfSpeaker.setActivated(false);
+            mTitleBar.setVisibility(View.GONE);
+            mChatBottom.setVisibility(View.GONE);
+            isShowBar = false;
+        }
+    }
+
+    private void initTimer()
+    {
+        timer = new Timer();
+        myTimerTask = new MyTimerTask();
+    }
+
+    /**
+     * Start timer
+     */
+    private void startTimer()
+    {
+        initTimer();
+        try
+        {
+            // 第一次进入界面执行计时器 5s后控件消失；
+            // 非第一次执行计时器，0.2s后控件显示再过5s后控件消失
+            if (isFirstStart)
+            {
+                timer.schedule(myTimerTask, 5000);
+            }
+            else
+            {
+                timer.schedule(myTimerTask, 200, 5000);
+            }
+        }
+        catch (IllegalStateException e)
+        {
+            e.printStackTrace();
+            initTimer();
+            timer.schedule(myTimerTask, 5000);
+        }
+    }
+
+    /**
+     * Stop timer
+     */
+    private void stopTimer()
+    {
+        if (null != timer)
+        {
+            timer.cancel();
+        }
+    }
+
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // 第一次启动界面时启动计时
+                    if (isFirstStart)
+                    {
+                        hideBar();
+                        isFirstStart = false;
+                        stopTimer();
+                    }
+                    else
+                    {
+                        if (isShowBar)
+                        {
+                            // 停止计时器，计时器任务执行完成之后执行stop
+                            hideBar();
+                            isPressTouch = false;
+                            stopTimer();
+                        }
+                        else
+                        {
+                            // 启动计时器，触发屏幕时先显示按钮
+                            showBar();
+                        }
+                    }
+                }
+            });
         }
     }
 }

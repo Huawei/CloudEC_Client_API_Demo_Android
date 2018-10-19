@@ -11,19 +11,14 @@ import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
-import com.huawei.ecterminalsdk.base.TsdkMediaSrtpMode;
-import com.huawei.ecterminalsdk.base.TsdkNetworkInfoParam;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
-import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelMode;
-import com.huawei.ecterminalsdk.base.TsdkServiceSecurityParam;
-import com.huawei.ecterminalsdk.base.TsdkSipTransportMode;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
 import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.imservice.ImAccountInfo;
+import com.huawei.opensdk.imservice.ImMgr;
 
 import static com.huawei.ecterminalsdk.base.TsdkServerType.TSDK_E_SERVER_TYPE_PORTAL;
 
@@ -107,48 +102,6 @@ public class LoginMgr {
         //Get local IP
         //获取本地IP
         localIpAddress = DeviceManager.getLocalIpAddress(loginParam.isVPN());
-
-        if (TsdkManager.getInstance().getAppInfo().getSupportAudioAndVideoCall() == 1)
-        {
-            //Set security param
-            TsdkServiceSecurityParam serviceSecurityParam = new TsdkServiceSecurityParam();
-
-            TsdkMediaSrtpMode srtpMode = TsdkMediaSrtpMode.enumOf(loginParam.getSrtpMode());
-            if(null != srtpMode) {
-                serviceSecurityParam.setMediaSrtpMode(srtpMode);
-            }
-
-            TsdkSipTransportMode sipTransportMode = TsdkSipTransportMode.enumOf(loginParam.getSipTransportMode());
-            if(null != sipTransportMode) {
-                serviceSecurityParam.setSipTransportMode(sipTransportMode);
-            }
-
-            serviceSecurityParam.setIsApplyConfigPriority(loginParam.getEnableConfigApplication());
-
-            TsdkSecurityTunnelMode tunnelMode = TsdkSecurityTunnelMode.enumOf(loginParam.getSecurityTunnelMode());
-            if (null != tunnelMode)
-            {
-                serviceSecurityParam.setSecurityTunnelMode(tunnelMode);
-            }
-            
-            TsdkManager.getInstance().setConfigParam(serviceSecurityParam);
-
-            //Set network param
-            TsdkNetworkInfoParam networkInfoParam = new TsdkNetworkInfoParam();
-            if (1 == loginParam.getPortPriority())
-            {
-                networkInfoParam.setSipServerUdpPort(loginParam.getUdpPort());
-                networkInfoParam.setSipServerTlsPort(loginParam.getTlsPort());
-            }
-            else
-            {
-                networkInfoParam.setSipServerUdpPort(0);
-                networkInfoParam.setSipServerTlsPort(0);
-            }
-
-            TsdkManager.getInstance().setConfigParam(networkInfoParam);
-        }
-
         TsdkLocalAddress localAddress = new TsdkLocalAddress(localIpAddress);
         ret = TsdkManager.getInstance().setConfigParam(localAddress);
         if (ret != 0) {

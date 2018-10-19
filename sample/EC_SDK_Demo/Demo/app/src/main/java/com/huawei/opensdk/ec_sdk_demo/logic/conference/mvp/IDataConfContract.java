@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 import android.content.Context;
+import android.view.SurfaceView;
 import android.view.ViewGroup;
 
 import com.huawei.opensdk.ec_sdk_demo.logic.BaseView;
@@ -11,7 +12,7 @@ public interface IDataConfContract
 {
     interface DataConfView extends BaseView
     {
-
+        void finishActivity();
     }
 
     interface IDataConfPresenter
@@ -33,5 +34,15 @@ public interface IDataConfContract
         void attachSurfaceView(ViewGroup container, Context context);
 
         void sendChatMsg(String content);
+
+        void registerBroadcast();
+
+        void unregisterBroadcast();
+
+        SurfaceView getHideVideoView();
+
+        SurfaceView getLocalVideoView();
+
+        void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup hideLayout);
     }
 }

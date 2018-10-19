@@ -7,22 +7,15 @@ import android.os.Looper;
 import android.os.Message;
 import android.widget.Toast;
 
-import com.huawei.ecterminalsdk.base.TsdkConfJoinParam;
-import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
-import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.IConfNotification;
-import com.huawei.opensdk.demoservice.MeetingMgr;
-import com.huawei.opensdk.demoservice.QueryJoinDataConfParamInfo;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
-
-import object.DataConfParam;
 
 public class ConfFunc implements IConfNotification
 {
@@ -33,7 +26,8 @@ public class ConfFunc implements IConfNotification
     private static final int QUERY_CONF_DETAIL_FAILED = 104;
     private static final int QUERY_CONF_DETAIL_SUCCESS = 105;
 
-    private static final int JOIN_CONF_SUCCESS = 110;
+    private static final int JOIN_VOICE_CONF_SUCCESS = 109;
+    private static final int JOIN_VIDEO_CONF_SUCCESS = 110;
     private static final int JOIN_CONF_FAILED = 111;
 
     private static ConfFunc mInstance = new ConfFunc();
@@ -71,13 +65,27 @@ public class ConfFunc implements IConfNotification
                             Toast.LENGTH_SHORT).show();
                     break;
 
-                case JOIN_CONF_SUCCESS:
+                case JOIN_VOICE_CONF_SUCCESS:
+                    if (msg.obj instanceof String)
+                    {
+                        String confID = (String)msg.obj;
+//                        Intent intent = new Intent(IntentConstant.CONF_MEMBER_LIST_ACTIVITY_ACTION);
+                        Intent intent = new Intent(IntentConstant.CONF_MANAGER_ACTIVITY_ACTION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(UIConstants.CONF_ID, confID);
+                        intent.putExtra(UIConstants.IS_VIDEO_CONF, false);
+                        ActivityUtil.startActivity(LocContext.getContext(), intent);
+                    }
+                    break;
+
+                case JOIN_VIDEO_CONF_SUCCESS:
                     if (msg.obj instanceof String)
                     {
                         String confID = (String)msg.obj;
                         Intent intent = new Intent(IntentConstant.CONF_MANAGER_ACTIVITY_ACTION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(UIConstants.CONF_ID, confID);
+                        intent.putExtra(UIConstants.IS_VIDEO_CONF, true);
                         ActivityUtil.startActivity(LocContext.getContext(), intent);
                     }
                     break;
@@ -99,11 +107,11 @@ public class ConfFunc implements IConfNotification
         @Override
         public void onReceive(String broadcastName, Object obj)
         {
-            switch (broadcastName)
-            {
-                default:
-                    break;
-            }
+//            switch (broadcastName)
+//            {
+//                default:
+//                    break;
+//            }
         }
     };
 
@@ -141,10 +149,16 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_CONF_DETAIL_RESULT, params);
                 break;
 
-            case JOIN_CONF_SUCCESS:
-                mHandler.sendMessage(mHandler.obtainMessage(JOIN_CONF_SUCCESS, params));
+            case JOIN_VOICE_CONF_SUCCESS:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CONF_CALL_CONNECTED, params);
+                mHandler.sendMessage(mHandler.obtainMessage(JOIN_VOICE_CONF_SUCCESS, params));
 
+
+                break;
+
+            case JOIN_VIDEO_CONF_SUCCESS:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CONF_CALL_CONNECTED, params);
+                mHandler.sendMessage(mHandler.obtainMessage(JOIN_VIDEO_CONF_SUCCESS, params));
                 break;
 
             case JOIN_CONF_FAILED:
@@ -270,7 +284,9 @@ public class ConfFunc implements IConfNotification
 			case CONF_CHAT_MSG:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG, params);
                 break;
-
+            case GET_TEMP_USER_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_TEMP_USER_RESULT, params);
+                break;
 
             default:
                 break;

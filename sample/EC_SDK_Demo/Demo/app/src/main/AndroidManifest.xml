@@ -35,6 +35,7 @@
         android:label="@string/app_name"
         android:theme="@style/android:Theme.Light.NoTitleBar">
         <activity android:name=".ui.login.LoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -46,6 +47,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -56,6 +58,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.login.LoginSettingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.login_setting_activity"/>
@@ -65,6 +68,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.call.CallOutActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.call_out_activity"/>
@@ -74,6 +78,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.call.CallInActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.call_in_activity"/>
@@ -83,6 +88,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.conference.CreateConfActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
@@ -93,6 +99,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.call.VideoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.video_activity"/>
@@ -102,6 +109,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.conference.ConfDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.conf_detail_activity"/>
@@ -110,16 +118,19 @@
                 <category android:name="android.intent.category.sdkdemo"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.conference.ConfManagerActivity"
+        <activity android:name=".ui.conference.ConfMemberListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.conf_manager_activity"/>
+                <action android:name="android.intent.action.attendee_list_activity"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.sdkdemo"/>
             </intent-filter>
         </activity>
         <activity android:name=".ui.servicesetting.ServiceSettingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.service_setting_activity"/>
@@ -129,6 +140,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.conference.ConfListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.conf_list_activity"/>
@@ -138,6 +150,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.conference.OneKeyJoinActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.one_key_join_activity"/>
@@ -148,6 +161,7 @@
         </activity>
 
         <activity android:name=".ui.eaddrbook.EnterpriseAddrBookActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.eaddr_book_activity"/>
@@ -157,7 +171,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.eaddrbook.EnterpriseAddrInfoActivity">
+        <activity android:name=".ui.eaddrbook.EnterpriseAddrInfoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.eaddr_info_activity"/>
 
@@ -166,11 +182,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.conference.VideoConfActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="landscape">
+        <!--android:screenOrientation="landscape-->
+        <!--android:launchMode="singleTask"-->
+        <activity android:name=".ui.conference.ConfManagerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.conf_video_activity"/>
+                <action android:name="android.intent.action.conf_manager_activity"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.sdkdemo"/>
@@ -178,6 +196,7 @@
         </activity>
 
         <activity android:name=".ui.conference.DataConfActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="landscape">
             <intent-filter>
@@ -188,7 +207,20 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.conference.anonymous.AnonymousJoinConfActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.anonymous_activity"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.sdkdemo"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".ui.servicesetting.IptRegisterActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.ipt_register_activity"/>
@@ -199,6 +231,7 @@
         </activity>
 
         <activity android:name=".ui.im.ImSearchActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_search_activity"/>
@@ -209,6 +242,7 @@
         </activity>
 
         <activity android:name=".ui.im.ChatActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden">
@@ -221,6 +255,7 @@
         </activity>
 
         <activity android:name=".ui.contact.GroupsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.groups_activity"/>
@@ -231,6 +266,7 @@
         </activity>
 
         <activity android:name=".ui.contact.TeamsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.teams_activity"/>
@@ -242,6 +278,7 @@
         </activity>
 
         <activity android:name=".ui.contact.ContactDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.contact_detail_activity"/>
@@ -252,6 +289,7 @@
         </activity>
 
         <activity android:name=".ui.im.VideoSelectedActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.video_selected_activity"/>
@@ -262,6 +300,7 @@
         </activity>
 
         <activity android:name=".ui.im.GroupDetailSettingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.group_detail_setting_activity"/>
@@ -272,6 +311,7 @@
         </activity>
 
         <activity android:name=".ui.im.SingleChatSettingActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.single_chat_setting_activity"/>
@@ -282,6 +322,7 @@
         </activity>
 
         <activity android:name=".ui.im.MediaScanActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_media_scan_activity"/>
@@ -292,6 +333,7 @@
         </activity>
 
         <activity android:name=".ui.im.GroupMemberAddActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_group_add_activity"/>
@@ -302,6 +344,7 @@
         </activity>
 
         <activity android:name=".ui.im.GroupMemberActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_group_member_activity"/>
@@ -312,6 +355,7 @@
         </activity>
 
         <activity android:name=".ui.im.CreateGroupActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_group_create_activity"/>
@@ -322,6 +366,7 @@
         </activity>
 
         <activity android:name=".ui.im.SettingMoreActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_setting_more_activity"/>
@@ -332,6 +377,7 @@
         </activity>
 
         <activity android:name=".ui.im.SystemHeadIconSelectActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.im_system_head_activity"/>

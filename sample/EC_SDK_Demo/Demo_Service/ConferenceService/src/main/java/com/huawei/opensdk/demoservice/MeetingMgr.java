@@ -8,6 +8,7 @@ import com.huawei.ecterminalsdk.base.TsdkAddAttendeesInfo;
 import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkAttendeeBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkBookConfInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfAnonymousJoinParam;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfAttendeeUpdateType;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
@@ -18,12 +19,18 @@ import com.huawei.ecterminalsdk.base.TsdkConfEnvType;
 import com.huawei.ecterminalsdk.base.TsdkConfJoinParam;
 import com.huawei.ecterminalsdk.base.TsdkConfLanguage;
 import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
+import com.huawei.ecterminalsdk.base.TsdkConfOperationType;
 import com.huawei.ecterminalsdk.base.TsdkConfRight;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
+import com.huawei.ecterminalsdk.base.TsdkConfShareState;
+import com.huawei.ecterminalsdk.base.TsdkConfSpeaker;
+import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfType;
 import com.huawei.ecterminalsdk.base.TsdkConfVideoMode;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
+import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfDetailReq;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfListReq;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendees;
@@ -35,13 +42,19 @@ import com.huawei.ecterminalsdk.models.conference.TsdkConference;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.Session;
 import com.huawei.opensdk.callmgr.VideoMgr;
+import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.tup.confctrl.sdk.TupConfParam;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
+import static com.huawei.ecterminalsdk.base.TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO;
+import static com.huawei.ecterminalsdk.base.TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE;
 
 /**
  * This class is about meeting function management.
@@ -87,11 +100,25 @@ public class MeetingMgr implements IMeetingMgr{
      */
     private TsdkConfEnvType confEnvType;
 
+    /**
+     * 会议协议类型
+     */
+    private ConfConstant.ConfProtocol confProtocol;
 
     /**
-     * 自己加入会议的号码
+     * 会议中的发言人
      */
-//    private String joinConfNumber;
+    private String[] speakers;
+
+    /**
+     * 是否是匿名入会，用于判断会议界面按钮的显示
+     */
+    private boolean isAnonymous = false;
+
+    /**
+     * 获取匿名会议临时账号是否成功，用于判断会议界面按钮的显示
+     */
+    private boolean getTempUserSuccess = false;
 
     private MeetingMgr()
     {
@@ -245,6 +272,39 @@ public class MeetingMgr implements IMeetingMgr{
         this.confEnvType = confEnvType;
     }
 
+    public ConfConstant.ConfProtocol getConfProtocol() {
+        return confProtocol;
+    }
+
+    public void setConfProtocol(ConfConstant.ConfProtocol confProtocol) {
+        this.confProtocol = confProtocol;
+    }
+
+    public boolean isAnonymous() {
+        return isAnonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        isAnonymous = anonymous;
+    }
+
+    public boolean isGetTempUserSuccess() {
+        return getTempUserSuccess;
+    }
+
+    public void setGetTempUserSuccess(boolean getTempUserSuccess) {
+        this.getTempUserSuccess = getTempUserSuccess;
+    }
+
+    public String[] getSpeakers() {
+        if (null != speakers)
+        {
+            return speakers.clone();
+        }
+
+        return new String[0];
+    }
+
     /**
      * This method is used to update conf info
      * 更新会议信息
@@ -320,6 +380,36 @@ public class MeetingMgr implements IMeetingMgr{
         return;
     }
 
+    /**
+     * This method is used to get a speaker by volume.
+     * @param speakerInfo 发言人信息
+     * @return
+     */
+    public String[] updateSpeaker(TsdkConfSpeakerInfo speakerInfo)
+    {
+        this.speakers = new String[speakerInfo.getSpeakerNum()];
+        List<TsdkConfSpeaker> confSpeakers = speakerInfo.getSpeakers();
+
+        Collections.sort(confSpeakers, new Comparator<TsdkConfSpeaker>() {
+            @Override
+            public int compare(TsdkConfSpeaker o1, TsdkConfSpeaker o2) {
+                int result = o2.getSpeakingVolume() - o1.getSpeakingVolume();
+                return result;
+            }
+        });
+
+        if (speakerInfo.getSpeakerNum() >= 2)
+        {
+            this.speakers[0] = confSpeakers.get(0).getBaseInfo().getDisplayName();
+            this.speakers[1] = confSpeakers.get(1).getBaseInfo().getDisplayName();
+        }
+        else
+        {
+            this.speakers[0] = confSpeakers.get(0).getBaseInfo().getDisplayName();
+        }
+
+        return speakers.clone();
+    }
 
     /**
      * This method is used to book instant conference or reserved conference
@@ -531,6 +621,9 @@ public class MeetingMgr implements IMeetingMgr{
             currentConference = null;
         }
 
+        setAnonymous(false);
+        setGetTempUserSuccess(false);
+
         return result;
     }
 
@@ -551,6 +644,9 @@ public class MeetingMgr implements IMeetingMgr{
         if (result == 0) {
             currentConference = null;
         }
+
+        setAnonymous(false);
+        setGetTempUserSuccess(false);
 
         return result;
     }
@@ -739,6 +835,13 @@ public class MeetingMgr implements IMeetingMgr{
         return result;
     }
 
+    /**
+     * [en]This method is used to set conference presenter.
+     * [cn]设置主讲人
+     *
+     * @param attendee   与会者信息
+     * @return int
+     */
     public int setPresenter(Member attendee)
     {
         if (null == currentConference)
@@ -815,12 +918,116 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
-     * This method is used to set conf mode
-     * 设置会议类型
-     * @param confctrlConfMode 会议类型
+     * This method is used to join a conference by anonymous
+     * 加入匿名会议
+     *
+     * @param confId            会议ID
+     * @param displayName       与会者名称
+     * @param confPassword      会议密码
+     * @param serviceAddress    匿名会议地址
+     * @param servicePort       匿名会议端口
+     * @param isVPN             是否VPN
      * @return
      */
-    public int setConfMode(TsdkConfVideoMode confctrlConfMode)
+    public int joinConferenceByAnonymous(String confId, String displayName,
+                                         String confPassword, String serviceAddress,
+                                         String servicePort,boolean isVPN)
+    {
+        Log.i(TAG,  "joinConferenceByAnonymous");
+
+        //设置本端IP
+        String localIpAddress = DeviceManager.getLocalIpAddress(isVPN);
+        TsdkLocalAddress localAddress = new TsdkLocalAddress(localIpAddress);
+        TsdkManager.getInstance().setConfigParam(localAddress);
+
+        TsdkConfAnonymousJoinParam anonymousParam = new TsdkConfAnonymousJoinParam();
+        anonymousParam.setConfId(confId);
+        anonymousParam.setConfPassword(confPassword);
+        anonymousParam.setDisplayName(displayName);
+        anonymousParam.setServerAddr(serviceAddress);
+        anonymousParam.setServerPort(Integer.parseInt(servicePort));
+        anonymousParam.setUserId(1);
+
+        int result = TsdkManager.getInstance().getConferenceManager().joinConferenceByAnonymous(anonymousParam);
+
+        if (result != 0)
+        {
+            Log.e(TAG, "join anonymous conference result ->" + result);
+            return result;
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * This method is used to call transfer to conference.
+     * 普通通话转成会议
+     *
+     * @param call_id               [en]Indicates call id.
+     *                              [cn]呼叫ID
+     * @return                      [en]If success return TSDK_SUCCESS,otherwise return corresponding error code
+     *                              [cn]成功返回TSDK_SUCCESS，失败返回相应错误码
+     */
+    public int callTransferToConference(int call_id){
+
+        Log.i(TAG, "callTransferToConference.");
+
+        Session callSession = CallMgr.getInstance().getCallSessionByCallID(call_id);
+        if (callSession == null)
+        {
+            Log.e(TAG, "call Session is null.");
+            return -1;
+        }
+
+        TsdkCall tsdkCall =  callSession.getTsdkCall();
+        if (tsdkCall == null)
+        {
+            Log.e(TAG, "call is invalid.");
+            return -1;
+        }
+
+        TsdkBookConfInfo bookConfInfo = new TsdkBookConfInfo();
+
+        bookConfInfo.setConfType(TsdkConfType.TSDK_E_CONF_INSTANT);
+        bookConfInfo.setIsAutoProlong(1);
+
+        bookConfInfo.setSubject(LoginMgr.getInstance().getAccount() + "'s Meeting");
+        if (1 == tsdkCall.getCallInfo().getIsVideoCall()) {
+            bookConfInfo.setConfMediaType(TSDK_E_CONF_MEDIA_VIDEO);
+        }else {
+            bookConfInfo.setConfMediaType(TSDK_E_CONF_MEDIA_VOICE);
+        }
+
+        bookConfInfo.setSize(2);
+
+        List<TsdkAttendeeBaseInfo> attendeeList = new ArrayList<>();
+        TsdkAttendeeBaseInfo confctrlAttendee = new TsdkAttendeeBaseInfo();
+        //confctrlAttendee.setNumber(callInfo.getPeerNumber());
+        confctrlAttendee.setRole(TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
+        attendeeList.add(confctrlAttendee);
+
+        bookConfInfo.setAttendeeList(attendeeList);
+        bookConfInfo.setAttendeeNum(attendeeList.size());
+
+        //The other parameters are optional, using the default value
+        //其他参数可选，使用默认值即可
+        bookConfInfo.setLanguage(TsdkConfLanguage.TSDK_E_CONF_LANGUAGE_EN_US);
+
+        int result = TsdkManager.getInstance().getConferenceManager().p2pTransferToConference(tsdkCall, bookConfInfo);
+        if (result != 0) {
+            Log.e(TAG, "call transfer to conference is return failed, result = " + result);
+        }
+        return result;
+    }
+
+    /**
+     * This method is used to set conf mode
+     * 设置会议类型
+     * @param confVideoMode 会议类型
+     * @return
+     */
+    public int setConfMode(ConfConstant.ConfVideoMode confVideoMode)
     {
         if (null == currentConference)
         {
@@ -828,7 +1035,24 @@ public class MeetingMgr implements IMeetingMgr{
             return -1;
         }
 
-        int result =  currentConference.setVideoMode(confctrlConfMode);
+        TsdkConfVideoMode tsdkConfVideoMode = TsdkConfVideoMode.TSDK_E_CONF_VIDEO_BROADCAST;
+
+        switch (confVideoMode)
+        {
+            case CONF_VIDEO_BROADCAST:
+                tsdkConfVideoMode = TsdkConfVideoMode.TSDK_E_CONF_VIDEO_BROADCAST;
+                break;
+            case CONF_VIDEO_VAS:
+                tsdkConfVideoMode = TsdkConfVideoMode.TSDK_E_CONF_VIDEO_VAS;
+                break;
+            case CONF_VIDEO_FREE:
+                tsdkConfVideoMode = TsdkConfVideoMode.TSDK_E_CONF_VIDEO_FREE;
+                break;
+            default:
+                break;
+        }
+
+        int result = currentConference.setVideoMode(tsdkConfVideoMode);
 
         return result;
     }
@@ -1148,6 +1372,10 @@ public class MeetingMgr implements IMeetingMgr{
             this.memberList = null;
             this.self = null;
 
+            if (isGetTempUserSuccess()){
+                setAnonymous(true);
+            }
+
             TsdkCall tsdkCall = tsdkConference.getCall();
             if (null != tsdkCall) {
                 Session newSession = CallMgr.getInstance().getCallSessionByCallID(tsdkCall.getCallInfo().getCallId());
@@ -1161,7 +1389,15 @@ public class MeetingMgr implements IMeetingMgr{
                 }
             }
 
-            mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_CONF_SUCCESS, tsdkConference.getHandle() + "");
+            if (ConfConvertUtil.convertConfMediaType(tsdkJoinConfIndInfo.getConfMediaType()) == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE
+                    || ConfConvertUtil.convertConfMediaType(tsdkJoinConfIndInfo.getConfMediaType()) == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA)
+            {
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VOICE_CONF_SUCCESS, tsdkConference.getHandle() + "");
+            }
+            else
+            {
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VIDEO_CONF_SUCCESS, tsdkConference.getHandle() + "");
+            }
         }
         else
         {
@@ -1230,78 +1466,77 @@ public class MeetingMgr implements IMeetingMgr{
         {
             Log.e(TAG, "conf ctrl operation failed: " + result.getDescription());
         }
-        int confOperationType = result.getOperationType();
-        switch (confOperationType)
+        switch (TsdkConfOperationType.enumOf(result.getOperationType()))
         {
             //升级会议
-            case 1:
+            case TSDK_E_CONF_UPGRADE_CONF:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.UPGRADE_CONF_RESULT, ret);
                 break;
             //闭音会场
-            case 2:
+            case TSDK_E_CONF_MUTE_CONF:
                 this.isMuteConf = true;
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.MUTE_CONF_RESULT, ret);
                 break;
             //取消闭音
-            case 3:
+            case TSDK_E_CONF_UNMUTE_CONF:
                 this.isMuteConf = false;
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.UN_MUTE_CONF_RESULT, ret);
                 break;
             //锁定会议
-            case 4:
+            case TSDK_E_CONF_LOCK_CONF:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LOCK_CONF_RESULT, ret);
                 break;
             //取消锁定
-            case 5:
+            case TSDK_E_CONF_UNLOCK_CONF:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.UN_LOCK_CONF_RESULT, ret);
                 break;
             //添加与会者
-            case 6:
+            case TSDK_E_CONF_ADD_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.ADD_ATTENDEE_RESULT, ret);
                 break;
             //删除与会者
-            case 7:
+            case TSDK_E_CONF_REMOVE_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.DEL_ATTENDEE_RESULT, ret);
                 break;
 
             //闭音与会者
-            case 10:
+            case TSDK_E_CONF_MUTE_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.MUTE_ATTENDEE_RESULT, ret);
                 break;
             //取消闭音与会者
-            case 11:
+            case TSDK_E_CONF_UNMUTE_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.UN_MUTE_ATTENDEE_RESULT, ret);
                 break;
             //设置举手
-            case 12:
+            case TSDK_E_CONF_SET_HANDUP:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.HAND_UP_RESULT, ret);
                 break;
             //取消设置举手
-            case 13:
+            case TSDK_E_CONF_CANCLE_HANDUP:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CANCEL_HAND_UP_RESULT, ret);
                 break;
             //设置会议视频模式
-            case 14:
+            case TSDK_E_CONF_SET_VIDEO_MODE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SET_CONF_MODE_RESULT, ret);
                 break;
             //选看与会者
-            case 15:
+            case TSDK_E_CONF_WATCH_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.WATCH_ATTENDEE_RESULT, ret);
                 break;
             //广播与会者
-            case 16:
+            case TSDK_E_CONF_BROADCAST_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BROADCAST_ATTENDEE_RESULT, ret);
                 break;
             //取消广播与会者
-            case 17:
+            case TSDK_E_CONF_CANCEL_BROADCAST_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CANCEL_BROADCAST_RESULT, ret);
                 break;
             //申请主席权限
-            case 18:
+            case TSDK_E_CONF_REQUEST_CHAIRMAN:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.REQUEST_CHAIRMAN_RESULT, ret);
                 break;
             //释放主席权限
-            case 19:
+            case TSDK_E_CONF_RELEASE_CHAIRMAN:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RELEASE_CHAIRMAN_RESULT, ret);
                 break;
             default:
@@ -1347,6 +1582,26 @@ public class MeetingMgr implements IMeetingMgr{
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.STATE_UPDATE, handle);
     }
 
+    /**
+     * 发言人处理
+     * @param speakerList
+     */
+    public void handleSpeakerInd(TsdkConfSpeakerInfo speakerList) {
+        Log.i(TAG, "onEvtSpeakerInd");
+
+        if (null == speakerList)
+        {
+            return;
+        }
+
+        if (speakerList.getSpeakerNum() > 0)
+        {
+            this.updateSpeaker(speakerList);
+        }
+
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SPEAKER_LIST_IND, speakerList.getSpeakerNum());
+    }
+
 
     /**
      * 会议来电处理
@@ -1382,9 +1637,10 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleAsStateChange(TsdkConfAsStateInfo asStateInfo)
     {
-        switch (asStateInfo.getState())
+        switch (TsdkConfShareState.enumOf(asStateInfo.getState()))
         {
-            case 0:
+            // 结束共享
+            case TSDK_E_CONF_AS_STATE_NULL:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_AS_SHARE, asStateInfo);
                 break;
             default:
@@ -1401,6 +1657,26 @@ public class MeetingMgr implements IMeetingMgr{
     public void handleRecvChatMsg(TsdkConfChatMsgInfo confChatMsgInfo)
     {
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CONF_CHAT_MSG, confChatMsgInfo);
+    }
+
+    /**
+     * [en]This method is used to get temporary user results for anonymous meetings.
+     * [cn]获取用于匿名方式加入会议的临时用户结果通知.
+     *
+     * @param userId            [en]Indicates user id
+     *                          [cn]用户ID
+     * @param result            [en]Indicates operation result.
+     *                          [cn]操作结果
+     */
+    public void handleGetTempUserResult(int userId, TsdkCommonResult result)
+    {
+        if(result == null){
+            return;
+        }
+        if (0 == result.getResult()){
+            setGetTempUserSuccess(true);
+        }
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.GET_TEMP_USER_RESULT, result);
     }
 
 }

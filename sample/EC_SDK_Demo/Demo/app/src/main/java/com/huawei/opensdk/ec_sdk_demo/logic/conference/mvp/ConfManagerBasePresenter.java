@@ -1,6 +1,8 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
+import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
@@ -8,7 +10,6 @@ import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
-import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
@@ -19,8 +20,8 @@ import java.util.List;
 
 
 
-public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConfContract.VideoConfView>
-        implements IVideoConfContract.VideoConfPresenter
+public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfManagerContract.ConfManagerView>
+        implements IConfManagerContract.ConfManagerPresenter
 {
     private String confID;
 
@@ -30,6 +31,7 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
         @Override
         public void onReceive(String broadcastName, Object obj)
         {
+            int result;
             switch (broadcastName)
             {
                 case CustomBroadcastConstants.CONF_STATE_UPDATE:
@@ -43,13 +45,11 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
 
                     //判断会议状态，如果会议结束，则关闭会议界面
                     ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
-                    ConfConstant.ConfConveneStatus status = confBaseInfo.getConfState();
-                    if (status == ConfConstant.ConfConveneStatus.DESTROYED)
+                    if (null == confBaseInfo)
                     {
-                        LocBroadcast.getInstance().unRegisterBroadcast(receiver, broadcastNames);
-                        getView().finishActivity();
                         return;
                     }
+                    getView().updateConfTypeIcon(confBaseInfo);
 
                     List<Member> memberList = MeetingMgr.getInstance().getCurrentConferenceMemberList();
                     if (memberList == null)
@@ -61,13 +61,65 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
                     if (self != null)
                     {
                         getView().updateMuteButton(self.isMute());
+                        getView().updateUpgradeConfBtn(confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA
+                                || confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA);
+                        getView().updateAttendeeButton(self);
                     }
                     getView().refreshMemberList(MeetingMgr.getInstance().getCurrentConferenceMemberList());
+                    break;
 
+                case CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.get_data_conf_params_fail);
+                        return;
+                    }
+                    MeetingMgr.getInstance().joinDataConf();
+                    break;
+
+                case CustomBroadcastConstants.DATA_CONFERENCE_JOIN_RESULT:
+                    result = (int) obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.join_data_conf_fail);
+                    }
                     break;
 
                 case CustomBroadcastConstants.GET_CONF_END:
                     getView().finishActivity();
+                    break;
+
+                case CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG:
+                    TsdkConfChatMsgInfo chatMsgInfo = (TsdkConfChatMsgInfo) obj;
+                    String msgInfo = chatMsgInfo.getChatMsg();
+                    String userName = chatMsgInfo.getSenderDisplayName();
+                    if (null == userName || "".equals(userName))
+                    {
+                        String userNumber = chatMsgInfo.getSenderNumber();
+                        if (null == userNumber || "".equals(userNumber))
+                        {
+                            getView().showMessage("The sender's name was not obtained.");
+                            return;
+                        }
+                        getView().showMessage(userNumber + ": " + msgInfo);
+                    }
+                    getView().showMessage(userName + ": " + msgInfo);
+                    break;
+
+                case CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE:
+                    getView().showCustomToast(R.string.share_end);
+                    break;
+
+                //  请求主席结果
+                case CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.request_chairman_fail);
+                        return;
+                    }
+                    setSelfPresenter();
                     break;
 
                 default:
@@ -155,6 +207,9 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
     public boolean isChairMan()
     {
         Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+        if(null == self){
+            return false;
+        }
 
         return (self.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE ? false:true);
     }
@@ -163,5 +218,37 @@ public abstract class VideoConfBasePresenter extends MVPBasePresenter<IVideoConf
     public List<Member> getMemberList()
     {
         return MeetingMgr.getInstance().getCurrentConferenceMemberList();
+    }
+
+    @Override
+    public void setSelfPresenter() {
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (null == confBaseInfo)
+        {
+            return;
+        }
+
+        if (confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO
+                || confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE)
+        {
+            return;
+        }
+
+        int result = 0;
+        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+        if(null == self)
+        {
+            return;
+        }
+
+        if (self.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN && !self.isPresent())
+        {
+            result = MeetingMgr.getInstance().setPresenter(self);
+        }
+
+        if (0 != result)
+        {
+            getView().showCustomToast(R.string.set_presenter_failed);
+        }
     }
 }

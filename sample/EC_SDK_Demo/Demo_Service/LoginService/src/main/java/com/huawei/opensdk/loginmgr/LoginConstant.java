@@ -7,6 +7,7 @@ package com.huawei.opensdk.loginmgr;
 public class LoginConstant {
 
     public static final String FILE_NAME = "TupLoginParams";
+    public static final String ANONYMOUS_FILE_NAME = "AnonymousParams";
 
     public static final int FIRST_LOGIN = 0;
     public static final int ALREADY_LOGIN = 1;
@@ -30,6 +31,14 @@ public class LoginConstant {
     public static final String UDP_DEFAULT = "5060";
     public static final String TLS_DEFAULT = "5061";
     public static final String SECURITY_TUNNEL = "securityTunnel";
+    public static final String CONF_CTRL_PROTOCOL = "confCtrlProtocol";
+
+    public static final String ANONYMOUS_ADDRESS = "anonymousAddress";
+    public static final String ANONYMOUS_PORT = "anonymousPort";
+    public static final String NICKNAME = "nickname";
+    public static final String FIRSTSTART = "firststart";
+
+    public static final String AUTO_LOGIN = "auto_login";
 
     /**
      * The constant of Thread pool Size

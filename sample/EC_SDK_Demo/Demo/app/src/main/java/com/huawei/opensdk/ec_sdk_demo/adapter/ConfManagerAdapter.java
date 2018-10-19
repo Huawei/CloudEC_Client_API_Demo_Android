@@ -86,6 +86,13 @@ public class ConfManagerAdapter extends BaseAdapter
 
     }
 
+    /**
+     * Update attendee Status
+     * 更新与会者状态
+     *
+     * @param viewHolder        视图持有者
+     * @param conferenceMemberEntity 与会者信息
+     */
     private void updateMemberStatus(ViewHolder viewHolder, Member conferenceMemberEntity)
     {
         ImageView stateIV = viewHolder.callingStateIV;
@@ -155,6 +162,11 @@ public class ConfManagerAdapter extends BaseAdapter
         }
     }
 
+    /**
+	 * View-holding classes improve processing performance
+     * to reduce the overhead of view memory consumption
+     * 视图持有类，为减少视图占用内存的开销，提高处理性能
+     */
     private static class ViewHolder
     {
         public ImageView chairmanPicIV;

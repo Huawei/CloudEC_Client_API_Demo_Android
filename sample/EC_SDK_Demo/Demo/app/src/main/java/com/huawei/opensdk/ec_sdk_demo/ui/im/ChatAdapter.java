@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaMetadataRetriever;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;

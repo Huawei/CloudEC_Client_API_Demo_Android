@@ -7,7 +7,6 @@ import com.huawei.ecterminalsdk.base.TsdkConfParticipantStatus;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.demoservice.data.CameraEntity;
 import com.huawei.tup.confctrl.ConfctrlConfRole;
-import com.huawei.tup.confctrl.sdk.TupConfECAttendeeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +98,11 @@ public class Member {
     private boolean isAutoInvite;
 
     /**
+     * 是否广播自己
+     */
+    private boolean isBroadcastSelf;
+
+    /**
      * 摄像头列表
      */
     private List<CameraEntity> cameraEntityList = new ArrayList<>();
@@ -171,6 +175,14 @@ public class Member {
 
     public void setAutoInvite(boolean autoInvite) {
         isAutoInvite = autoInvite;
+    }
+
+    public boolean isBroadcastSelf() {
+        return isBroadcastSelf;
+    }
+
+    public void setBroadcastSelf(boolean broadcastSelf) {
+        isBroadcastSelf = broadcastSelf;
     }
 
     public TsdkConfRole getRole() {
@@ -312,6 +324,7 @@ public class Member {
         TsdkConfRole role = ((attendeeBaseInfo.getRole() == ConfctrlConfRole.CONFCTRL_E_CONF_ROLE_CHAIRMAN.getIndex()) ?
                 TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN : TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
         setRole(role);
+        setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
 
         TsdkConfParticipantStatus participantStatus = ConfConvertUtil.convertAttendStatus(attendeeStatusInfo.getState());
         if (participantStatus != null) {

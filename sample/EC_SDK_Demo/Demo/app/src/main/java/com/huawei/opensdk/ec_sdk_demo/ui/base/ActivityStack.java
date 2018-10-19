@@ -138,7 +138,7 @@ public final class ActivityStack
     {
         Activity target;
         int size = stack.size();
-        LogUtil.d(UIConstants.DEMO_TAG, "size#" + size + ";" + activity.getLocalClassName());
+//        LogUtil.d(UIConstants.DEMO_TAG, "size#" + size + ";" + activity.getLocalClassName());
 
         try
         {
