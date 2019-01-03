@@ -197,9 +197,32 @@ public final class LogUtil
                 }
                 catch (IOException e)
                 {
-                    LogUtil.e(TAG, e.getMessage());
+                    //LogUtil.e(TAG, e.getMessage());
+					LogUtil.e(TAG, LogUtil.encodeForLog(e.getMessage()));
                 }
             }
         }
+    }
+	
+	public static String encodeForLog(Object obj)
+    {
+        if (obj == null)
+        {
+            return "null";
+        }
+        String msg = obj.toString();
+        int length = msg.length();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++)
+        {
+            char ch = msg.charAt(i);
+            // Replace \ r \ n with ' _ '
+            if (ch == '\r' || ch == '\n')
+            {
+                ch = '_';
+            }
+            sb.append(Character.valueOf(ch));
+        }
+        return sb.toString();
     }
 }

@@ -1,6 +1,9 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -16,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huawei.common.res.LocContext;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.util.LogUtil;
@@ -43,6 +47,8 @@ import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
@@ -50,6 +56,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         implements IConfManagerContract.ConfManagerView, View.OnClickListener
 {
     private RelativeLayout mVideoConfLayout;
+    private RelativeLayout mTitleLayout;
+    private LinearLayout mConfMediaLayout;
     private FrameLayout mConfRemoteVideoLayout;
     private FrameLayout mConfSmallLayout;
     private FrameLayout mHideVideoLayout;
@@ -73,12 +81,23 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private FrameLayout mConfMore;
     private ImageView cameraStatusIV;
     private TextView cameraStatusTV;
+    private RelativeLayout mAudioConfLayout;
+    private TextView mAudioConfAttendeeTV;
 
     private String confID;
     private boolean isCameraClose = false;
     private boolean isVideo = false;
     private boolean isDateConf = false;
     private List<Object> items = new ArrayList<>();
+    private int mOrientation = 1;
+
+    private MyTimerTask myTimerTask;
+    private Timer timer;
+    private boolean isFirstStart = true;
+    private boolean isPressTouch = false;
+    private boolean isShowBar = false;
+
+    private boolean isStartShare = false;
 
     @Override
     protected IConfManagerContract.ConfManagerView createView()
@@ -98,6 +117,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         setContentView(R.layout.conf_manager_activity);
         mConfButton = (LinearLayout) findViewById(R.id.media_btn_group);
         mVideoConfLayout = (RelativeLayout) findViewById(R.id.conference_video_layout);
+        mTitleLayout = (RelativeLayout) findViewById(R.id.title_layout_transparent);
+        mConfMediaLayout = (LinearLayout) findViewById(R.id.media_btn_group);
 
         //title
         mLeaveIV = (ImageView) findViewById(R.id.leave_iv);
@@ -138,12 +159,19 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         }
         else
         {
+            mAudioConfAttendeeTV = (TextView) findViewById(R.id.tv_audio_conf_attendee);
+            mAudioConfLayout = (RelativeLayout) findViewById(R.id.audio_conf_layout_logo);
+
+            mAudioConfAttendeeTV.setSelected(true);
+
+            mAudioConfLayout.setVisibility(View.VISIBLE);
             mVideoConfLayout.setVisibility(View.INVISIBLE);
 
             //title
             mRightIV.setVisibility(View.GONE);
         }
 
+        mVideoConfLayout.setOnClickListener(this);
         mConfHangup.setOnClickListener(this);
         mConfMute.setOnClickListener(this);
         mConfSpeaker.setOnClickListener(this);
@@ -159,26 +187,53 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     {
         super.onResume();
         mPresenter.registerBroadcast();
-        if (isVideo)
-        {
-            mPresenter.setVideoContainer(this, mConfSmallLayout, mConfRemoteVideoLayout, mHideVideoLayout);
-        }
-        mPresenter.setAutoRotation(this, true);
-
-        // 以下处理用于PBX下的视频会议
-        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
-        if (self == null || self.getCameraEntityList().isEmpty())
-        {
-            LogUtil.i(UIConstants.DEMO_TAG,  "no camera--------- ");
-        }
-        else
-        {
-            //打开前置摄像头
-            mPresenter.shareSelfVideo(self.getCameraEntityList().get(1).getDeviceID());
-        }
 
         // 刷新当前扬声器状态
         updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
+
+        if (!isVideo)
+        {
+            return;
+        }
+
+        if (isFirstStart)
+        {
+            startTimer();
+        }
+
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            mConfSmallLayout.getLayoutParams().width = dp2ps(this, 160);
+            mConfSmallLayout.getLayoutParams().height = dp2ps(this, 90);
+        }
+        else
+        {
+            mConfSmallLayout.getLayoutParams().width = dp2ps(this, 90);
+            mConfSmallLayout.getLayoutParams().height = dp2ps(this, 160);
+        }
+        mPresenter.setVideoContainer(this, mConfSmallLayout, mConfRemoteVideoLayout, mHideVideoLayout);
+        mPresenter.setAutoRotation(this, true, mOrientation);
+
+        // 以下处理用于PBX下的视频会议
+//        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+//        if (self == null || self.getCameraEntityList().isEmpty())
+//        {
+//            LogUtil.i(UIConstants.DEMO_TAG,  "no camera--------- ");
+//        }
+//        else
+//        {
+//            //打开前置摄像头
+//            mPresenter.shareSelfVideo(self.getCameraEntityList().get(1).getDeviceID());
+//        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopTimer();
+        isFirstStart = true;
+        isPressTouch = false;
+        isShowBar = false;
     }
 
     @Override
@@ -198,6 +253,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
         if (!isVideo)
         {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             return;
         }
         if (ConfConstant.ConfProtocol.IDO_PROTOCOL == MeetingMgr.getInstance().getConfProtocol())
@@ -210,11 +266,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             items.add(getString(R.string.voice_control_mode));
             items.add(getString(R.string.free_mode));
         }
+
+        // 获取屏幕方向
+        Configuration configuration = this.getResources().getConfiguration();
+        mOrientation = configuration.orientation;
     }
 
     @Override
     public void finishActivity()
     {
+        stopTimer();
         finish();
     }
 
@@ -246,6 +307,25 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     {
         switch (v.getId())
         {
+            case R.id.conference_video_layout:
+                if (!isVideo)
+                {
+                    return;
+                }
+                if (isFirstStart)
+                {
+                    return;
+                }
+                if (isPressTouch)
+                {
+                    return;
+                }
+                else
+                {
+                    isPressTouch = true;
+                    startTimer();
+                }
+                break;
             case R.id.conf_hangup:
                 LogUtil.i(UIConstants.DEMO_TAG, "conference hangup!");
                 if (!mPresenter.isChairMan())
@@ -286,11 +366,20 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 break;
             case R.id.right_iv:
                 final List<Member> memberList = mPresenter.getMemberList();
-                if (null == memberList || memberList.size()<=0){
+                if (null == memberList || memberList.size()<=0)
+                {
                     return;
                 }
                 final View popupView = getLayoutInflater().inflate(R.layout.popup_conf_list, null);
                 mConfMemberListView = (ListView) popupView.findViewById(R.id.popup_conf_member_list);
+
+                View headView = getLayoutInflater().inflate(R.layout.popup_video_conf_list_item, null);
+                final TextView tvDisplayName = (TextView) headView.findViewById(R.id.name_tv);
+                ImageView isMainHall = (ImageView) headView.findViewById(R.id.host_logo);
+                tvDisplayName.setText(LocContext.getString(R.string.main_conference));
+                isMainHall.setImageResource(R.drawable.group_detail_group_icon);
+                mConfMemberListView.addHeaderView(headView);
+
                 mAdapter.setData(memberList);
                 mConfMemberListView.setAdapter(mAdapter);
                 mPopupWindow = PopupWindowUtil.getInstance().generatePopupWindow(popupView);
@@ -300,7 +389,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                     {
-                        Member conferenceMemberEntity = memberList.get(position);
+                        Member conferenceMemberEntity = new Member();
+                        if (0 == position)
+                        {
+                            conferenceMemberEntity.setDisplayName(tvDisplayName.getText().toString());
+                            conferenceMemberEntity.setNumber("");
+                        }
+                        else
+                        {
+                            conferenceMemberEntity = memberList.get(position - 1);
+                        }
 
                         if (null != conferenceMemberEntity)
                         {
@@ -337,6 +435,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 Intent shareIntent = new Intent(IntentConstant.CONF_DATA_ACTIVITY_ACTION);
                 shareIntent.putExtra(UIConstants.CONF_ID, confID);
                 shareIntent.putExtra(UIConstants.IS_VIDEO_CONF, isVideo);
+                shareIntent.putExtra(UIConstants.IS_START_SHARE_CONF, isStartShare);
                 ActivityUtil.startActivity(this, shareIntent);
                 break;
             default:
@@ -441,8 +540,36 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 showMoreButton();
                 mAdapter.setData(list);
                 mAdapter.notifyDataSetChanged();
+
+                if (!isVideo)
+                {
+                    mAudioConfAttendeeTV.setText(getAttendeeName(list));
+                }
             }
         });
+    }
+
+    private String getAttendeeName(List<Member> list)
+    {
+        if (1 == list.size())
+        {
+            return list.get(0).getDisplayName();
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < list.size(); i ++)
+        {
+            if (i == list.size() - 1)
+            {
+                builder.append(list.get(i).getDisplayName());
+            }
+            else
+            {
+                builder.append(list.get(i).getDisplayName() + ", ");
+            }
+        }
+
+        return builder.toString();
     }
 
     private void showMoreButton()
@@ -507,6 +634,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         });
     }
 
+    @Override
+    public void startAsShare(boolean isShare) {
+        isStartShare = isShare;
+    }
+
     private void showLeaveConfDialog()
     {
         ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
@@ -517,6 +649,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             {
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                stopTimer();
                 finish();
             }
         });
@@ -543,6 +676,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             {
                 mPresenter.finishConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                stopTimer();
                 finish();
             }
         });
@@ -569,7 +703,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         super.onDestroy();
         mPresenter.leaveVideo();
         mPresenter.unregisterBroadcast();
-        mPresenter.setAutoRotation(this, false);
+        mPresenter.setAutoRotation(this, false, mOrientation);
         PopupWindowUtil.getInstance().dismissPopupWindow(mPopupWindow);
     }
 
@@ -787,5 +921,132 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
         mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
         mPopupWindow.showAtLocation(findViewById(R.id.media_btn_group), Gravity.RIGHT | Gravity.BOTTOM, 0, mConfButton.getHeight());
+    }
+
+    /**
+     * 屏幕旋转时调用此方法
+     * @param newConfig
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == 2)
+        {
+            mConfSmallLayout.getLayoutParams().width = dp2ps(this, 160);
+            mConfSmallLayout.getLayoutParams().height = dp2ps(this, 90);
+        }
+        else
+        {
+            mConfSmallLayout.getLayoutParams().width = dp2ps(this, 90);
+            mConfSmallLayout.getLayoutParams().height = dp2ps(this, 160);
+        }
+
+        if (this.mOrientation == newConfig.orientation)
+        {
+            return;
+        }
+        else
+        {
+            this.mOrientation = newConfig.orientation;
+            mPresenter.setAutoRotation(this, true, this.mOrientation);
+        }
+    }
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     * @param context
+     * @param dpValue
+     * @return
+     */
+    private int dp2ps(Context context, float dpValue)
+    {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (scale * dpValue + 0.5f);
+    }
+    
+    private void showButton()
+    {
+        if (mTitleLayout.getVisibility() == View.GONE || mConfMediaLayout.getVisibility() == View.GONE)
+        {
+            mTitleLayout.setVisibility(View.VISIBLE);
+            mConfMediaLayout.setVisibility(View.VISIBLE);
+            isShowBar = true;
+        }
+    }
+    
+    private void hideButton()
+    {
+        if (mTitleLayout.getVisibility() == View.VISIBLE || mConfMediaLayout.getVisibility() == View.VISIBLE)
+        {
+            mTitleLayout.setVisibility(View.GONE);
+            mConfMediaLayout.setVisibility(View.GONE);
+            isShowBar = false;
+        }
+    }
+    
+    private void startTimer()
+    {
+        initTimer();
+        try {
+            if (isFirstStart)
+            {
+                timer.schedule(myTimerTask, 5000);
+            }
+            else 
+            {
+                timer.schedule(myTimerTask, 200, 5000);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            initTimer();
+            timer.schedule(myTimerTask, 5000);
+        }
+    }
+    
+    private void stopTimer()
+    {
+        if (null != timer)
+        {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    private void initTimer()
+    {
+        timer = new Timer();
+        myTimerTask = new MyTimerTask();
+    }
+
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFirstStart)
+                    {
+                        hideButton();
+                        isFirstStart = false;
+                        stopTimer();
+                    }
+                    else 
+                    {
+                        if (isShowBar)
+                        {
+                            hideButton();
+                            isPressTouch = false;
+                            stopTimer();
+                        }
+                        else
+                        {
+                            showButton();
+                        }
+                    }
+                }
+            });
+        }
     }
 }

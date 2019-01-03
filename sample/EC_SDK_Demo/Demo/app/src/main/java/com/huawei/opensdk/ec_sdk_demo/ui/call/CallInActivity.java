@@ -102,7 +102,7 @@ public class CallInActivity extends BaseMediaActivity
 
                     //TsdkConference tsdkConference = TsdkManager.getInstance().getConferenceManager().getConferenceByConfHandle(mConfToCallHandle);
                     //tsdkConference.acceptConference(mConfToCallVideo);
-                    MeetingMgr.getInstance().acceptConf(mIsVideoCall);
+                    MeetingMgr.getInstance().acceptConf(false);
                     finish();
                 }
                 break;

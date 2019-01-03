@@ -27,6 +27,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
 {
     private static final int ADD_LOCAL_VIEW = 101;
 
+    private boolean is_refresh_view = false;
     private int mCameraIndex = CallConstant.FRONT_CAMERA;
 
     private Handler mHandler = new Handler()
@@ -54,9 +55,10 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.DATA_CONFERENCE_JOIN_RESULT,
                 CustomBroadcastConstants.ADD_LOCAL_VIEW,
                 CustomBroadcastConstants.DEL_LOCAL_VIEW,
-                CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG,
-                CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE,
+                CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS,
+                CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS,
                 CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT,
+                CustomBroadcastConstants.SPEAKER_LIST_IND,
                 CustomBroadcastConstants.GET_CONF_END};
     }
 
@@ -66,6 +68,10 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
         switch (broadcastName)
         {
             case CustomBroadcastConstants.CONF_STATE_UPDATE:
+                if (!is_refresh_view) {
+                    mHandler.sendEmptyMessage(ADD_LOCAL_VIEW);
+                    is_refresh_view = true;
+                }
                 break;
 
             case CustomBroadcastConstants.ADD_LOCAL_VIEW:
@@ -113,10 +119,9 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     }
 
     @Override
-    public void setAutoRotation(Object object, boolean isOpen) {
-        VideoMgr.getInstance().setAutoRotation(object, isOpen, 1);
+    public void setAutoRotation(Object object, boolean isOpen, int orientation) {
+        VideoMgr.getInstance().setAutoRotation(object, isOpen, orientation);
     }
-
 
     @Override
     public void attachRemoteVideo(long userID, long deviceID)

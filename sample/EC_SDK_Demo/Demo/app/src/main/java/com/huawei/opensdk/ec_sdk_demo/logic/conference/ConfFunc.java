@@ -273,8 +273,12 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CONF_INCOMING_TO_CALL_INCOMING, params);
                 break;
 
-            case END_AS_SHARE:
-                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE, params);
+            case START_DATA_CONF_SHARE:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS, params);
+                break;
+
+            case END_DATA_CONF_SHARE:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS, params);
                 break;
 
             case LEAVE_CONF:
@@ -286,6 +290,10 @@ public class ConfFunc implements IConfNotification
                 break;
             case GET_TEMP_USER_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_TEMP_USER_RESULT, params);
+                break;
+
+            case CALL_TRANSFER_TO_CONFERENCE:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE, params);
                 break;
 
             default:

@@ -8,7 +8,6 @@ import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfParticipantStatus;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkConfState;
-import com.huawei.tup.confctrl.ConfctrlConfMediatypeFlag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,47 +21,6 @@ public class ConfConvertUtil {
     /**
      * This method is used to convert conference media type.
      * 会议媒体类型转换
-     * @param mediaType 媒体类型
-     * @return
-     */
-    public static int convertConfMediaType(TsdkConfMediaType mediaType)
-    {
-        int confMediaType;
-        switch (mediaType)
-        {
-            //音频
-            case TSDK_E_CONF_MEDIA_VOICE:
-                confMediaType = ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_VOICE.getIndex();
-                break;
-
-            //视频
-            case TSDK_E_CONF_MEDIA_VIDEO:
-                confMediaType = ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_VOICE.getIndex()
-                        | ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_HDVIDEO.getIndex();
-                break;
-
-            //音频数据
-            case TSDK_E_CONF_MEDIA_VOICE_DATA:
-                confMediaType = ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_VOICE.getIndex()
-                        | ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_DATA.getIndex();
-                break;
-
-            //视频数据
-            case TSDK_E_CONF_MEDIA_VIDEO_DATA:
-                confMediaType = ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_VOICE.getIndex()
-                        | ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_VIDEO.getIndex()
-                        | ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_DATA.getIndex();
-                break;
-
-            default:
-                confMediaType = ConfctrlConfMediatypeFlag.CONFCTRL_E_CONF_MEDIATYPE_FLAG_BUTT.getIndex();
-                break;
-        }
-        return  confMediaType;
-    }
-
-    /**
-     * This method is used to convert conference media type.
      * @param confMediaType conference media type 会议媒体类型
      * @return
      */

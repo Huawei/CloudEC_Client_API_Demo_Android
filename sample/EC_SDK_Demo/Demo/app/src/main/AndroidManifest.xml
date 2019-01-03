@@ -186,7 +186,7 @@
         <!--android:launchMode="singleTask"-->
         <activity android:name=".ui.conference.ConfManagerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.conf_manager_activity"/>
 
@@ -198,7 +198,7 @@
         <activity android:name=".ui.conference.DataConfActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.conf_data_activity"/>
 

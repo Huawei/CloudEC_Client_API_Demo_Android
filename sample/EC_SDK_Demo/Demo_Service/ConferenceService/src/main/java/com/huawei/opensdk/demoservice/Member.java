@@ -6,7 +6,6 @@ import com.huawei.ecterminalsdk.base.TsdkAttendeeStatusInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfParticipantStatus;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.demoservice.data.CameraEntity;
-import com.huawei.tup.confctrl.ConfctrlConfRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -321,8 +320,7 @@ public class Member {
         setSms(attendeeBaseInfo.getSms());
         setMute(attendeeStatusInfo.getIsMute() == 1? true:false);
         setHandUp(attendeeStatusInfo.getIsHandup() == 1? true : false);
-        TsdkConfRole role = ((attendeeBaseInfo.getRole() == ConfctrlConfRole.CONFCTRL_E_CONF_ROLE_CHAIRMAN.getIndex()) ?
-                TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN : TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
+        TsdkConfRole role = (TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN.enumOf(attendeeBaseInfo.getRole()));
         setRole(role);
         setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
 

@@ -85,7 +85,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
             CustomBroadcastConstants.ACTION_CALL_END,
             CustomBroadcastConstants.CALL_UPGRADE_ACTION,
             CustomBroadcastConstants.HOLD_CALL_RESULT,
-            CustomBroadcastConstants.BLD_TRANSFER_RESULT};
+            CustomBroadcastConstants.BLD_TRANSFER_RESULT,
+            CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE};
     private LinearLayout mSpeakerButton;
     private LinearLayout mUpgradeVideoArea;
 
@@ -413,6 +414,17 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                 {
                     mHandler.sendEmptyMessage(BLD_TRANSFER_FAILED);
                 }
+                break;
+
+            case CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE:
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(CallMgr.getInstance().isResumeHold()){
+                            CallMgr.getInstance().unHoldCall(CallMgr.getInstance().getOriginal_CallId());
+                        }
+                    }
+                },20000);
                 break;
             default:
                 break;

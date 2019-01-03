@@ -29,12 +29,15 @@ import com.huawei.ecterminalsdk.base.TsdkConfSpeaker;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfType;
 import com.huawei.ecterminalsdk.base.TsdkConfVideoMode;
+import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
+import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfDetailReq;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfListReq;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendees;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendeesInfo;
+import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
 import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
@@ -45,11 +48,11 @@ import com.huawei.opensdk.callmgr.VideoMgr;
 import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.loginmgr.LoginMgr;
-import com.huawei.tup.confctrl.sdk.TupConfParam;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
@@ -119,6 +122,21 @@ public class MeetingMgr implements IMeetingMgr{
      * 获取匿名会议临时账号是否成功，用于判断会议界面按钮的显示
      */
     private boolean getTempUserSuccess = false;
+
+    /**
+     * 是否是通话转会议
+     */
+    private boolean callTransferToConference = false;
+
+    /**
+     * 是否正在桌面共享
+     */
+    private boolean isShareAs = false;
+
+    /**
+     * 共享文档和白板的id
+     */
+    private List<Integer> documentId = new ArrayList<>();
 
     private MeetingMgr()
     {
@@ -619,10 +637,15 @@ public class MeetingMgr implements IMeetingMgr{
         int result = currentConference.leaveConference();
         if (result == 0) {
             currentConference = null;
+
+            // 离开会议后将数据会议的共享状态初始化，重新进入会议后此共享状态会重新推送
+            isShareAs = false;
+            documentId.clear();
         }
 
         setAnonymous(false);
         setGetTempUserSuccess(false);
+        callTransferToConference = false;
 
         return result;
     }
@@ -643,10 +666,15 @@ public class MeetingMgr implements IMeetingMgr{
         int result =  currentConference.endConference();
         if (result == 0) {
             currentConference = null;
+
+            // 结束会议后将数据会议的共享状态初始化，重新进入会议后此共享状态会重新推送
+            isShareAs = false;
+            documentId.clear();
         }
 
         setAnonymous(false);
         setGetTempUserSuccess(false);
+        callTransferToConference = false;
 
         return result;
     }
@@ -979,6 +1007,9 @@ public class MeetingMgr implements IMeetingMgr{
             Log.e(TAG, "call Session is null.");
             return -1;
         }
+        //用于转会议失败之后，恢复原通话。
+        CallMgr.getInstance().setOriginal_CallId(call_id);
+        callTransferToConference = true;
 
         TsdkCall tsdkCall =  callSession.getTsdkCall();
         if (tsdkCall == null)
@@ -1220,7 +1251,14 @@ public class MeetingMgr implements IMeetingMgr{
         TsdkConfChatMsgInfo chatMsgInfo = new TsdkConfChatMsgInfo();
         chatMsgInfo.setChatType(TsdkConfChatType.TSDK_E_CONF_CHAT_PUBLIC);
         chatMsgInfo.setChatMsg(message);
-        chatMsgInfo.setSenderDisplayName(self.getDisplayName());
+        if (null == self)
+        {
+            chatMsgInfo.setSenderDisplayName(LoginMgr.getInstance().getAccount());
+        }
+        else
+        {
+            chatMsgInfo.setSenderDisplayName(self.getDisplayName());
+        }
         currentConference.sendChatMsg(chatMsgInfo);
     }
 
@@ -1239,20 +1277,38 @@ public class MeetingMgr implements IMeetingMgr{
         if ((result == null) || (confBaseInfo == null))
         {
             Log.e(TAG, "book conference is failed, unknown error.");
+            if (callTransferToConference){
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                if (callSession != null)
+                {
+                    callSession.unHoldCall();
+                }
+            }
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BOOK_CONF_FAILED, -1);
-
             return;
         }
 
-        if (result.getResult() != TupConfParam.CONF_RESULT.TUP_SUCCESS)
+        if (result.getResult() != 0)
         {
             Log.e(TAG, "book conference is failed, return ->" + result.getResult());
+            if (callTransferToConference){
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                if (callSession != null)
+                {
+                    callSession.unHoldCall();
+                }
+            }
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BOOK_CONF_FAILED, result.getResult());
             return;
         }
 
         Log.i(TAG, "book conference is success.");
-        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BOOK_CONF_SUCCESS, result.getResult());
+        if (callTransferToConference){
+            CallMgr.getInstance().setResumeHold(true);
+            mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CALL_TRANSFER_TO_CONFERENCE, result.getResult());
+        }else {
+            mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.BOOK_CONF_SUCCESS, result.getResult());
+        }
     }
 
 
@@ -1322,7 +1378,7 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
-        if (result.getResult() != TupConfParam.CONF_RESULT.TUP_SUCCESS)
+        if (result.getResult() != 0)
         {
             Log.e(TAG, "get conference detail is failed, return ->" + result.getResult());
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.QUERY_CONF_DETAIL_FAILED, result.getResult());
@@ -1365,6 +1421,8 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
+        CallMgr.getInstance().setResumeHold(false);
+
         int result = commonResult.getResult();
         if (result == 0)
         {
@@ -1401,6 +1459,13 @@ public class MeetingMgr implements IMeetingMgr{
         }
         else
         {
+            if(callTransferToConference){
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                if (callSession != null)
+                {
+                    callSession.unHoldCall();
+                }
+            }
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_CONF_FAILED, result);
         }
 
@@ -1608,6 +1673,7 @@ public class MeetingMgr implements IMeetingMgr{
      * @param conference
      */
     public void handleConfIncomingInd(TsdkConference conference){
+        Log.i(TAG, "handleConfIncomingInd");
 
         if (null == conference)
         {
@@ -1637,14 +1703,124 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleAsStateChange(TsdkConfAsStateInfo asStateInfo)
     {
+        Log.i(TAG, "handleAsStateChange");
+
         switch (TsdkConfShareState.enumOf(asStateInfo.getState()))
         {
+            // 开始共享
+            case TSDK_E_CONF_AS_STATE_VIEW:
+                isShareAs = true;
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_DATA_CONF_SHARE, asStateInfo);
+                break;
+
             // 结束共享
             case TSDK_E_CONF_AS_STATE_NULL:
-                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_AS_SHARE, asStateInfo);
+                isShareAs = false;
+                if (!isShareAs && (0 == documentId.size() || null == documentId))
+                {
+                    mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_DATA_CONF_SHARE, asStateInfo);
+                }
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * This method is used to handle a new document status.
+     * 处理开始新建文档的共享状态
+     * @param docBaseInfo Indicates basic document information
+     *                    文档基础信息
+     */
+    public void handleDsDocNew(TsdkDocBaseInfo docBaseInfo)
+    {
+        Log.i(TAG, "handleDsDocNew");
+
+        if (null == docBaseInfo)
+        {
+            return;
+        }
+
+        documentId.add(docBaseInfo.getDocumentId());
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_DATA_CONF_SHARE, docBaseInfo);
+    }
+
+    /**
+     * This method is used to handle delete document status.
+     * 处理删除文档的共享状态
+     * @param docShareDelDocInfo Indicates delete document information
+     *                           文档删除信息
+     */
+    public void handleDsDocDel(TsdkDocShareDelDocInfo docShareDelDocInfo)
+    {
+        Log.i(TAG, "handleDsDocDel");
+
+        if (null == docShareDelDocInfo)
+        {
+            return;
+        }
+
+        Iterator<Integer> iterator = documentId.iterator();
+        while (iterator.hasNext())
+        {
+            if (iterator.next() == docShareDelDocInfo.getDocBaseInfo().getDocumentId())
+            {
+                iterator.remove();
+            }
+        }
+
+        if (0 == documentId.size() && !isShareAs)
+        {
+            mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_DATA_CONF_SHARE, docShareDelDocInfo);
+        }
+    }
+
+    /**
+     * This method is used to handle a new whiteboard status.
+     * 处理开始新建白板的共享状态
+     * @param docBaseInfo Indicates basic whiteboard information
+     *                    白板基础信息
+     */
+    public void handleWbDocNew(TsdkDocBaseInfo docBaseInfo)
+    {
+        Log.i(TAG, "handleWbDocNew");
+
+        if (null == docBaseInfo)
+        {
+            return;
+        }
+
+        documentId.add(docBaseInfo.getDocumentId());
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_DATA_CONF_SHARE, docBaseInfo);
+    }
+
+    /**
+     * This method is used to handle delete whiteboard status.
+     * 处理删除白板的共享状态
+     * @param wbDelDocInfo Indicates delete whiteboard information
+     *                     删除的白板信息
+     */
+    public void handleWbDocDel(TsdkWbDelDocInfo wbDelDocInfo)
+    {
+        Log.i(TAG, "handleWbDocDel");
+
+        if (null == wbDelDocInfo)
+        {
+            return;
+        }
+
+        Iterator<Integer> iterator = documentId.iterator();
+        while (iterator.hasNext())
+        {
+            if (iterator.next() == wbDelDocInfo.getWbBaseInfo().getDocumentId())
+            {
+                iterator.remove();
+            }
+        }
+
+        if (0 == documentId.size() && !isShareAs)
+        {
+            mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_DATA_CONF_SHARE, wbDelDocInfo);
         }
     }
 
@@ -1656,6 +1832,8 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleRecvChatMsg(TsdkConfChatMsgInfo confChatMsgInfo)
     {
+        Log.i(TAG, "handleRecvChatMsg");
+
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CONF_CHAT_MSG, confChatMsgInfo);
     }
 
@@ -1670,6 +1848,8 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleGetTempUserResult(int userId, TsdkCommonResult result)
     {
+        Log.i(TAG, "handleGetTempUserResult");
+
         if(result == null){
             return;
         }

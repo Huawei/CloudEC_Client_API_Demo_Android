@@ -52,6 +52,16 @@ public class CallMgr implements ICallMgr
      */
     private int ringBackToneHandle = -1;
 
+    /**
+     * 是否恢复转会议通话
+     */
+    private boolean resumeHold = false;
+
+    /**
+     * 普通通话呼叫ID，用于通话转会议失败之后，恢复原通话
+     */
+    private int originalCallId = 0;
+
     private CallMgr()
     {
     }
@@ -61,6 +71,21 @@ public class CallMgr implements ICallMgr
         return mInstance;
     }
 
+    public boolean isResumeHold() {
+        return resumeHold;
+    }
+
+    public void setResumeHold(boolean resumeHold) {
+        this.resumeHold = resumeHold;
+    }
+
+    public int getOriginal_CallId() {
+        return originalCallId;
+    }
+
+    public void setOriginal_CallId(int original_CallId) {
+        this.originalCallId = original_CallId;
+    }
 
     /**
      * This method is used to store call session
@@ -110,7 +135,6 @@ public class CallMgr implements ICallMgr
     {
         return VideoMgr.getInstance();
     }
-
 
     @Override
     public void regCallServiceNotification(ICallNotification callNotification)

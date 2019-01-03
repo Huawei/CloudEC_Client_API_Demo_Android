@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
-import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 

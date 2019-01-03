@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.VideoMgr;
@@ -22,7 +23,10 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
 {
     private String confID;
 
-    private String[] broadcastNames = new String[]{CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE,
+    private String[] broadcastNames = new String[]{
+            CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS,
+            CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS,
+            CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG,
             CustomBroadcastConstants.GET_CONF_END};
 
     private LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -32,14 +36,50 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
         {
             switch (broadcastName)
             {
-                case CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE:
+                case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
+                    getView().startAsShare(true);
+                    break;
+
+                case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
+                    getView().startAsShare(false);
                     getView().showCustomToast(R.string.share_end);
-                    getView().finishActivity();
                     break;
 
                 case CustomBroadcastConstants.GET_CONF_END:
                     getView().finishActivity();
                     break;
+
+                case CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG:
+                    TsdkConfChatMsgInfo chatMsgInfo = (TsdkConfChatMsgInfo) obj;
+                    String msgInfo = chatMsgInfo.getChatMsg();
+                    String userName = chatMsgInfo.getSenderDisplayName();
+                    String userNumber = chatMsgInfo.getSenderNumber();
+                    boolean isSelfMsg = false;
+
+                    Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+                    if (null != self)
+                    {
+                        if (self.getDisplayName().equals(userName) || self.getNumber().equals(userNumber))
+                        {
+                            isSelfMsg = true;
+                        }
+                    }
+
+                    if (null == userName || "".equals(userName))
+                    {
+                        if (null == userNumber || "".equals(userNumber))
+                        {
+                            getView().displayConfChatMag(isSelfMsg, "The sender's name was not obtained.");
+                        }
+                        else
+                        {
+                            getView().displayConfChatMag(isSelfMsg, userNumber + ": " + msgInfo);
+                        }
+                        return;
+                    }
+                    getView().displayConfChatMag(isSelfMsg, userName + ": " + msgInfo);
+                    break;
+
                 default:
                     break;
             }

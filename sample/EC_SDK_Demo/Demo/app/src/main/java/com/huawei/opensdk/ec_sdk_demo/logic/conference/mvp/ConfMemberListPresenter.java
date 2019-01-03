@@ -62,7 +62,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
             CustomBroadcastConstants.DATA_CONFERENCE_GET_DEVICE_INFO_RESULT,
             CustomBroadcastConstants.DATA_CONFERENCE_EXTEND_DEVICE_INFO,
             CustomBroadcastConstants.DATA_CONFERENCE_CAMERA_STATUS_UPDATE,
-            CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE,
             CustomBroadcastConstants.GET_CONF_END};
 
     private LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -339,10 +338,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                     break;
 
                 case CustomBroadcastConstants.DATA_CONFERENCE_CAMERA_STATUS_UPDATE:
-                    break;
-
-                case CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE:
-                    getView().showCustomToast(R.string.share_end);
                     break;
 
                 case CustomBroadcastConstants.GET_CONF_END:

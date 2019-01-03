@@ -33,6 +33,8 @@ public interface IConfManagerContract
         void updateConfTypeIcon(ConfBaseInfo confBaseInfo);
 
         void showMessage(String message);
+
+        void startAsShare(boolean isShare);
     }
 
     interface ConfManagerPresenter
@@ -53,7 +55,7 @@ public interface IConfManagerContract
 
         void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout);
 
-        void setAutoRotation(Object object, boolean isOpen);
+        void setAutoRotation(Object object, boolean isOpen, int orientation);
 
         /**
          * 打开指定与会者的视频

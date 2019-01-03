@@ -13,6 +13,8 @@ public interface IDataConfContract
     interface DataConfView extends BaseView
     {
         void finishActivity();
+        void startAsShare(boolean isShare);
+        void displayConfChatMag(boolean isSelf, String msg);
     }
 
     interface IDataConfPresenter

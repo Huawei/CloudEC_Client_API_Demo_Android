@@ -234,6 +234,7 @@ public class VideoMgr {
      */
     public int setVideoOrient(int callId, int cameraIndex)
     {
+        int result = 0;
         int orient;
         int portrait;
         int landscape;
@@ -270,11 +271,14 @@ public class VideoMgr {
          * @return int result  视频角度
          */
         TsdkVideoOrient videoOrient = new TsdkVideoOrient(portrait, seascape, landscape,orient);
-        int result = callManager.getCallByCallId(callId).setVideoOrient(cameraIndex, videoOrient);
-        if (result != 0) {
-            LogUtil.e(TAG, "set video orient is failed. result --> " + result);
-        } else {
-            setCurrentCameraIndex(cameraIndex);
+        TsdkCall tsdkCall = callManager.getCallByCallId(callId);
+        if (tsdkCall != null) {
+            result = tsdkCall.setVideoOrient(cameraIndex, videoOrient);
+            if (result != 0) {
+                LogUtil.e(TAG, "set video orient is failed. result --> " + result);
+            } else {
+                setCurrentCameraIndex(cameraIndex);
+            }
         }
 
         if (orientationDetector != null)
@@ -300,33 +304,36 @@ public class VideoMgr {
             @Override
             public void run() {
 
-            if (isInitializedVideoWindows == false) {
-                createVideoRenderer();
-            }
-            isInitializedVideoWindows = true;
+                if (isInitializedVideoWindows == false) {
+                    createVideoRenderer();
+                }
+                isInitializedVideoWindows = true;
 
-            setCurrentCallId(callId);
+                setCurrentCallId(callId);
 
-            //设置视频窗口方向参数
-            setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+                //设置视频窗口方向参数
+                setVideoOrient(callId, CallConstant.FRONT_CAMERA);
 
-            // 设置本地视频窗口
-            TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
-            localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
-            localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
-            localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+                // 设置本地视频窗口
+                TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
+                localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+                localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
+                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
 
-            //设置远端视频窗口
-            TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
-            remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
-            remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteVideoView));
-            remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
+                //设置远端视频窗口
+                TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
+                remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
+                remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteVideoView));
+                remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
 
-            List<TsdkVideoWndInfo> list = new ArrayList<>();
-            list.add(localWndInfo);
-            list.add(remoteWndInfo);
+                List<TsdkVideoWndInfo> list = new ArrayList<>();
+                list.add(localWndInfo);
+                list.add(remoteWndInfo);
 
-            callManager.getCallByCallId(callId).setVideoWindow(list);
+                TsdkCall tsdkCall = callManager.getCallByCallId(callId);
+                if (tsdkCall != null) {
+                    tsdkCall.setVideoWindow(list);
+                }
             }
         });
 

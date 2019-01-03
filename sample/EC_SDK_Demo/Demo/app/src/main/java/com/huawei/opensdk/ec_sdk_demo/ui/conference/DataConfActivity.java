@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -10,11 +11,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.DataConfPresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IDataConfContract;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.widget.BarrageAnimation;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,6 +30,8 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
 {
 
     private FrameLayout mConfShareLayout;
+    private RelativeLayout mDataConfLayout;
+    private FrameLayout mConfShareEmptyLayout;
     private ImageView mLeaveIV;
     private TextView mTitleTV;
     private ImageView mRightIV;
@@ -39,6 +44,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     private LinearLayout mChatBottom;
     private EditText mChatMsg;
     private ImageView mChatSend;
+    private RelativeLayout mBarrageLayout;
 
     private boolean isVideo;
     private MyTimerTask myTimerTask;
@@ -55,6 +61,11 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
      * 控件是否显示
      */
     private boolean isShowBar = false;
+
+    /**
+     * 是否正在共享
+     */
+    private boolean isStartShare = false;
 
     @Override
     protected IDataConfContract.DataConfView createView()
@@ -73,18 +84,25 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     public void initializeComposition()
     {
         setContentView(R.layout.data_conf_activity);
-        //video layout
+
+        // data layout
+        mDataConfLayout = (RelativeLayout) findViewById(R.id.date_conf_rl);
+
+        // data share layout
         mConfShareLayout = (FrameLayout) findViewById(R.id.conf_share_layout);
+
+        // Data sharing has not started
+        mConfShareEmptyLayout = (FrameLayout) findViewById(R.id.conf_share_empty);
 
         // 需要隐藏的标题栏
         mTitleBar = (RelativeLayout) findViewById(R.id.title_layout_transparent);
         mChatBottom = (LinearLayout) findViewById(R.id.chat_data_meeting_layout);
 
-        //采集视频
+        // 采集视频
         mHideVideoView = (FrameLayout) findViewById(R.id.hide_video_view);
         mLocalVideoView = (FrameLayout) findViewById(R.id.local_video_view);
 
-        //title
+        // title
         mRightIV = (ImageView) findViewById(R.id.right_iv);
         mTitleTV = (TextView) findViewById(R.id.conf_title);
         mLeaveIV = (ImageView) findViewById(R.id.leave_iv);
@@ -93,10 +111,14 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         mChatMsg = (EditText) findViewById(R.id.message_input_et);
         mChatSend = (ImageView) findViewById(R.id.chat_send_iv);
 
+        // barrage display view
+        mBarrageLayout = (RelativeLayout) findViewById(R.id.barrage_layout);
+
         mTitleTV.setText(mSubject);
         mRightIV.setVisibility(View.GONE);
 
         mConfShareLayout.setOnClickListener(this);
+        mDataConfLayout.setOnClickListener(this);
         mLeaveIV.setOnClickListener(this);
         mChatSend.setOnClickListener(this);
 
@@ -109,6 +131,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         Intent intent = getIntent();
         confID = intent.getStringExtra(UIConstants.CONF_ID);
         isVideo = intent.getBooleanExtra(UIConstants.IS_VIDEO_CONF, false);
+        isStartShare = intent.getBooleanExtra(UIConstants.IS_START_SHARE_CONF, false);
         if (confID == null)
         {
             showToast(R.string.empty_conf_id);
@@ -126,13 +149,78 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
 
     @Override
     public void finishActivity() {
-        finish();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (null != mBarrageLayout)
+                {
+                    mBarrageLayout.removeAllViews();
+                }
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void startAsShare(final boolean isShare) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isShare)
+                {
+                    mConfShareLayout.setVisibility(View.VISIBLE);
+                    mConfShareEmptyLayout.setVisibility(View.GONE);
+                }
+                else
+                {
+                    mConfShareLayout.setVisibility(View.GONE);
+                    mConfShareEmptyLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void displayConfChatMag(final boolean isSelf, final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tvMsg = new TextView(LocContext.getContext());
+                if (isSelf)
+                {
+                    tvMsg.setTextColor(Color.GREEN);
+                }
+                else
+                {
+                    tvMsg.setTextColor(Color.BLACK);
+                }
+                tvMsg.setText(msg);
+                tvMsg.setTextSize(17);
+                tvMsg.setBackgroundResource(R.drawable.conf_msg_bg_normal);
+                mBarrageLayout.addView(tvMsg);
+                tvMsg.measure(0, 0);
+                int width = tvMsg.getMeasuredWidth();
+                int height = tvMsg.getMeasuredHeight();
+                new BarrageAnimation(tvMsg, mBarrageLayout, width, height);
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mPresenter.registerBroadcast();
+
+        if (isStartShare)
+        {
+            mConfShareLayout.setVisibility(View.VISIBLE);
+            mConfShareEmptyLayout.setVisibility(View.GONE);
+        }
+        else
+        {
+            mConfShareLayout.setVisibility(View.GONE);
+            mConfShareEmptyLayout.setVisibility(View.VISIBLE);
+        }
 
         if (isVideo)
         {
@@ -162,6 +250,10 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         super.onDestroy();
         mPresenter.unregisterBroadcast();
         stopTimer();
+        if (null != mBarrageLayout)
+        {
+            mBarrageLayout.removeAllViews();
+        }
     }
 
     @Override
@@ -188,6 +280,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         switch (v.getId())
         {
             case R.id.conf_share_layout:
+            case R.id.date_conf_rl:
                 // 按钮显示，不执行
                 if (isFirstStart)
                 {
@@ -290,6 +383,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         if (null != timer)
         {
             timer.cancel();
+            timer = null;
         }
     }
 

@@ -84,7 +84,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
                 showLoginDialog(getString(R.string.logining_msg));
                 mUserName = mUsernameEditText.getText().toString().trim();
                 mPassword = mPasswordEditText.getText().toString();
-                mPresenter.doLogin(mUserName, mPassword);
+                new Thread(runnable).start();
             }
         });
 
@@ -117,6 +117,14 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
             mPresenter.doLogin(mUserName, mPassword);
         }
     }
+
+    /*最新的API要求需要在子线程里面判断网络信息，和一些耗时操作*/
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            mPresenter.doLogin(mUserName, mPassword);
+        }
+    };
 
     @Override
     public void initializeData()

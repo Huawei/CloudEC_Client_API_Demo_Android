@@ -4,8 +4,6 @@ import com.huawei.ecterminalsdk.base.TsdkDtmfTone;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 
-import common.TupCallParam;
-
 /**
  * This class is about call session
  * 呼叫会话类
@@ -84,21 +82,13 @@ public class Session {
      */
     public boolean answerCall(boolean isVideo)
     {
-        int iVideoCall;
-
         CallMgr.getInstance().setDefaultAudioRoute(isVideo);
         if (isVideo)
         {
             initVideoWindow();
             VideoMgr.getInstance().setVideoOrient(getCallID(), CallConstant.FRONT_CAMERA);
-            iVideoCall = TupCallParam.CALL_E_CALL_TYPE.TUP_CALLTYPE_VIDEO;
         }
-        else
-        {
-            iVideoCall = TupCallParam.CALL_E_CALL_TYPE.TUP_CALLTYPE_AUDIO;
-        }
-
-        int result = tsdkCall.answerCall(iVideoCall==1? true:false);
+        int result = tsdkCall.answerCall(isVideo);
         if (result != 0)
         {
             LogUtil.e(TAG, "acceptCall return failed, result = " + result);

@@ -73,7 +73,7 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mServerPortEditText.setText(mSharedPreferences.getString(LoginConstant.TUP_PORT, LoginConstant.BLANK_STRING));
         mSrtpGroup.check(getSrtpGroupCheckedId(mSharedPreferences.getInt(LoginConstant.TUP_SRTP, 0)));
         mSipTransportGroup.check(getSipTransportGroupCheckedId(mSharedPreferences.getInt(LoginConstant.TUP_SIP_TRANSPORT, 0)));
-        mAppConfigGroup.check(getEnableConfigDefaultCheckedId(mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 1)));
+        mAppConfigGroup.check(getEnableConfigDefaultCheckedId(mSharedPreferences.getInt(LoginConstant.APPLY_CONFIG_PRIORITY, 0)));
         mSecurityTunnelGroup.check(getSecurityTunnelModeCheckedId(mSharedPreferences.getInt(LoginConstant.SECURITY_TUNNEL, 0)));
         mPriorityGroup.check(getPortConfigPriorityCheckedId(mSharedPreferences.getInt(LoginConstant.PORT_CONFIG_PRIORITY, 0)));
         mProtocolGroup.check(getProtocolCheckedId(mSharedPreferences.getInt(LoginConstant.CONF_CTRL_PROTOCOL, 0)));

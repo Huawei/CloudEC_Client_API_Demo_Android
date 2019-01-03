@@ -251,6 +251,7 @@
     <string name="free_mode">Free Mode</string>
     <string name="upgrade_conf">Upgrade conference</string>
     <string name="set_presenter_failed">Set presenter failed</string>
+    <string name="main_conference">Main Conf Hall</string>
 
 
 </resources>

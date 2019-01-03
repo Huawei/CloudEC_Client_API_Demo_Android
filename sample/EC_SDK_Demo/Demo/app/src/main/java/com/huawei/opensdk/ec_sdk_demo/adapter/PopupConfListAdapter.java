@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.tup.confctrl.ConfctrlConfRole;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class PopupConfListAdapter extends BaseAdapter
         String displayName = entity.getDisplayName();
         viewHolder.nameTv.setText(displayName);
         viewHolder.hostLogo.setVisibility(entity.getRole().equals(
-                ConfctrlConfRole.CONFCTRL_E_CONF_ROLE_CHAIRMAN) ? View.VISIBLE : View.GONE);
+                TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN) ? View.VISIBLE : View.INVISIBLE);
         return convertView;
     }
 

@@ -60,6 +60,8 @@ public interface CustomBroadcastConstants
 
     String GET_TEMP_USER_RESULT = "com.huawei.opensdk.conf.gettempuserresult";
 
+    String CALL_TRANSFER_TO_CONFERENCE = "com.huawei.opensdk.conf.calltransfertoconference";
+
     //DataConf
     String CONF_INFO_PARAM = "com.huawei.opensdk.conf.dataconfparam";
     String GET_DATA_CONF_PARAM_RESULT = "com.huawei.opensdk.conf.getdataconfparamresult";
@@ -75,7 +77,8 @@ public interface CustomBroadcastConstants
     String DATA_CONFERENCE_GET_DEVICE_INFO_RESULT = "com.huawei.opensdk.conf.dataconferencegetdeviceinforesult";
     String DATA_CONFERENCE_EXTEND_DEVICE_INFO = "com.huawei.opensdk.conf.dataconferenceextenddeviceinfo";
     String DATA_CONFERENCE_CAMERA_STATUS_UPDATE = "com.huawei.opensdk.conf.dataconferencecamerastatusupdate";
-    String DATE_CONFERENCE_END_AS_SHARE = "com.huawei.opensdk.conf.dateconferenceendasshare";
+    String DATE_CONFERENCE_START_SHARE_STATUS = "com.huawei.opensdk.conf.dateconferencestartsharestatus";
+    String DATE_CONFERENCE_END_SHARE_STATUS = "com.huawei.opensdk.conf.dateconferenceendsharestatus";
     String DATE_CONFERENCE_CHAT_MSG = "com.huawei.opensdk.conf.dateconferencechatmsg";
 
     //IM

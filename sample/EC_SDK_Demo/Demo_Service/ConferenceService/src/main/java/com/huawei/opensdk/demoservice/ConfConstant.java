@@ -103,7 +103,8 @@ public class ConfConstant {
         JOIN_DATA_CONF_RESULT(),
         JOIN_DATA_CONF_LEAVE(),
         JOIN_DATA_CONF_TERMINATE(),
-        END_AS_SHARE(),
+        START_DATA_CONF_SHARE(),
+        END_DATA_CONF_SHARE(),
 
         CAMERA_STATUS_UPDATE(),
 
@@ -114,6 +115,8 @@ public class ConfConstant {
 		CONF_CHAT_MSG(),
 
         GET_TEMP_USER_RESULT(),//匿名会议临时账户结果
+
+        CALL_TRANSFER_TO_CONFERENCE(),//通话转会议，创会成功
 
         BUTT()
     }

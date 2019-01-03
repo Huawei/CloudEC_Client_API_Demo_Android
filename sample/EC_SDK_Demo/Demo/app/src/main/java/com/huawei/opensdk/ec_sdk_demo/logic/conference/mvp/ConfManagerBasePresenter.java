@@ -1,10 +1,14 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
-import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallMgr;
+import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -57,15 +61,16 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         return;
                     }
 
-                    Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
-                    if (self != null)
+                    getView().refreshMemberList(memberList);
+                    for (Member member : memberList)
                     {
-                        getView().updateMuteButton(self.isMute());
-                        getView().updateUpgradeConfBtn(confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO_DATA
-                                || confBaseInfo.getMediaType() == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA);
-                        getView().updateAttendeeButton(self);
+                        if (member.isSelf())
+                        {
+                            getView().updateMuteButton(member.isMute());
+                            getView().updateUpgradeConfBtn(member.isInDataConference());
+                            getView().updateAttendeeButton(member);
+                        }
                     }
-                    getView().refreshMemberList(MeetingMgr.getInstance().getCurrentConferenceMemberList());
                     break;
 
                 case CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT:
@@ -90,28 +95,16 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     getView().finishActivity();
                     break;
 
-                case CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG:
-                    TsdkConfChatMsgInfo chatMsgInfo = (TsdkConfChatMsgInfo) obj;
-                    String msgInfo = chatMsgInfo.getChatMsg();
-                    String userName = chatMsgInfo.getSenderDisplayName();
-                    if (null == userName || "".equals(userName))
-                    {
-                        String userNumber = chatMsgInfo.getSenderNumber();
-                        if (null == userNumber || "".equals(userNumber))
-                        {
-                            getView().showMessage("The sender's name was not obtained.");
-                            return;
-                        }
-                        getView().showMessage(userNumber + ": " + msgInfo);
-                    }
-                    getView().showMessage(userName + ": " + msgInfo);
+                case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
+                    getView().startAsShare(true);
                     break;
 
-                case CustomBroadcastConstants.DATE_CONFERENCE_END_AS_SHARE:
+                case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
+                    getView().startAsShare(false);
                     getView().showCustomToast(R.string.share_end);
                     break;
 
-                //  请求主席结果
+                // 请求主席结果
                 case CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT:
                     result = (int)obj;
                     if (result != 0)
@@ -120,6 +113,21 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         return;
                     }
                     setSelfPresenter();
+                    break;
+
+                // 发言人通知
+                case CustomBroadcastConstants.SPEAKER_LIST_IND:
+                    if (!"ConfManagerActivity".equals(getCurrentActivity(LocContext.getContext())))
+                    {
+                        return;
+                    }
+                    int speakerNum = (int) obj;
+                    if (0 == speakerNum)
+                    {
+                        return;
+                    }
+                    String[] speakerName = MeetingMgr.getInstance().getSpeakers();
+                    getView().showMessage(speakerName[0] + " is speaking.");
                     break;
 
                 default:
@@ -250,5 +258,29 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         {
             getView().showCustomToast(R.string.set_presenter_failed);
         }
+    }
+
+    /**
+     * 获取当前显示的activity名称
+     * @param context
+     * @return
+     */
+    private String getCurrentActivity(Context context)
+    {
+        ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+        ComponentName componentName = manager.getRunningTasks(1).get(0).topActivity;
+        String className = componentName.getClassName();
+        if (null == className)
+        {
+            return null;
+        }
+
+        if (!className.contains("."))
+        {
+            return className;
+        }
+
+        String[] str = className.split("\\.");
+        return str[str.length - 1];
     }
 }

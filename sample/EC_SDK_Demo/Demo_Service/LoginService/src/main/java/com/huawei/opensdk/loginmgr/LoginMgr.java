@@ -120,7 +120,7 @@ public class LoginMgr {
         tsdkLoginParam.setServerPort(loginParam.getServerPort());
         tsdkLoginParam.setServerVersion("");
         tsdkLoginParam.setServerType(TSDK_E_SERVER_TYPE_PORTAL);
-        tsdkLoginParam.setUserTiket("");
+        tsdkLoginParam.setUserTicket("");
 
         ret = TsdkManager.getInstance().getLoginManager().login(tsdkLoginParam);
         if (ret != 0) {

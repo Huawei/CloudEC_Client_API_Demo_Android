@@ -21,7 +21,7 @@ public class LoginConstant {
     public static final String TUP_SIP_TRANSPORT = "tupSipTransport";
     public static final String BLANK_STRING = "";
 
-    public static final String UPORTAL_REGISTER_SERVER = "10.174.12.169";
+    public static final String UPORTAL_REGISTER_SERVER = "218.4.33.69";
     public static final String UPORTAL_PORT = "8443";
 
     public static final String APPLY_CONFIG_PRIORITY = "applyConfigPriority";

@@ -12,6 +12,8 @@ import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
 import com.huawei.ecterminalsdk.base.TsdkCtdCallStatus;
+import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
+import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
 import com.huawei.ecterminalsdk.base.TsdkGetIconResult;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkIptServiceInfoSet;
@@ -26,6 +28,7 @@ import com.huawei.ecterminalsdk.base.TsdkSetIptServiceResult;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
+import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
 import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkNotify;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
@@ -380,6 +383,30 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtAsStateChange(TsdkConference conference, TsdkConfAppShareType shareType, TsdkConfAsStateInfo asStateInfo) {
         Log.i(TAG, "onEvtAsStateChange notify.");
         MeetingMgr.getInstance().handleAsStateChange(asStateInfo);
+    }
+
+    @Override
+    public void onEvtDsDocNew(TsdkConference conference, TsdkDocBaseInfo docBaseInfo) {
+        Log.i(TAG, "onEvtDsDocNew notify.");
+        MeetingMgr.getInstance().handleDsDocNew(docBaseInfo);
+    }
+
+    @Override
+    public void onEvtDsDocDel(TsdkConference conference, TsdkDocShareDelDocInfo docShareDelDocInfo) {
+        Log.i(TAG, "onEvtDsDocDel notify.");
+        MeetingMgr.getInstance().handleDsDocDel(docShareDelDocInfo);
+    }
+
+    @Override
+    public void onEvtWbDocNew(TsdkConference conference, TsdkDocBaseInfo docBaseInfo) {
+        Log.i(TAG, "onEvtWbDocNew notify.");
+        MeetingMgr.getInstance().handleWbDocNew(docBaseInfo);
+    }
+
+    @Override
+    public void onEvtWbDocDel(TsdkConference conference, TsdkWbDelDocInfo wbDelDocInfo) {
+        Log.i(TAG, "onEvtWbDocDel notify.");
+        MeetingMgr.getInstance().handleWbDocDel(wbDelDocInfo);
     }
 
     @Override
