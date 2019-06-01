@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 
-import com.huawei.contacts.MyOtherInfo;
-import com.huawei.utils.img.BitmapUtil;
+//import com.huawei.contacts.MyOtherInfo;
+//import com.huawei.utils.img.BitmapUtil;
 
 import java.io.File;
 
@@ -43,7 +43,7 @@ public class ContactHeadLocalLoader
             return null;
         }
 
-        bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap);
+//        bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap);
         return new BitmapDrawable(mContext.getResources(), bitmap);
         // return new BitmapDrawable(mContext.getResources(), bitmap);
     }
@@ -54,8 +54,8 @@ public class ContactHeadLocalLoader
         if (file.exists())
         {
             HeadPhotoUtil.getIns().addAccount(account, file.getName());
-            return BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(),
-                    MyOtherInfo.PICTURE_DEFAULT_WIDTH, MyOtherInfo.PICTURE_DEFAULT_WIDTH);
+//            return BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(),
+//                    MyOtherInfo.PICTURE_DEFAULT_WIDTH, MyOtherInfo.PICTURE_DEFAULT_WIDTH);
         }
 
         return null;
@@ -108,8 +108,8 @@ public class ContactHeadLocalLoader
         {
             File file = files[0];
             HeadPhotoUtil.getIns().addAccount(eSpaceNum, file.getName());
-            bitmap = BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(),
-                    MyOtherInfo.PICTURE_DEFAULT_WIDTH, MyOtherInfo.PICTURE_DEFAULT_WIDTH);
+//            bitmap = BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(),
+//                    MyOtherInfo.PICTURE_DEFAULT_WIDTH, MyOtherInfo.PICTURE_DEFAULT_WIDTH);
         }
 
         return bitmap;

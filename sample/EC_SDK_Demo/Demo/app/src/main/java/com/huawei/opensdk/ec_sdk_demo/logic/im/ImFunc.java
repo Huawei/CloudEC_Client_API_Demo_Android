@@ -5,23 +5,19 @@ import android.os.Looper;
 import android.os.Message;
 import android.widget.Toast;
 
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.AddFriendResp;
-import com.huawei.data.RequestJoinInGroupNotifyData;
-import com.huawei.data.base.BaseResponseData;
-import com.huawei.data.entity.InstantMessage;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
-import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.imservice.IImNotification;
-import com.huawei.opensdk.imservice.ImMgr;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
+import com.huawei.opensdk.imservice.ImChatMsgInfo;
+import com.huawei.opensdk.imservice.ImConstant;
+import com.huawei.opensdk.imservice.ImContactInfo;
+import com.huawei.opensdk.imservice.ImRecentChatInfo;
 import com.huawei.opensdk.imservice.data.UmTransProgressData;
 
 import java.util.List;
-
 
 public class ImFunc implements IImNotification
 {
@@ -47,7 +43,6 @@ public class ImFunc implements IImNotification
             {
                 case IM_EVENT_LOGIN_SUCCESS:
                     mLoginStatus = ImLoginStatus.LOGIN_SUCCESS;
-                    ImMgr.getInstance().loadFriendAndGroups();
                     Toast.makeText(LocContext.getContext(), LocContext.getContext().getString(R.string.im_login_success),
                             Toast.LENGTH_LONG).show();
                     LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_LOGIN_SUCCESS, null);
@@ -84,6 +79,70 @@ public class ImFunc implements IImNotification
     }
 
     @Override
+    public void onUserStatusUpdate() {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_USER_STATUS_CHANGE, null);
+    }
+
+    @Override
+    public void onUserInfoUpdate(List<ImContactInfo> imContactInfoList) {
+        if (null == imContactInfoList)
+        {
+            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_USER_INFO_CHANGE_FAILED, -1);
+        }
+        else
+        {
+            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_USER_INFO_CHANGE, imContactInfoList);
+        }
+    }
+
+    @Override
+    public void onJoinChatGroupInd(Object object) {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_ADD, object);
+    }
+
+    @Override
+    public void onLeaveChatGroupResult(int result) {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_LEAVE_RESULT, result);
+    }
+
+    @Override
+    public void onChatGroupInfoUpdate(ImChatGroupInfo chatGroupInfo, Object object) {
+        switch ((int) object)
+        {
+            case ImConstant.ChatGroupUpdateType.CHAT_GROUP_INFO_UPDATE:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_UPDATE, chatGroupInfo);
+                break;
+            case ImConstant.ChatGroupUpdateType.CHAT_GROUP_ADD_MEMBER:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_ADD_MEMBER, object);
+                break;
+            case ImConstant.ChatGroupUpdateType.CHAT_GROUP_DEL_MEMBER:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_DEL_MEMBER, object);
+                break;
+            case ImConstant.ChatGroupUpdateType.CHAT_GROUP_DISMISS:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_DISMISS, object);
+                break;
+                default:
+                    break;
+        }
+
+    }
+
+    @Override
+    public void onInputtingStatusInd(boolean isInputting) {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_INPUTTING_STATUS_IND, isInputting);
+    }
+
+    @Override
+    public void onWithdrawMessagesFail() {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_WITHDRAW_MSG_FAILED, null);
+    }
+
+    @Override
+    public void onWithdrawMessagesInd(String origin) {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_CHAT_WITHDRAW_MSG_IND, origin);
+    }
+
+    @Override
     public void onImEventNotify(int code, Object params)
     {
 
@@ -113,12 +172,12 @@ public class ImFunc implements IImNotification
 
     }
 
-    @Override
-    public void onSearchContactResult(List<PersonalContact> searchContactResult)
-    {
-        LogUtil.i(UIConstants.DEMO_TAG, "onSearchContactResult: " + searchContactResult.size());
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_SEARCH_CONTACT_RESULT, searchContactResult);
-    }
+//    @Override
+//    public void onSearchContactResult(List<PersonalContact> searchContactResult)
+//    {
+//        LogUtil.i(UIConstants.DEMO_TAG, "onSearchContactResult: " + searchContactResult.size());
+//        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_SEARCH_CONTACT_RESULT, searchContactResult);
+//    }
 
     @Override
     public void onSetSignatureSuccess(int result)
@@ -163,16 +222,16 @@ public class ImFunc implements IImNotification
     }
 
     @Override
-    public void onSendMessagesSuccess(InstantMessage instantMessage)
+    public void onSendMessagesSuccess(ImChatMsgInfo imChatMsgInfo)
     {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_SEND_MESSAGE_SUCCESS, null);
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_SEND_MESSAGE_SUCCESS, imChatMsgInfo);
     }
 
-    @Override
-    public void onSendMessagesFail(InstantMessage instantMessage)
-    {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_SEND_MESSAGE_FAIL, null);
-    }
+//    @Override
+//    public void onSendMessagesFail(InstantMessage instantMessage)
+//    {
+//        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_SEND_MESSAGE_FAIL, null);
+//    }
 
     @Override
     public void notifyFinish()
@@ -192,11 +251,11 @@ public class ImFunc implements IImNotification
 
     }
 
-    @Override
-    public void onInviteJoinGroupNotify(RequestJoinInGroupNotifyData requestJoinInGroupNotifyData)
-    {
-
-    }
+//    @Override
+//    public void onInviteJoinGroupNotify(RequestJoinInGroupNotifyData requestJoinInGroupNotifyData)
+//    {
+//
+//    }
 
     @Override
     public void onRefreshRecentSession()
@@ -205,33 +264,34 @@ public class ImFunc implements IImNotification
     }
 
     @Override
-    public void onReceiveMessages(List<InstantMessage> list)
+    public void onReceiveMessage(ImChatMsgInfo newMsg)
     {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_RECEIVE_SESSION_CHANGE, list);
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_RECEIVE_SESSION_CHANGE, newMsg);
     }
 
     @Override
-    public void onRefreshUnreadMessage()
+    public void onRefreshUnreadMessage(List<ImChatMsgInfo> msgInfoList)
     {
+        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_RECEIVE_BATCH_MESSAGES, msgInfoList);
     }
 
-    @Override
-    public void onQueryHistoryMessagesSuccess(List<InstantMessage> list)
-    {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_QUERY_HISTORY, list);
-    }
+//    @Override
+//    public void onQueryHistoryMessagesSuccess(List<InstantMessage> list)
+//    {
+//        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_QUERY_HISTORY, list);
+//    }
 
-    @Override
-    public void onAddContactResult(AddFriendResp addFriendResp)
-    {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_ADD_CONTACT_RESULT, addFriendResp);
-    }
+//    @Override
+//    public void onAddContactResult(AddFriendResp addFriendResp)
+//    {
+//        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_ADD_CONTACT_RESULT, addFriendResp);
+//    }
 
-    @Override
-    public void onDeleteContactResult(BaseResponseData deleteFriendResp)
-    {
-        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_DELETE_CONTACT_RESULT, deleteFriendResp);
-    }
+//    @Override
+//    public void onDeleteContactResult(BaseResponseData deleteFriendResp)
+//    {
+//        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_DELETE_CONTACT_RESULT, deleteFriendResp);
+//    }
 
     @Override
     public void onInviteJoinGroupSuccess()

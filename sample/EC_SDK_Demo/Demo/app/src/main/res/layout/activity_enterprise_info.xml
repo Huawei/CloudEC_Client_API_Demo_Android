@@ -1,417 +1,498 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/detail_background" >
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:fadingEdge="none"
+        android:scrollbars="none">
 
-        <!--
-        <include layout="@layout/blog_old"/>-->
-        <include layout="@layout/activity_enterprise_blog"></include>
+        <RelativeLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+            <include layout="@layout/blog_old"/>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="StaffAccount"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/staff_account"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20sp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textSize="20sp" />
-        </LinearLayout>
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/blog_area"
+                android:orientation="vertical">
 
-        <!--
-         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                <!--基本信息-->
+                <LinearLayout android:id="@+id/detail_container01_layout"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/blog_area"
+                    android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="PersonName"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="4"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/person_name"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:layout_marginLeft="20sp">
-            </TextView>
-        </LinearLayout>
-        -->
+                    <!--上面的留白-->
+                    <View android:id="@+id/space_15"
+                        android:layout_width="match_parent"
+                        android:layout_height="15dp"
+                        android:background="@color/white"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <!--第一部分，账号 部门-->
+                    <FrameLayout android:id="@+id/info_area_01"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp">
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="StaffNo"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/staff_no"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                        <!--具体内容-->
+                        <LinearLayout android:id="@+id/detail_container01"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <!--账号-->
+                            <LinearLayout android:id="@+id/detail_Item_layout1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/detail_content_text1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/detail_content_name_text1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/account"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                            <!--部门-->
+                            <LinearLayout android:id="@+id/detail_Item_layout2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/detail_content_text2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/detail_content_name_text2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/department"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Terminal"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/terminal"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                            <!--职务-->
+                            <LinearLayout android:id="@+id/detail_Item_layout3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/detail_content_text3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/detail_content_name_text3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/post"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
+                        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                        <!--个人信息图标-->
+                        <ImageView android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginTop="20dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/contact_detail_basic_info"/>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="DeptName"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/dept_name"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                    </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <include layout="@layout/divide_double"/>
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Title"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/title"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                <!-- 电话号码列表 -->
+                <LinearLayout android:id="@+id/numbers_area_outer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <!--块之间的分割块-->
+                    <View android:layout_width="match_parent"
+                        android:layout_height="15dp"
+                        android:background="@color/white"/>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Mobile"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/mobile"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                    <FrameLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_item_selector"
+                        android:minHeight="40dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                        <!-- 所有的电话号码 -->
+                        <LinearLayout android:id="@+id/numbers_area"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:orientation="vertical">
+                            <!--软终端电话-->
+                            <LinearLayout android:id="@+id/call_Item_layout1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/call_content_text1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/call_content_name_text1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/user_number"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="OfficePhone"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/office_phone"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                            <!--移动电话-->
+                            <LinearLayout android:id="@+id/call_Item_layout2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/call_content_text2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/call_content_name_text2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/phone_mobile"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
+                        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                        <!-- 电话号码图标 -->
+                        <ImageView android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginTop="15dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/contact_detail_dial_color"/>
+                    </FrameLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="HomePhone"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/home_phone"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                    <include layout="@layout/divide_double"/>
+                </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                <!-- 视频电话号码列表 -->
+                <LinearLayout android:id="@+id/video_numbers_area_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Email"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/email"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                    <!--块之间的分割块-->
+                    <View android:layout_width="match_parent"
+                        android:layout_height="15dp"
+                        android:background="@color/white"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <FrameLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_item_selector"
+                        android:minHeight="40dp">
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="OtherPhone"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/other_phone"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                        <!-- 所有的电话号码 -->
+                        <LinearLayout android:id="@+id/video_numbers_area"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:orientation="vertical">
+                            <!--软终端电话-->
+                            <LinearLayout android:id="@+id/video_Item_layout1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="95dp"
+                                android:paddingTop="10dp">
+                                <TextView android:id="@+id/video_content_text1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="50dp"
+                                    android:clickable="false"
+                                    android:text="0755-0123456789"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="15.5sp"/>
+                                <TextView android:id="@+id/video_content_name_text1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/user_number"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="12sp"
+                                    android:layout_marginTop="@dimen/dp10"/>
+                            </LinearLayout>
+                        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                        <!-- 视频电话号码图标 -->
+                        <ImageView android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginTop="15dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/contact_detail_video"/>
+                    </FrameLayout>
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10sp"
-                android:layout_weight="5"
-                android:gravity="center_vertical"
-                android:text="OtherPhone2"
-                android:textSize="23sp" />
+                    <include layout="@layout/divide_double"/>
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/other_phone2"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
 
-        <!--<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                <!-- 第 2 栏内容 电子邮件，地址，邮编-->
+                <LinearLayout android:id="@+id/detail_container02"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_item_selector"
+                    android:orientation="vertical"
+                    android:paddingTop="10dp">
+                    <!--电子邮件-->
+                    <LinearLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <!-- 左侧图标 -->
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="15dp"
+                            android:clickable="false"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/contact_detail_mailbox"/>
+                        <LinearLayout android:id="@+id/email_Item_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="45dp"
+                            android:paddingTop="10dp">
+                            <TextView android:id="@+id/email_content_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="50dp"
+                                android:clickable="false"
+                                android:text="0755-0123456789"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="15.5sp"/>
+                            <TextView android:id="@+id/email_content_name_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/e_mail"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="12sp"
+                                android:layout_marginTop="@dimen/dp10"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Gender"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/gender"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>-->
+                    <!--地址-->
+                    <LinearLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <!-- 左侧图标 -->
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="15dp"
+                            android:clickable="false"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/contact_detail_location"/>
+                        <LinearLayout android:id="@+id/location_Item_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="45dp"
+                            android:paddingTop="10dp">
+                            <TextView android:id="@+id/location_content_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="50dp"
+                                android:clickable="false"
+                                android:text="0755-0123456789"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="15.5sp"/>
+                            <TextView android:id="@+id/location_content_name_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/address"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="12sp"
+                                android:layout_marginTop="@dimen/dp10"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <!--传真-->
+                    <LinearLayout android:id="@+id/fax_Item_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="95dp"
+                        android:paddingTop="10dp">
+                        <TextView android:id="@+id/fax_content_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="50dp"
+                            android:clickable="false"
+                            android:text="0755-0123456789"
+                            android:textColor="@color/textPrimary"
+                            android:textSize="15.5sp"/>
+                        <TextView android:id="@+id/fax_content_name_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/phone_fax"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="12sp"
+                            android:layout_marginTop="@dimen/dp10"/>
+                    </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="ZipCode"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/zip_code"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                    <!--邮编-->
+                    <LinearLayout android:id="@+id/zip_Item_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="95dp"
+                        android:paddingTop="10dp">
+                        <TextView android:id="@+id/zip_content_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="50dp"
+                            android:clickable="false"
+                            android:text="0755-0123456789"
+                            android:textColor="@color/textPrimary"
+                            android:textSize="15.5sp"/>
+                        <TextView android:id="@+id/zip_content_name_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zip_code"
+                            android:textColor="@color/textSecondary"
+                            android:textSize="12sp"
+                            android:layout_marginTop="@dimen/dp10"/>
+                    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Address"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/address"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
+                <!-- 分组信息 -->
+                <RelativeLayout android:id="@+id/team_info_area"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_item_selector"
+                    android:minHeight="75dp">
 
-        <!--
+                    <LinearLayout
+                        android:id="@+id/ListView01"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_item_selector"
+                        android:orientation="vertical">
+                        <!-- -->
+                    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal"
-            android:weightSum="6">
+                    <!-- 分组的图标 -->
+                    <ImageView
+                        android:layout_width="19dp"
+                        android:layout_height="19dp"
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginRight="18dp"
+                        android:layout_marginTop="15dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/contact_detail_group_info"/>
+                </RelativeLayout>
 
-            <TextView
-                android:layout_width="0sp"
-                android:layout_height="match_parent"
-                android:text="Signature"
-                android:gravity="center_vertical"
-                android:textSize="23sp"
-                android:layout_weight="5"
-                android:layout_marginLeft="10sp"/>
-            <TextView
-                android:layout_width="150sp"
-                android:layout_height="match_parent"
-                android:id="@+id/signature"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:layout_marginLeft="20sp"/>
-        </LinearLayout>
-        -->
-    </LinearLayout>
+                <!---->
+                <LinearLayout android:id="@+id/bottom_buttons_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:orientation="vertical">
 
-</ScrollView>
+                    <!--底部线-->
+                    <View android:layout_width="fill_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#e5e5e5"/>
+                    <LinearLayout android:id="@+id/delete_friend_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <!--删除联系按钮-->
+                        <Button android:id="@+id/deletecontact"
+                            android:layout_width="fill_parent"
+                            android:layout_height="55dp"
+                            android:background="@drawable/bg_item_selector"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:singleLine="true"
+                            android:textColor="@color/primary"
+                            android:textSize="15.5sp"/>
+
+                        <!-- 底部线 -->
+                        <View android:layout_width="fill_parent"
+                            android:layout_height="0.5dp"
+                            android:background="#e5e5e5"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 进入个人聊天界面-->
+            <ImageView android:id="@+id/enter_chat"
+                style="@style/chatBtnStyle"
+                android:layout_below="@id/blog_area"/>
+        </RelativeLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/detail_background">
+
+        <include layout="@layout/title_fluent"
+            android:id="@+id/include" />
+    </RelativeLayout>
+</FrameLayout>

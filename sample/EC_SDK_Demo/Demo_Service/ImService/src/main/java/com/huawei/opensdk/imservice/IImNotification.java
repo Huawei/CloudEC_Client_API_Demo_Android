@@ -1,10 +1,5 @@
 package com.huawei.opensdk.imservice;
 
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.AddFriendResp;
-import com.huawei.data.RequestJoinInGroupNotifyData;
-import com.huawei.data.base.BaseResponseData;
-import com.huawei.data.entity.InstantMessage;
 import com.huawei.opensdk.imservice.data.UmTransProgressData;
 
 import java.util.List;
@@ -15,6 +10,29 @@ import java.util.List;
  */
 public interface IImNotification
 {
+    void onUserStatusUpdate();
+
+    /**
+     * [en]This method is used to notify user update information.
+     * [cn]用户更新信息通知
+     *
+     * @param contactInfoList         [en]Indicates user information list
+     *                                [cn]更新信息用户的列表
+     */
+    void onUserInfoUpdate(List<ImContactInfo> contactInfoList);
+
+    void onJoinChatGroupInd(Object object);
+
+    void onLeaveChatGroupResult(int result);
+
+    void onChatGroupInfoUpdate(ImChatGroupInfo chatGroupInfo, Object object);
+
+    void onInputtingStatusInd(boolean isInputting);
+
+    void onWithdrawMessagesFail();
+
+    void onWithdrawMessagesInd(String origin);
+
     void onImEventNotify(int code, Object params);
 
     /**
@@ -47,7 +65,7 @@ public interface IImNotification
      * @param searchContactResult Indicates search contacts list
      *                            查询到的联系人列表
      */
-    void onSearchContactResult(List<PersonalContact> searchContactResult);
+//    void onSearchContactResult(List<PersonalContact> searchContactResult);
 
     /**
      * This method is used to notify set signature result.
@@ -100,10 +118,10 @@ public interface IImNotification
     /**
      * This method is used to notify the result of message send successful.
      * 消息发送结果成功通知
-     * @param instantMessage Indicates instant message
+     * @param imChatMsgInfo  Indicates instant message
      *                       消息
      */
-    void onSendMessagesSuccess(InstantMessage instantMessage);
+    void onSendMessagesSuccess(ImChatMsgInfo imChatMsgInfo);
 
     /**
      * This method is used to notify the result of message send failed.
@@ -111,7 +129,7 @@ public interface IImNotification
      * @param instantMessage Indicates instant message
      *                       消息
      */
-    void onSendMessagesFail(InstantMessage instantMessage);
+//    void onSendMessagesFail(InstantMessage instantMessage);
 
     /**
      * This method is used to notify offline file transfer finish.
@@ -141,7 +159,7 @@ public interface IImNotification
      * @param requestJoinInGroupNotifyData Indicates join result
      *                                     邀请加入的数据结构
      */
-    void onInviteJoinGroupNotify(RequestJoinInGroupNotifyData requestJoinInGroupNotifyData);
+//    void onInviteJoinGroupNotify(RequestJoinInGroupNotifyData requestJoinInGroupNotifyData);
 
     /**
      * This method is used to refresh recent session.
@@ -151,17 +169,17 @@ public interface IImNotification
 
     /**
      * This method is used to notify receive message result.
-     * 接收消息通知
-     * @param list Indicates message list
-     *             接收到的消息列表
+     * 接收新消息通知
+     * @param newMsg Indicates new message
+     *               接收到的新消息
      */
-    void onReceiveMessages(List<InstantMessage> list);
+    void onReceiveMessage(ImChatMsgInfo newMsg);
 
     /**
      * This method is used to refresh unread message.
      * 刷新未读消息
      */
-    void onRefreshUnreadMessage();
+    void onRefreshUnreadMessage(List<ImChatMsgInfo> msgInfoList);
 
     /**
      * This method is used to notify query message history result.
@@ -169,7 +187,7 @@ public interface IImNotification
      * @param list Indicates query history message list
      *             漫游消息列表
      */
-    void onQueryHistoryMessagesSuccess(List<InstantMessage> list);
+//    void onQueryHistoryMessagesSuccess(List<InstantMessage> list);
 
     /**
      * This method is used to notify add friend response.
@@ -177,7 +195,7 @@ public interface IImNotification
      * @param addFriendResp Indicates response data struct
      *                      添加结果的数据结构
      */
-    void onAddContactResult(AddFriendResp addFriendResp);
+//    void onAddContactResult(AddFriendResp addFriendResp);
 
     /**
      * This method is used to notify delete friend response.
@@ -185,7 +203,7 @@ public interface IImNotification
      * @param deleteFriendResp Indicates response data struct
      *                         删除结果的数据结构
      */
-    void onDeleteContactResult(BaseResponseData deleteFriendResp);
+//    void onDeleteContactResult(BaseResponseData deleteFriendResp);
 
     /**
      * This method is used to response invite to join group successful.

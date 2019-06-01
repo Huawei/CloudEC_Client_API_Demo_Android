@@ -40,6 +40,15 @@ public class TripleDialog extends BaseDialog
             titleTV.setText(resid);
         }
     }
+
+    public void hideTitleButton()
+    {
+        View bt = findViewById(R.id.dialog_header);
+        if(bt != null){
+            bt.setVisibility(View.GONE);
+        }
+    }
+
     public void hideDownloadButton(){
         View bt = findViewById(R.id.dialog_leftbutton);
         if(bt != null){

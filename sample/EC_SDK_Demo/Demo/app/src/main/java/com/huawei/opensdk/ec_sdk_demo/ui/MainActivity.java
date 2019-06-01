@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.huawei.contacts.ContactClientStatus;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -33,6 +32,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.im.RecentFragment;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.BaseDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
+import com.huawei.opensdk.imservice.ImConstant;
 import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     };
     private String mMyAccount;
     private ContactHeadFetcher contactHeadFetcher;
+    private ImConstant.ImStatus mImStatus;
 
     private String mIconPath;
     private int mIconId;
@@ -191,6 +192,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 //        mMyAccount = LoginCenter.getInstance().getAccount();
         mMyAccount = LoginMgr.getInstance().getAccount();
         contactHeadFetcher = new ContactHeadFetcher(this);
+        mImStatus = ImMgr.getInstance().getStatus();
     }
 
     private void initIndicator()
@@ -241,7 +243,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 ActivityUtil.startActivity(MainActivity.this, IntentConstant.SERVICE_SETTING_ACTIVITY_ACTION);
                 break;
             case R.id.right_img:
-                ActivityUtil.startActivity(MainActivity.this, IntentConstant.IM_SEARCH_ACTIVITY_ACTION);
+                ActivityUtil.startActivity(MainActivity.this, IntentConstant.EADDR_BOOK_ACTIVITY_ACTION);
                 break;
             default:
                 break;
@@ -251,6 +253,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume()
     {
+        updateStatus();
         mHeadIv.postDelayed(new Runnable()
         {
             @Override
@@ -341,7 +344,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         switch (broadcastName)
         {
             case CustomBroadcastConstants.ACTION_SET_STATUS:
-                updateStatus();
+//                updateStatus();
                 break;
             case CustomBroadcastConstants.ACTION_IM_LOGIN_SUCCESS:
                 updateStatus();
@@ -374,27 +377,30 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void run()
             {
-                int status = ImMgr.getInstance().getStatus().getIndex();
-                mStatusIv.setImageResource(getStatusResource(status));
+                mImStatus = ImMgr.getInstance().getStatus();
+                mStatusIv.setImageResource(getStatusResource(mImStatus));
             }
         });
     }
 
-    private static int getStatusResource(int status)
+    private static int getStatusResource(ImConstant.ImStatus status)
     {
         int drwId = 0;
         switch (status)
         {
-            case ContactClientStatus.ON_LINE:
+            case AWAY:
+                drwId = R.drawable.state_offline;
+                break;
+            case ON_LINE:
                 drwId = R.drawable.state_online;
                 break;
-            case ContactClientStatus.BUSY:
+            case BUSY:
                 drwId = R.drawable.state_busy;
                 break;
-            case ContactClientStatus.XA:
+            case XA:
                 drwId = R.drawable.state_away;
                 break;
-            case ContactClientStatus.UNINTERRUPTABLE:
+            case DND:
                 drwId = R.drawable.state_uninterrupt;
                 break;
             default:

@@ -79,6 +79,18 @@ public class ConfBaseInfo {
     private boolean isLock;
 
     /**
+     * record
+     * 是否录制
+     */
+    private boolean record;
+
+    /**
+     * record
+     * 是否录制
+     */
+    private boolean supportRecord;
+
+    /**
      * Mute all
      * 是否全部静音
      */
@@ -200,6 +212,22 @@ public class ConfBaseInfo {
 
     public void setLock(boolean lock) {
         isLock = lock;
+    }
+
+    public boolean isRecord() {
+        return record;
+    }
+
+    public void setRecord(boolean record) {
+        this.record = record;
+    }
+
+    public boolean isSupportRecord() {
+        return supportRecord;
+    }
+
+    public void setSupportRecord(boolean supportRecord) {
+        this.supportRecord = supportRecord;
     }
 
     public boolean isMuteAll() {

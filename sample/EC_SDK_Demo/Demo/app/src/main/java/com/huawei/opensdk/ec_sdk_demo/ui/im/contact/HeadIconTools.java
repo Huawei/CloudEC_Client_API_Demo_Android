@@ -9,8 +9,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.ViewHeadPhotoData;
+//import com.huawei.contacts.PersonalContact;
+//import com.huawei.data.ViewHeadPhotoData;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
@@ -257,64 +257,64 @@ public class HeadIconTools
 
     //-----------------------------------------Upload headPhoto ending--------------------------------
 
-    /**
-     * Load head image boolean.
-     * @param contacts the contacts
-     * @param headPhotoData the head photo data
-     * @return the boolean
-     */
-    public synchronized boolean loadHeadImage(List<PersonalContact> contacts, List<ViewHeadPhotoData> headPhotoData)
-    {
-        for (PersonalContact contact : contacts)
-        {
-            if (contact == null)
-            {
-                continue;
-            }
-            Bitmap bitmap = null;
-            String headIdStr = contact.getHead();
-            long headId = -1;
-            if (!TextUtils.isEmpty(headIdStr))
-            {
-                headId = Long.parseLong(headIdStr);
-            }
-            else
-            {
-                headId = 0;
-            }
-            int sysHeadImageSize = systemHeadIcons.length;
-            if (headId >= 0 && headId < sysHeadImageSize)
-            {
-                bitmap = getBitmapByIconId((int) headId);
-            }
+//    /**
+//     * Load head image boolean.
+//     * @param contacts the contacts
+//     * @param headPhotoData the head photo data
+//     * @return the boolean
+//     */
+//    public synchronized boolean loadHeadImage(List<PersonalContact> contacts, List<ViewHeadPhotoData> headPhotoData)
+//    {
+//        for (PersonalContact contact : contacts)
+//        {
+//            if (contact == null)
+//            {
+//                continue;
+//            }
+//            Bitmap bitmap = null;
+//            String headIdStr = contact.getHead();
+//            long headId = -1;
+//            if (!TextUtils.isEmpty(headIdStr))
+//            {
+//                headId = Long.parseLong(headIdStr);
+//            }
+//            else
+//            {
+//                headId = 0;
+//            }
+//            int sysHeadImageSize = systemHeadIcons.length;
+//            if (headId >= 0 && headId < sysHeadImageSize)
+//            {
+//                bitmap = getBitmapByIconId((int) headId);
+//            }
+//
+//            for (ViewHeadPhotoData data : headPhotoData)
+//            {
+//                if (contact.getEspaceNumber().equals(data.getEspaceNumber()))
+//                {
+//                    bitmap = getBitmapFromHeadPhotoData(contact.getEspaceNumber(), headPhotoData);
+//                }
+//            }
+//            if (bitmap != null)
+//            {
+//                headImageMap.put(contact.getEspaceNumber(), bitmap);
+//            }
+//        }
+//        return true;
+//    }
 
-            for (ViewHeadPhotoData data : headPhotoData)
-            {
-                if (contact.getEspaceNumber().equals(data.getEspaceNumber()))
-                {
-                    bitmap = getBitmapFromHeadPhotoData(contact.getEspaceNumber(), headPhotoData);
-                }
-            }
-            if (bitmap != null)
-            {
-                headImageMap.put(contact.getEspaceNumber(), bitmap);
-            }
-        }
-        return true;
-    }
-
-    private Bitmap getBitmapFromHeadPhotoData(String account, List<ViewHeadPhotoData> headPhotoData)
-    {
-        Bitmap bitmap = null;
-        for (ViewHeadPhotoData data : headPhotoData)
-        {
-            if (data.getEspaceNumber().equals(account))
-            {
-                bitmap = bytes2Bitmap(data.getData());
-            }
-        }
-        return bitmap;
-    }
+//    private Bitmap getBitmapFromHeadPhotoData(String account, List<ViewHeadPhotoData> headPhotoData)
+//    {
+//        Bitmap bitmap = null;
+//        for (ViewHeadPhotoData data : headPhotoData)
+//        {
+//            if (data.getEspaceNumber().equals(account))
+//            {
+//                bitmap = bytes2Bitmap(data.getData());
+//            }
+//        }
+//        return bitmap;
+//    }
 
     private Bitmap bytes2Bitmap(byte[] b)
     {

@@ -3,15 +3,16 @@ package com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
 import com.huawei.ecterminalsdk.base.TsdkDepartmentInfo;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
@@ -22,6 +23,11 @@ import com.huawei.opensdk.contactservice.eaddr.QueryDepartmentResult;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
+import com.huawei.opensdk.imservice.ImConstant;
+import com.huawei.opensdk.imservice.ImContactGroupInfo;
+import com.huawei.opensdk.imservice.ImMgr;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,120 +39,153 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
 
     private Toast toast;
     private ImageView userAvatar = null;
-    private TextView account = null;
+    private ImageView state = null;
     private TextView name = null;
-    private TextView staff = null;
     private TextView number = null;
+    private TextView signature = null;
+    private ImageView enterChat = null;
+    private TextView account = null;
     private TextView dept = null;
     private TextView title = null;
+    private TextView softPhone = null;
     private TextView mobile = null;
-    private TextView phone = null;
-    private TextView homePhone = null;
+    private TextView softVideoPhone = null;
     private TextView email = null;
-    private TextView otherPhone = null;
-    private TextView otherPhone2 = null;
-    private TextView zip = null;
     private TextView address = null;
-    private TextView signature = null;
-    private ImageView blogSex = null;
-    private ImageView eaddrBack = null;
+    private LinearLayout fax = null;
+    private TextView zip = null;
+    private Button deleteFriend = null;
+    private ImageView opContact = null;
 
-    private List<TsdkContactsInfo> listEaddrs = new ArrayList<>();
-    private List<EntAddressBookInfo> iconEaddrs = new ArrayList<>();
-    private int index;
-    private int deptSeq;
     private List<TsdkDepartmentInfo> list = new ArrayList<>();
+    private int deptSeq;
     private String deptName;
+    private EntAddressBookInfo entAddressBookInfo;
+    private String selfAccount = LoginMgr.getInstance().getAccount();
+    private long sefFriendId; // 添加为好友之后的contactId
+    private List<ImContactGroupInfo> contactGroupList = ImMgr.getInstance().getAllContactGroupList();
+    private long checkGroupId;
+    private ImConstant.ImStatus selfStatus = ImMgr.getInstance().getStatus();
 
     private String[] eActions = new String[]{
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_DEPARTMENT_FAILED,
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_DEPARTMENT_NULL,
-            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_DEPARTMENT_RESULT
+            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_DEPARTMENT_RESULT,
+            CustomBroadcastConstants.ACTION_IM_USER_STATUS_CHANGE
     };
 
     @Override
     public void initializeComposition() {
         setContentView(R.layout.activity_enterprise_info);
 
-        //Get contact list (all contact information except Avatar)
-        listEaddrs = EnterpriseAddressBookMgr.getInstance().getList();
+        opContact = (ImageView) findViewById(R.id.right_iv);
+        userAvatar = (ImageView)findViewById(R.id.blog_head_iv);
+        state = (ImageView) findViewById(R.id.blog_state_iv);
+        name = (TextView)findViewById(R.id.blog_name_tv);
+        number = (TextView)findViewById(R.id.blog_number_tv);
+        signature = (TextView) findViewById(R.id.contact_signature_tv);
+        enterChat = (ImageView) findViewById(R.id.enter_chat);
 
-        //Get Contact Avatar
-        iconEaddrs = EnterpriseAddrBookActivity.getList();
+        account = (TextView)findViewById(R.id.detail_content_text1);
+        dept = (TextView)findViewById(R.id.detail_content_text2);
+        title = (TextView)findViewById(R.id.detail_content_text3);
+        softPhone = (TextView) findViewById(R.id.call_content_text1);
+        mobile = (TextView)findViewById(R.id.call_content_text2);
+        softVideoPhone = (TextView)findViewById(R.id.video_content_text1);
+        email = (TextView)findViewById(R.id.email_content_text);
+        address = (TextView)findViewById(R.id.location_content_text);
+        fax = (LinearLayout) findViewById(R.id.fax_Item_layout);
+        zip = (TextView)findViewById(R.id.zip_content_text);
 
-        //Set User avatar
-        userAvatar = (ImageView)findViewById(R.id.eaddr_head_iv);
-        int iconId = iconEaddrs.get(index).getSysIconID();
-        String iconPath = iconEaddrs.get(index).getHeadIconPath();
-        if (!iconEaddrs.get(index).getHeadIconPath().isEmpty())
+        deleteFriend = (Button) findViewById(R.id.deletecontact);
+
+        opContact.setVisibility(View.GONE);
+        fax.setVisibility(View.GONE);
+        if (selfAccount.equals(entAddressBookInfo.getEaddrAccount()))
         {
-            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(iconPath);
+            state.setImageResource(getStatusResource(selfStatus));
+            enterChat.setVisibility(View.GONE);
+            deleteFriend.setVisibility(View.GONE);
+        }
+
+        setData();
+    }
+
+    private void setData()
+    {
+        if (!entAddressBookInfo.getHeadIconPath().isEmpty())
+        {
+            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(entAddressBookInfo.getHeadIconPath());
             userAvatar.setImageBitmap(headIcon);
         }
         else
         {
-            userAvatar.setImageResource(iconId);
+            userAvatar.setImageResource(entAddressBookInfo.getSysIconID());
         }
+        name.setText(entAddressBookInfo.getEaddrName());
+        number.setVisibility(View.GONE);
+        signature.setVisibility(View.VISIBLE);
+        signature.setText(entAddressBookInfo.getSignature());
+        account.setText(entAddressBookInfo.getEaddrAccount());
+        dept.setText(entAddressBookInfo.getEaddrDept());
+        title.setText(entAddressBookInfo.getTitle());
+        softPhone.setText(entAddressBookInfo.getTerminal());
+        mobile.setText(entAddressBookInfo.getMobile());
+        softVideoPhone.setText(entAddressBookInfo.getTerminal());
+        email.setText(entAddressBookInfo.getEmail());
+        address.setText(entAddressBookInfo.getAddress());
+        zip.setText(entAddressBookInfo.getZipCode());
 
-        account = (TextView)findViewById(R.id.staff_account);
-        name = (TextView)findViewById(R.id.eaddr_name_tv);
-        staff = (TextView)findViewById(R.id.staff_no);
-        number = (TextView)findViewById(R.id.terminal);
+        updateDeleteFriendButton();
 
-        dept = (TextView)findViewById(R.id.dept_name);
         dept.setOnClickListener(this);
+        deleteFriend.setOnClickListener(this);
+    }
 
-        title = (TextView)findViewById(R.id.title);
-        mobile = (TextView)findViewById(R.id.mobile);
-        phone = (TextView)findViewById(R.id.office_phone);
-        homePhone = (TextView)findViewById(R.id.home_phone);
-        email = (TextView)findViewById(R.id.email);
-        otherPhone = (TextView)findViewById(R.id.other_phone);
-        otherPhone2 = (TextView)findViewById(R.id.other_phone2);
-        zip = (TextView)findViewById(R.id.zip_code);
-        address = (TextView)findViewById(R.id.address);
-        signature = (TextView)findViewById(R.id.eaddr_signature_tv);
-        blogSex = (ImageView)findViewById(R.id.eaddr_sex_iv);
-
-        eaddrBack = (ImageView)findViewById(R.id.book_back);
-        eaddrBack.setOnClickListener(this);
-
-        account.setText(listEaddrs.get(index).getStaffAccount());
-        name.setText(listEaddrs.get(index).getPersonName());
-        staff.setText(listEaddrs.get(index).getStaffNo());
-        number.setText(listEaddrs.get(index).getTerminal());
-        dept.setText(listEaddrs.get(index).getDepartmentName());
-        title.setText(listEaddrs.get(index).getTitle());
-        mobile.setText(listEaddrs.get(index).getMobile());
-        phone.setText(listEaddrs.get(index).getOfficePhone());
-        homePhone.setText(listEaddrs.get(index).getHomePhone());
-        email.setText(listEaddrs.get(index).getEmail());
-        otherPhone.setText(listEaddrs.get(index).getOtherPhone());
-        otherPhone2.setText(listEaddrs.get(index).getOtherPhone2());
-        zip.setText(listEaddrs.get(index).getZipCode());
-        address.setText(listEaddrs.get(index).getAddress());
-        signature.setText(listEaddrs.get(index).getSignature());
-        if(listEaddrs.get(index).getGender().equals("female"))
-        {
-            blogSex.setBackgroundResource(R.drawable.sex_female);
-        }
-        else if(listEaddrs.get(index).getGender().equals("male"))
-        {
-            blogSex.setBackgroundResource(R.drawable.sex_male);
-        }
+    private void updateDeleteFriendButton()
+    {
+        sefFriendId = ImMgr.getInstance().getFriendId(entAddressBookInfo.getEaddrAccount());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (-1 == sefFriendId)
+                {
+                    deleteFriend.setText(getString(R.string.addtofriend));
+                }
+                else
+                {
+                    deleteFriend.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @Override
     public void initializeData() {
-        //Get clicked contact position and list.index() correspondence
+        //Get the contact details of the click
+        LocBroadcast.getInstance().registerBroadcast(this, eActions);
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        index = bundle.getInt(UIConstants.CONTACT_POSITION);
+        entAddressBookInfo = (EntAddressBookInfo) intent.getSerializableExtra(UIConstants.CONTACT_INFO);
+        // im登陆成功后获取用户状态
+        if (LoginMgr.getInstance().isImLogin())
+        {
+            if (selfAccount.equals(entAddressBookInfo.getEaddrAccount()))
+            {
+                return;
+            }
+            List<String> accounts = new ArrayList<>();
+            accounts.add(entAddressBookInfo.getEaddrAccount());
+            int result = ImMgr.getInstance().probeUserStatus(accounts);
+            if (0 != result)
+            {
+                showToast(R.string.detect_user_status_failed);
+            }
+        }
     }
 
     @Override
     protected void onResume() {
-        LocBroadcast.getInstance().registerBroadcast(this, eActions);
+
         super.onResume();
     }
 
@@ -179,6 +218,33 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
         }
     }
 
+    private static int getStatusResource(ImConstant.ImStatus status)
+    {
+        int drwId = 0;
+        switch (status)
+        {
+            case AWAY:
+                drwId = R.drawable.state_offline;
+                break;
+            case ON_LINE:
+                drwId = R.drawable.state_online;
+                break;
+            case BUSY:
+                drwId = R.drawable.state_busy;
+                break;
+            case XA:
+                drwId = R.drawable.state_away;
+                break;
+            case DND:
+                drwId = R.drawable.state_uninterrupt;
+                break;
+            default:
+                break;
+        }
+
+        return drwId;
+    }
+
     @Override
     public void onBackPressed() {
         cancelToast();
@@ -186,20 +252,55 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
     }
 
     @Override
+    protected void onDestroy() {
+        LocBroadcast.getInstance().unRegisterBroadcast(this, eActions);
+        super.onDestroy();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId())
         {
-            case R.id.book_back:
-                LocBroadcast.getInstance().unRegisterBroadcast(this, eActions);
-                finish();
-                break;
-            case R.id.dept_name:
+            case R.id.detail_content_text2:
                 //此处查询部门仅作功能验证。ID为-1时代表获取0、1级部门
                 deptSeq = EnterpriseAddressBookMgr.getInstance().searchDepartment("-1");
+                break;
+            case R.id.deletecontact:
+                showTeamDialog();
                 break;
             default:
                 break;
         }
+    }
+
+    private void showTeamDialog()
+    {
+        List<Object> teamName = new ArrayList<>();
+        if (null == contactGroupList || contactGroupList.size() == 0)
+        {
+            showToast(R.string.create_new_group);
+            return;
+        }
+        for (int i = 0; i < contactGroupList.size(); i++)
+        {
+            teamName.add(contactGroupList.get(i).getGroupName());
+        }
+        final SimpleListDialog dialog = new SimpleListDialog(this, teamName);
+        dialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dialog.dismiss();
+                checkGroupId = contactGroupList.get(position).getGroupId();
+                long contactId = ImMgr.getInstance().addFriend(entAddressBookInfo.getEaddrAccount(), checkGroupId);
+                if (-1 == contactId)
+                {
+                    showToast(R.string.add_friend_failed);
+                    return;
+                }
+                updateDeleteFriendButton();
+            }
+        });
+        dialog.show();
     }
 
     Handler handler = new Handler() {
@@ -224,6 +325,9 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
                         builder.show();
                     }
                     break;
+                    case UIConstants.IM_USER_STATUS_UPDATE:
+                        state.setImageResource(getStatusResource(ImMgr.getInstance().updateUserStatus(entAddressBookInfo.getEaddrAccount())));
+                        break;
                 default:
                     break;
             }
@@ -243,6 +347,9 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
                 break;
             case CustomBroadcastConstants.ACTION_ENTERPRISE_GET_DEPARTMENT_FAILED:
                 showToast("Search department failed!");
+                break;
+            case CustomBroadcastConstants.ACTION_IM_USER_STATUS_CHANGE:
+                handler.sendEmptyMessage(UIConstants.IM_USER_STATUS_UPDATE);
                 break;
             default:
                 break;

@@ -186,10 +186,10 @@ public class ServiceMgr
         LogUtil.i(TAG, "config service param is success.");
 
         //IM init
-        if (isSupportIM)
-        {
-            ImMgr.getInstance().sdkInit(context, appPath);
-        }
+//        if (isSupportIM)
+//        {
+//            ImMgr.getInstance().sdkInit(context, appPath);
+//        }
         return true;
 
     }

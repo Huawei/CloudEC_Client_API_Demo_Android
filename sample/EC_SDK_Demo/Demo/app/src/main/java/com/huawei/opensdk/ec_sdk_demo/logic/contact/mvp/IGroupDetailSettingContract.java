@@ -1,9 +1,9 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.contact.mvp;
 
-import com.huawei.data.ConstGroup;
-import com.huawei.data.ConstGroupContact;
+//import com.huawei.data.ConstGroup;
+//import com.huawei.data.ConstGroupContact;
 
-import java.util.List;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
 
 /**
  * Group information related functional interface.
@@ -21,16 +21,20 @@ public interface IGroupDetailSettingContract
 
         /**
          * Modify group info.
-         * @param obj
+         * @param imChatGroupInfo
          */
-        void updateGroupInfo(String obj);
+        void updateGroupInfo(ImChatGroupInfo imChatGroupInfo);
+
+        void toast(int id);
+
+        void finishActivity();
     }
 
     interface IGroupDetailSettingPresenter
     {
-        void setConstGroup(ConstGroup constGroup);
+        void setChatGroupInfo(ImChatGroupInfo chatGroupInfo);
 
-        List<ConstGroupContact> getGroupMembers();
+//        List<ConstGroupContact> getGroupMembers();
 
         void enterChat();
 
@@ -71,8 +75,8 @@ public interface IGroupDetailSettingContract
 
         /**
          * Modify the group info.
-         * @param constGroup
+         * @param imChatGroupInfo
          */
-        void modifyGroup(ConstGroup constGroup);
+        void modifyGroup(ImChatGroupInfo imChatGroupInfo, int type);
     }
 }

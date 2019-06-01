@@ -36,6 +36,8 @@ public interface CustomBroadcastConstants
     String UN_MUTE_CONF_RESULT = "com.huawei.opensdk.conf.unmuteconfresult";
     String LOCK_CONF_RESULT = "com.huawei.opensdk.conf.lockconfresult";
     String UN_LOCK_CONF_RESULT = "com.huawei.opensdk.conf.unlockconfresult";
+    String START_RECORD_RESULT = "com.huawei.opensdk.conf.startrecordresult";
+    String STOP_RECORD_RESULT = "com.huawei.opensdk.conf.stoprecordresult";
     String SESSION_MODIFIED_RESULT = "com.huawei.opensdk.conf.sessionmodifiedresult";
     String REQUEST_CHAIRMAN_RESULT = "com.huawei.opensdk.conf.requestchairmanresult";
     String RELEASE_CHAIRMAN_RESULT = "com.huawei.opensdk.conf.releasechairmanresult";
@@ -84,6 +86,7 @@ public interface CustomBroadcastConstants
     //IM
     String ACTION_LOGIN_IM = "com.huawei.opensdk.im.imlogin";
     String ACTION_RECEIVE_SESSION_CHANGE = "com.huawei.opensdk.im.messagereceive";
+    String ACTION_RECEIVE_BATCH_MESSAGES = "com.huawei.opensdk.im.receivebatchmessages";
     String ACTION_IM_LOGIN_SUCCESS = "com.huawei.opensdk.im.loginsuccess";
     String ACTION_IM_LOGIN_ERROR = "com.huawei.opensdk.im.loginerror";
     String ACTION_IM_QUERY_HISTORY = "com.huawei.opensdk.im.queryhistory";
@@ -102,6 +105,19 @@ public interface CustomBroadcastConstants
     String ACTION_SET_STATUS = "com.huawei.opensdk.im.modifygroupmember";
     String ACTION_IM_SET_HEAD_PHOTO = "com.huawei.opensdk.im.setheadphoto";
     String ACTION_REFRESH_TEAM_MEMBER = "com.huawei.opensdk.im.refreshteammember";
+
+    String ACTION_IM_USER_INFO_CHANGE = "com.huawei.opensdk.im.userinfochange";
+    String ACTION_IM_USER_STATUS_CHANGE = "com.huawei.opensdk.im.userstatuschange";
+    String ACTION_IM_USER_INFO_CHANGE_FAILED = "com.huawei.opensdk.im.userinfochangefailed";
+    String ACTION_IM_CHAT_GROUP_ADD = "com.huawei.opensdk.im.chatgroupadd";
+    String ACTION_IM_CHAT_GROUP_DISMISS = "com.huawei.opensdk.im.chatgroupupdismiss";
+    String ACTION_IM_CHAT_GROUP_UPDATE = "com.huawei.opensdk.im.chatgroupupdate";
+    String ACTION_IM_CHAT_GROUP_ADD_MEMBER = "com.huawei.opensdk.im.chatgroupaddmember";
+    String ACTION_IM_CHAT_GROUP_DEL_MEMBER = "com.huawei.opensdk.im.chatgroupdelmember";
+    String ACTION_IM_CHAT_GROUP_LEAVE_RESULT = "com.huawei.opensdk.im.chatgroupleaveresult";
+    String ACTION_IM_CHAT_WITHDRAW_MSG_FAILED = "com.huawei.opensdk.im.chatwithdrawmsgfailed";
+    String ACTION_IM_CHAT_WITHDRAW_MSG_IND = "com.huawei.opensdk.im.chatwithdrawmsgind";
+    String ACTION_IM_CHAT_INPUTTING_STATUS_IND = "com.huawei.opensdk.im.chatinputtingstatusind";
 
     //Enterprise address book
     String ACTION_ENTERPRISE_GET_SELF_RESULT = "com.huawei.opensdk.eaddr.getselfresult";

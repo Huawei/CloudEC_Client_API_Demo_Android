@@ -12,8 +12,8 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.huawei.data.entity.InstantMessage;
-import com.huawei.data.unifiedmessage.MediaResource;
+//import com.huawei.data.entity.InstantMessage;
+//import com.huawei.data.unifiedmessage.MediaResource;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -35,7 +35,7 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
     private static final int SCAN_MEDIA = 0;
     private static final int UPDATE_DOWNLOAD_PROGRESS = 1;
     private String fileName;
-    private InstantMessage currentMediaMessage;
+//    private InstantMessage currentMediaMessage;
     private ImageView pictureImageView;
     private VideoView videoView;
     private TextView progressTextView;
@@ -73,14 +73,14 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
 
     private void initView()
     {
-        currentMediaMessage = (InstantMessage) getIntent().getSerializableExtra(UIConstants.MEDIA_RESOURCE);
-        if (currentMediaMessage.getMediaRes().getMediaType() == MediaResource.MEDIA_PICTURE)
+//        currentMediaMessage = (InstantMessage) getIntent().getSerializableExtra(UIConstants.MEDIA_RESOURCE);
+//        if (currentMediaMessage.getMediaRes().getMediaType() == MediaResource.MEDIA_PICTURE)
         {
             pictureImageView = (ImageView) findViewById(R.id.media_picture_scan);
             pictureImageView.setVisibility(View.VISIBLE);
             isPicture = true;
         }
-        else if (currentMediaMessage.getMediaRes().getMediaType() == MediaResource.MEDIA_VIDEO)
+//        else if (currentMediaMessage.getMediaRes().getMediaType() == MediaResource.MEDIA_VIDEO)
         {
             videoView = (VideoView) findViewById(R.id.media_video_scan);
             isPicture = false;
@@ -92,34 +92,34 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
     {
         if (isPicture)
         {
-            String filePath = getPictureFilePath(currentMediaMessage);
-            if (isPictureDownload(filePath))
+//            String filePath = getPictureFilePath(currentMediaMessage);
+//            if (isPictureDownload(filePath))
             {
-                String filepath = getPictureFilePath(currentMediaMessage);
-                Bitmap bitmap = HeadIconTools.getBitmapByPath(filepath);
-                pictureImageView.setImageBitmap(bitmap);
+//                String filepath = getPictureFilePath(currentMediaMessage);
+//                Bitmap bitmap = HeadIconTools.getBitmapByPath(filepath);
+//                pictureImageView.setImageBitmap(bitmap);
             }
-            else
+//            else
             {
-                imMgr.downloadFile(currentMediaMessage, false);
+//                imMgr.downloadFile(currentMediaMessage, false);
             }
         }
         else
         {
-            String filePath = getVideoFilePath(currentMediaMessage);
-            if (isVideoDownload(filePath))
+//            String filePath = getVideoFilePath(currentMediaMessage);
+//            if (isVideoDownload(filePath))
             {
                 videoView.setVisibility(View.VISIBLE);
                 videoView.setMediaController(new MediaController(this));
-                Uri videoUri = Uri.parse(filePath);
-                videoView.setVideoURI(videoUri);
+//                Uri videoUri = Uri.parse(filePath);
+//                videoView.setVideoURI(videoUri);
                 videoView.start();
             }
-            else
+//            else
             {
-                boolean result = imMgr.downloadFile(currentMediaMessage, true);
+//                boolean result = imMgr.downloadFile(currentMediaMessage, true);
 //                videoFilePath = getVideoFilePath(currentMediaMessage);
-                Log.i("MediaScanActivity", "result = " + result);
+//                Log.i("MediaScanActivity", "result = " + result);
             }
         }
     }
@@ -147,17 +147,17 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
         return false;
     }
 
-    private String getPictureFilePath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        fileName = mediaRes.getName();
-        if (!TextUtils.isEmpty(fileName))
-        {
-            String filepath = ChatTools.APP_PATH + File.separator + "Img" + File.separator + fileName;
-            return filepath;
-        }
-        return null;
-    }
+//    private String getPictureFilePath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        fileName = mediaRes.getName();
+//        if (!TextUtils.isEmpty(fileName))
+//        {
+//            String filepath = ChatTools.APP_PATH + File.separator + "Img" + File.separator + fileName;
+//            return filepath;
+//        }
+//        return null;
+//    }
 
     private boolean isVideoDownload(String filePath)
     {
@@ -175,17 +175,17 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
         return false;
     }
 
-    private String getVideoFilePath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        fileName = mediaRes.getName();
-        if (!TextUtils.isEmpty(fileName))
-        {
-            String filePath = ChatTools.APP_PATH + File.separator + "Video" + File.separator + fileName;
-            return filePath;
-        }
-        return null;
-    }
+//    private String getVideoFilePath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        fileName = mediaRes.getName();
+//        if (!TextUtils.isEmpty(fileName))
+//        {
+//            String filePath = ChatTools.APP_PATH + File.separator + "Video" + File.separator + fileName;
+//            return filePath;
+//        }
+//        return null;
+//    }
 
     private Handler handler = new Handler()
     {
@@ -203,9 +203,9 @@ public class MediaScanActivity extends BaseActivity implements View.OnClickListe
 
                     if (progress == 100)
                     {
-                        String videoFilePath = getVideoFilePath(currentMediaMessage);
-                        Bitmap bitmap = ChatTools.getVideoThumbnail(videoFilePath);
-                        ChatTools.setVideoThumbnailMap(currentMediaMessage.getMessageId(), bitmap);
+//                        String videoFilePath = getVideoFilePath(currentMediaMessage);
+//                        Bitmap bitmap = ChatTools.getVideoThumbnail(videoFilePath);
+//                        ChatTools.setVideoThumbnailMap(currentMediaMessage.getMessageId(), bitmap);
                         progressTextView.setVisibility(View.GONE);
                     }
                     break;

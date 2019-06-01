@@ -5,8 +5,8 @@ import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.util.Log;
 
-import com.huawei.data.entity.InstantMessage;
-import com.huawei.data.unifiedmessage.MediaResource;
+//import com.huawei.data.entity.InstantMessage;
+//import com.huawei.data.unifiedmessage.MediaResource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,34 +47,34 @@ public class ChatTools
         return videoThumbnailMap.get(key);
     }
 
-    /**
-     * Copy video file.
-     * @param instantMessage the instant message
-     */
-    public static void copyVideoFile(InstantMessage instantMessage)
-    {
-        if (instantMessage == null || instantMessage.getMediaRes() == null)
-        {
-            Log.e(TAG, "copyVideoFile:instantMessage is null");
-            return;
-        }
-        MediaResource resource = instantMessage.getMediaRes();
-        String originalLocalPath = "";
-        String destinationPath = "";
-        if (resource.getResourceType() == MediaResource.RES_LOCAL)
-        {
-            destinationPath = APP_PATH + File.separator + "Video" + File.separator + resource.getName();
-            File file = new File(destinationPath);
-            if (file.exists())
-            {
-                return;
-            }
-            originalLocalPath = resource.getLocalPath();
-            copyFile(originalLocalPath, destinationPath);
-            Bitmap bitmap = getVideoThumbnail(destinationPath);
-            ChatTools.setVideoThumbnailMap(instantMessage.getMessageId(), bitmap);
-        }
-    }
+//    /**
+//     * Copy video file.
+//     * @param instantMessage the instant message
+//     */
+//    public static void copyVideoFile(InstantMessage instantMessage)
+//    {
+//        if (instantMessage == null || instantMessage.getMediaRes() == null)
+//        {
+//            Log.e(TAG, "copyVideoFile:instantMessage is null");
+//            return;
+//        }
+//        MediaResource resource = instantMessage.getMediaRes();
+//        String originalLocalPath = "";
+//        String destinationPath = "";
+//        if (resource.getResourceType() == MediaResource.RES_LOCAL)
+//        {
+//            destinationPath = APP_PATH + File.separator + "Video" + File.separator + resource.getName();
+//            File file = new File(destinationPath);
+//            if (file.exists())
+//            {
+//                return;
+//            }
+//            originalLocalPath = resource.getLocalPath();
+//            copyFile(originalLocalPath, destinationPath);
+//            Bitmap bitmap = getVideoThumbnail(destinationPath);
+//            ChatTools.setVideoThumbnailMap(instantMessage.getMessageId(), bitmap);
+//        }
+//    }
 
     private static void copyFile(String oldPath, String newPath)
     {

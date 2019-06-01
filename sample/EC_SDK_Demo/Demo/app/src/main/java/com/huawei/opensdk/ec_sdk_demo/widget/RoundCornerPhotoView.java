@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadCache;
-import com.huawei.utils.img.BitmapUtil;
+//import com.huawei.utils.img.BitmapUtil;
 
 public class RoundCornerPhotoView extends ImageView
 {
@@ -32,7 +32,7 @@ public class RoundCornerPhotoView extends ImageView
         {
             // Bitmap roundBm = HeadPhotoUtil.getIns().getRoundCornerBgBig();
             // bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, roundBm, true);
-            bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, getBigMaskBg(), true);
+//            bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, getBigMaskBg(), true);
         }
 
         if (useCircleMaskBg)
@@ -55,7 +55,7 @@ public class RoundCornerPhotoView extends ImageView
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
             // Bitmap roundBm = HeadPhotoUtil.getIns().getRoundCornerBgSmall();
             // defaultBitmap = BitmapUtil.getRoundCornerBitmap(bitmap, roundBm);
-            defaultBitmap = BitmapUtil.getRoundCornerBitmap(bitmap, getBigMaskBg(), useBigMaskBg);
+//            defaultBitmap = BitmapUtil.getRoundCornerBitmap(bitmap, getBigMaskBg(), useBigMaskBg);
             // HeadCache.ins().setDefaultBitmap(resId, defaultBitmap);
             HeadCache.getIns().setDefaultBitmap(key, defaultBitmap);
         }
@@ -72,7 +72,8 @@ public class RoundCornerPhotoView extends ImageView
     {
         int maskBgId = R.drawable.mask_bg;
         Bitmap mask = BitmapFactory.decodeResource(getResources(), maskBgId);
-        return BitmapUtil.mixtureBitmap(mask, bitmap);
+//        return BitmapUtil.mixtureBitmap(mask, bitmap);
+        return mask;
     }
 
     private String createKey(int resId)

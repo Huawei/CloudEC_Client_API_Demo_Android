@@ -98,6 +98,8 @@
     <string name="un_mute_conf_fail">UnMute conference failed</string>
     <string name="lock_conf_fail">Lock conference failed</string>
     <string name="un_lock_conf_fail">UnLock conference failed</string>
+    <string name="start_record_fail">Start record failed</string>
+    <string name="stop_record_fail">Stop record failed</string>
     <string name="request_chairman_fail">Request chairman failed</string>
     <string name="release_chairman_fail">Release chairman failed</string>
     <string name="handup_fail">Hand up failed</string>
@@ -117,6 +119,8 @@
     <string name="un_mute_conf_success">UnMute conference success</string>
     <string name="lock_conf_success">Lock conference success</string>
     <string name="un_lock_conf_success">UnLock conference success</string>
+    <string name="start_record_success">Start record success</string>
+    <string name="stop_record_success"> Stop record success</string>
     <string name="request_chairman_success">Request chairman success</string>
     <string name="release_chairman_success">Release chairman success</string>
     <string name="handup_success">Hand up success</string>
@@ -137,6 +141,8 @@
     <string name="mute_full_conf">Mute All</string>
     <string name="unlock_conf">Unlock conference</string>
     <string name="lock_conf">Lock conference</string>
+    <string name="start_record">Start record</string>
+    <string name="stop_record">Stop record</string>
     <string name="conf_hand_up">Raise Hand</string>
     <string name="conf_cancel_hand_up">Cancel Hand</string>
     <string name="add_contact">Add Attendee</string>
@@ -175,6 +181,9 @@
     <string name="conference_video">Video meeting</string>
     <string name="conference_voice_data">Voice + Data meeting</string>
     <string name="conference_video_data">Video + Data meeting</string>
+    <string name="recode_conference">Recode Conference</string>
+    <string name="recode_conference_disable">Disable</string>
+    <string name="recode_conference_enable">Enable</string>
     <string name="members_number">Member No.</string>
     <string name="conference_members">Participants</string>
     <string name="add">Add member</string>
@@ -230,22 +239,33 @@
 
 
     <string name="chat_groups">ChatGroups</string>
+    <string name="group_type">GroupType</string>
     <string name="group">Group</string>
     <string name="contact">All Contacts</string>
     <string name="team">Team</string>
     <string name="loading">Loading</string>
     <string name="record_failed">record failed, record time length less than One Seconds</string>
+    <string name="fixed_group">Fixed group</string>
+    <string name="discussion_group">Discussion group</string>
+    <string name="add_member_failed">Add Member Failed</string>
+    <string name="add_member_success">Add Member Success</string>
+    <string name="del_member_success">Delete Member Success</string>
+    <string name="update_chat_group_success">Update Chat Group Success</string>
+    <string name="dis_chat_group_success">Dismiss Chat Group Success</string>
+    <string name="leave_chat_group_success">Leave Chat Group Success</string>
 
     <string name="team_check">Packet filtering</string>
-    <string name="all_contacts">All Contacts</string>
 
     <string name="add_friend_failed">Add friend failed</string>
     <string name="delete_friend_failed">Delete friend failed</string>
+    <string name="update_chat_group_failed">Update Chat Group Failed</string>
+    <string name="leave_chat_group_failed">Leave Chat Group Failed</string>
 
     <string name="leave">leave</string>
     <string name="online">online</string>
     <string name="busy">busy</string>
     <string name="offline">offline</string>
+    <string name="dnd">DND</string>
 
     <string name="format_not_supported">Format not supported</string>
     <string name="media_picture">[Picture]</string>
@@ -1970,7 +1990,6 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="im_send_onebyone">Separate Forward</string>
     <string name="im_send_merge">Merged Forward</string>
     <string name="contact_detail_show_all_call_nubmers">View All Numbers</string>
-    <string name="group_setting_all_member_nubmer">Total %1$s members</string>
     <string name="email_disable">Failed to read the email. The email has been archived or deleted.</string>
     <string name="url_cannot_open_tip">Corresponding software is required to open the website.</string>
     <string name="im_send_waring">Voice and special messages cannot be forwarded. Continue?</string>
@@ -2031,7 +2050,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="opr_msg_withdraw">Recall</string>
     <string name="opr_msg_withdrawn">Message recalled.</string>
     <string name="opr_msg_withdraw_ing">Message being recalled…</string>
-    <string name="opr_msg_withdraw_hint">%1$s recalled a message.</string>
+    <string name="opr_msg_withdraw_hint">recalled a message.</string>
     <string name="opr_msg_withdraw_timeout">The message was sent more than %1$s ago and cannot be recalled.</string>
     <string name="module_error_3">Incorrect account or password.</string>
     <string name="module_error_3_lock">The account is locked.</string>
@@ -2165,8 +2184,37 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="voice_control_mode">Voice Control Mode</string>
     <string name="free_mode">Free Mode</string>
     <string name="upgrade_conf">Upgrade conference</string>
-    <string name="set_presenter_failed">Set presenter failed</string>
     <string name="main_conference">Main Conf Hall</string>
+    <string name="input_group_name">Input group name</string>
+    <string name="input_group_bulletin">Input group bulletin</string>
+    <string name="input_group_description">Input group description</string>
+    <string name="search_group">Input group name or number to find</string>
+    <string name="new_team">New Team</string>
+    <string name="move_team_up">Move group up</string>
+    <string name="move_team_down">Move group down</string>
+    <string name="rename_team">Rename group</string>
+    <string name="delete_team">Delete group</string>
+    <string name="create_new_group">Please create a contact group first</string>
+    <string name="move_im_contact">Move contacts to</string>
+    <string name="copy_im_contact">Copy contacts to</string>
+    <string name="move_copy_contact_success">Move or Copy contact successful</string>
+    <string name="delete_all_record">Delete all records</string>
+    <string name="input_in_process">The other is typing...</string>
+    <string name="no_op_group">There are currently no groups that can be copied or moved</string>
 
+    <string name="set_presenter_failed">Set presenter failed</string>
+    <string name="set_info_failed">Set own information failed</string>
+    <string name="search_group_failed">Search group failed</string>
+    <string name="new_team_failed">New team failed</string>
+    <string name="del_team_failed">Delete team failed</string>
+    <string name="mod_team_failed">Modify team failed</string>
+    <string name="update_team_order_failed">Update team order failed</string>
+    <string name="move_copy_contact_failed">Move or Copy contact failed</string>
+    <string name="detect_user_status_failed">Detect user status failed</string>
+    <string name="send_message_failed">Send message failed</string>
+    <string name="withdraw_message_failed">Withdraw message failed</string>
+    <string name="delete_message_failed">Delete message failed</string>
+    <string name="set_read_failed">Set message read failed</string>
+    <string name="set_input_failed">Set input status failed</string>
 
 </resources>

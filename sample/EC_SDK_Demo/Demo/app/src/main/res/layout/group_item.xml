@@ -13,13 +13,21 @@
         app:linePaddingRight="@dimen/dp15"
         android:background="@drawable/bg_item_selector">
 
-    <com.huawei.opensdk.ec_sdk_demo.widget.RoundCornerPhotoView
-               android:id="@+id/group_head"
-               android:layout_width="40dp"
-               android:layout_height="40dp"
-               android:scaleType="fitXY"
-               android:layout_centerVertical="true"
-               android:layout_marginLeft="15dp"/>
+    <!--<com.huawei.opensdk.ec_sdk_demo.widget.RoundCornerPhotoView-->
+               <!--android:id="@+id/group_head"-->
+               <!--android:layout_width="40dp"-->
+               <!--android:layout_height="40dp"-->
+               <!--android:scaleType="fitXY"-->
+               <!--android:layout_centerVertical="true"-->
+               <!--android:layout_marginLeft="15dp"/>-->
+
+    <ImageView
+        android:id="@+id/group_head"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp" />
 
     <TextView android:id="@+id/group_name"
               android:layout_width="wrap_content"

@@ -8,13 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.contacts.ContactTools;
-import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.ContactHeadFetcher;
+import com.huawei.opensdk.imservice.ImContactInfo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * This adapter is about add group members.
@@ -25,7 +23,7 @@ public class AddGroupMemberListAdapter extends BaseAdapter
     private LayoutInflater inflater;
 
     private ContactHeadFetcher headFetcher;
-    private List<PersonalContact> mMemberList = new ArrayList<>();
+    private LinkedList<ImContactInfo> mMemberList = new LinkedList<>();
 
     public AddGroupMemberListAdapter(Context context)
     {
@@ -67,14 +65,16 @@ public class AddGroupMemberListAdapter extends BaseAdapter
         {
             viewHolder = (MemberViewHolder) convertView.getTag();
         }
-        PersonalContact contact = mMemberList.get(position);
-        viewHolder.contactName.setText(ContactTools.getDisplayName(contact));
-        headFetcher.loadHead(contact, viewHolder.contactHead, false);
+        ImContactInfo contact = mMemberList.get(position);
+        viewHolder.contactName.setText(contact.getAccount());
+//        headFetcher.loadHead(contact, viewHolder.contactHead, false);
+        // TODO: 2019/1/26 此处写为默认头像，后面头像整体优化时处理
+        viewHolder.contactHead.setImageResource(R.drawable.default_head);
         viewHolder.contactHead.setScaleType(ImageView.ScaleType.FIT_XY);
         return convertView;
     }
 
-    public void setMemberList(List<PersonalContact> members)
+    public void setData(LinkedList<ImContactInfo> members)
     {
         this.mMemberList = members;
     }

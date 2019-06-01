@@ -254,7 +254,7 @@ public class SpannableStringParser
 
     private List<Tag> getTags(String text, Pattern pattern)
     {
-        List<Tag> listTag = new ArrayList<Tag>();
+        List<Tag> listTag = new ArrayList<>();
         if (text == null || text.length() == 0)
         {
             return null;

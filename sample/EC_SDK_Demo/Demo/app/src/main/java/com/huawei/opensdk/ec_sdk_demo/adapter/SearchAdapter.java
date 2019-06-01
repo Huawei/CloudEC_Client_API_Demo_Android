@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.ContactHeadFetcher;
 
@@ -24,7 +24,7 @@ public class SearchAdapter extends BaseAdapter
 {
     private Context context;
     private ContactHeadFetcher headFetcher;
-    private List<PersonalContact> contactList = new ArrayList<>();
+//    private List<PersonalContact> contactList = new ArrayList<>();
 
     public SearchAdapter(Context context)
     {
@@ -32,21 +32,23 @@ public class SearchAdapter extends BaseAdapter
         headFetcher = new ContactHeadFetcher(context);
     }
 
-    public void setContactList(List<PersonalContact> contactList)
-    {
-        this.contactList = contactList;
-    }
+//    public void setContactList(List<PersonalContact> contactList)
+//    {
+//        this.contactList = contactList;
+//    }
 
     @Override
     public int getCount()
     {
-        return contactList.size();
+//        return contactList.size();
+        return 0;
     }
 
     @Override
     public Object getItem(int position)
     {
-        return contactList.get(position);
+//        return contactList.get(position);
+        return null;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SearchAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        PersonalContact contact = contactList.get(position);
+//        PersonalContact contact = contactList.get(position);
         ViewHolder viewHolder;
         if (convertView == null)
         {
@@ -73,9 +75,9 @@ public class SearchAdapter extends BaseAdapter
         {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.nameTv.setText(contact.getName());
-        viewHolder.infoTv.setText(contact.getDepartment());
-        headFetcher.loadHead(contact, viewHolder.headIv, true);
+//        viewHolder.nameTv.setText(contact.getName());
+//        viewHolder.infoTv.setText(contact.getDepartment());
+//        headFetcher.loadHead(contact, viewHolder.headIv, true);
         return convertView;
     }
 

@@ -5,14 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 
-import com.huawei.contacts.MyOtherInfo;
-import com.huawei.data.ViewHeadPhotoData;
-import com.huawei.data.ViewHeadPhotoParam;
-import com.huawei.ecs.mtk.log.Logger;
-import com.huawei.log.TagInfo;
-import com.huawei.msghandler.maabusiness.GetHeadImageRequest;
-import com.huawei.utils.FileUtil;
-import com.huawei.utils.img.BitmapUtil;
+//import com.huawei.contacts.MyOtherInfo;
+//import com.huawei.data.ViewHeadPhotoData;
+//import com.huawei.data.ViewHeadPhotoParam;
+//import com.huawei.ecs.mtk.log.Logger;
+//import com.huawei.log.TagInfo;
+//import com.huawei.msghandler.maabusiness.GetHeadImageRequest;
+//import com.huawei.utils.FileUtil;
+//import com.huawei.utils.img.BitmapUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +63,9 @@ public class ContactHeadDownloader
             listener.onLoadSuccess();
         }
 
-        return new BitmapDrawable(mContext.getResources(),
-                BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap));
+//        return new BitmapDrawable(mContext.getResources(),
+//                BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap));
+        return null;
     }
 
     /**
@@ -78,18 +79,18 @@ public class ContactHeadDownloader
         return TextUtils.isEmpty(account) || TextUtils.isEmpty(id);
     }
 
-    protected Bitmap doRequest(List<ViewHeadPhotoParam> list)
-    {
-        GetHeadImageRequest request = new GetHeadImageRequest();
-        request.setWaitTime(15000);  //等待15秒
-        List<ViewHeadPhotoData> dataList = request.requestPhoto(list);
-        if (dataList == null)
-        {
-            return null;
-        }
-
-        return saveHeadPhoto(dataList, list);
-    }
+//    protected Bitmap doRequest(List<ViewHeadPhotoParam> list)
+//    {
+//        GetHeadImageRequest request = new GetHeadImageRequest();
+//        request.setWaitTime(15000);  //等待15秒
+//        List<ViewHeadPhotoData> dataList = request.requestPhoto(list);
+//        if (dataList == null)
+//        {
+//            return null;
+//        }
+//
+//        return saveHeadPhoto(dataList, list);
+//    }
 
     /**
      * 请求图片数据
@@ -100,24 +101,25 @@ public class ContactHeadDownloader
      */
     private Bitmap requestBitmap(String account, String headId, int sideLength)
     {
-        Logger.debug(TagInfo.APPTAG, "account=" + account + "/id=" + headId);
-        List<ViewHeadPhotoParam> list = getParam(account, headId, sideLength);
+//        Logger.debug(TagInfo.APPTAG, "account=" + account + "/id=" + headId);
+//        List<ViewHeadPhotoParam> list = getParam(account, headId, sideLength);
 
-        return doRequest(list);
+//        return doRequest(list);
+        return null;
     }
 
-    private List<ViewHeadPhotoParam> getParam(String account, String id, int sideLength)
-    {
-        List<ViewHeadPhotoParam> list = new ArrayList<ViewHeadPhotoParam>();
-        ViewHeadPhotoParam param = new ViewHeadPhotoParam();
-        param.setJid(account);
-        param.setHeadId(id);
-        param.setH(getSideLength(sideLength));
-        param.setW(getSideLength(sideLength));
-        list.add(param);
-
-        return list;
-    }
+//    private List<ViewHeadPhotoParam> getParam(String account, String id, int sideLength)
+//    {
+//        List<ViewHeadPhotoParam> list = new ArrayList<ViewHeadPhotoParam>();
+//        ViewHeadPhotoParam param = new ViewHeadPhotoParam();
+//        param.setJid(account);
+//        param.setHeadId(id);
+//        param.setH(getSideLength(sideLength));
+//        param.setW(getSideLength(sideLength));
+//        list.add(param);
+//
+//        return list;
+//    }
 
     /**
      * 获取头像的边长。
@@ -126,64 +128,65 @@ public class ContactHeadDownloader
      */
     private String getSideLength(int sideLength)
     {
-        return (sideLength < 0 ? MyOtherInfo.PICTURE_DEFAULT_HEIGHT : sideLength) + "";
+//        return (sideLength < 0 ? MyOtherInfo.PICTURE_DEFAULT_HEIGHT : sideLength) + "";
+        return null;
     }
 
 
-    /**
-     * 收到响应时保存头像
-     * @param photoDatas
-     * @param headPhoto
-     * @return resp 为null,直接返回.
-     */
-    public Bitmap saveHeadPhoto(List<ViewHeadPhotoData> photoDatas,
-            List<ViewHeadPhotoParam> headPhoto)
-    {
-        if (!isInValidParam(photoDatas, headPhoto))
-        {
-            return null;
-        }
+//    /**
+//     * 收到响应时保存头像
+//     * @param photoDatas
+//     * @param headPhoto
+//     * @return resp 为null,直接返回.
+//     */
+//    public Bitmap saveHeadPhoto(List<ViewHeadPhotoData> photoDatas,
+//            List<ViewHeadPhotoParam> headPhoto)
+//    {
+//        if (!isInValidParam(photoDatas, headPhoto))
+//        {
+//            return null;
+//        }
+//
+//        ViewHeadPhotoData photoData = photoDatas.get(0);
+//        ViewHeadPhotoParam mHeadPhoto = headPhoto.get(0);
+//        return saveBytes(photoData, mHeadPhoto);
+//    }
 
-        ViewHeadPhotoData photoData = photoDatas.get(0);
-        ViewHeadPhotoParam mHeadPhoto = headPhoto.get(0);
-        return saveBytes(photoData, mHeadPhoto);
-    }
+//    private boolean isInValidParam(List<ViewHeadPhotoData> photoDatas, List<ViewHeadPhotoParam> headPhoto)
+//    {
+//        return headPhoto != null && headPhoto.size() == 1 && photoDatas.size() == 1;
+//    }
 
-    private boolean isInValidParam(List<ViewHeadPhotoData> photoDatas, List<ViewHeadPhotoParam> headPhoto)
-    {
-        return headPhoto != null && headPhoto.size() == 1 && photoDatas.size() == 1;
-    }
-
-    private Bitmap saveBytes(ViewHeadPhotoData photoData, ViewHeadPhotoParam mHeadPhoto)
-    {
-        String account = photoData.getEspaceNumber();
-        if (TextUtils.isEmpty(account))
-        {
-            Logger.debug(TagInfo.APPTAG, "eSpaceNumber = null or \"\"");
-            return null;
-        }
-
-        //删除上次使用的头像
-        HeadPhotoUtil.deletePhoto(mContext, account);
-
-        byte[] data = photoData.getData();
-        String fileName = save(account, mHeadPhoto.getHeadId(), data);
-        HeadPhotoUtil.getIns().addAccount(account, fileName);
-
-        //存入内存
-        return BitmapUtil.decodeByteArray(data, MyOtherInfo.PICTURE_DEFAULT_HEIGHT);
-    }
+//    private Bitmap saveBytes(ViewHeadPhotoData photoData, ViewHeadPhotoParam mHeadPhoto)
+//    {
+//        String account = photoData.getEspaceNumber();
+//        if (TextUtils.isEmpty(account))
+//        {
+//            Logger.debug(TagInfo.APPTAG, "eSpaceNumber = null or \"\"");
+//            return null;
+//        }
+//
+//        //删除上次使用的头像
+//        HeadPhotoUtil.deletePhoto(mContext, account);
+//
+//        byte[] data = photoData.getData();
+//        String fileName = save(account, mHeadPhoto.getHeadId(), data);
+//        HeadPhotoUtil.getIns().addAccount(account, fileName);
+//
+//        //存入内存
+//        return BitmapUtil.decodeByteArray(data, MyOtherInfo.PICTURE_DEFAULT_HEIGHT);
+//    }
 
     private String save(String account, String headId, byte[] data)
     {
         if (data == null)
         {
-            Logger.debug(TagInfo.APPTAG, "headId = null");
+//            Logger.debug(TagInfo.APPTAG, "headId = null");
             return null;
         }
 
         String fileName = HeadPhotoUtil.createHeadFileName(account, headId);
-        FileUtil.saveBytes(mContext, fileName, data, true);
+//        FileUtil.saveBytes(mContext, fileName, data, true);
 
         return fileName;
     }

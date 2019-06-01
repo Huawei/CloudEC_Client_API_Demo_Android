@@ -2,9 +2,9 @@ package com.huawei.opensdk.ec_sdk_demo.logic.im.mvp;
 
 import android.content.Intent;
 
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.entity.InstantMessage;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.MessageItemType;
+import com.huawei.opensdk.imservice.ImChatMsgInfo;
+import com.huawei.opensdk.imservice.ImConstant;
 
 import java.util.List;
 
@@ -14,11 +14,15 @@ public interface ChatContract
     {
         void refreshRecentChatList(List<MessageItemType> list);
 
-        void toast();
+        void toast(int id);
 
-        void updatePersonalStatus(PersonalContact contact);
+        void updatePersonalStatus(ImConstant.ImStatus status);
 
         void updateGroupName(String obj);
+
+        void showInputtingStatus(boolean isInputting);
+
+        void showWithdrawResult(String origin);
     }
 
     interface ChatPresenter
@@ -29,7 +33,11 @@ public interface ChatContract
 
         String getName();
 
-        int getChatType();
+        String getMyAccount();
+
+        ImConstant.ChatMsgType getChatType();
+
+        void loadStatus();
 
         boolean isIsGroup();
 
@@ -37,23 +45,29 @@ public interface ChatContract
 
         void loadHistoryMessage();
 
+        void loadUnReadMessage();
+
+        void loadCurrentChat();
+
         void registerBroadcast();
 
         void unregisterBroadcast();
 
         CharSequence parseInnerEmotion(String ss);
 
-        InstantMessage sendMessage(String trim);
+        int setInputStatus(boolean isInputting);
+
+        ImChatMsgInfo sendMessage(String trim);
 
         CharSequence parseSpan(String content);
 
         void addItem(MessageItemType item);
 
-        void refreshViewAfterSendMessage(InstantMessage instantMessage);
+        void refreshViewAfterSendMessage(ImChatMsgInfo instantMessage);
 
         void startRecord();
 
-        InstantMessage stopRecord();
+//        InstantMessage stopRecord();
 
         void handleActivityResult(int requestCode, int resultCode, Intent data);
 
@@ -62,5 +76,9 @@ public interface ChatContract
         void gotoDetailActivity();
 
         void subscribeContactState();
+
+        void delHistoryMessage(int position);
+
+        void withdrawMessage(int position);
     }
 }

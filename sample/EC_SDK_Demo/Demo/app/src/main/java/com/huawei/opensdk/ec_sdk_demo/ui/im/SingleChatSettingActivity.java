@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.contact.mvp.ISingleChatContract;
@@ -20,7 +20,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 public class SingleChatSettingActivity extends MVPBaseActivity<ISingleChatContract.ISingleChatView, SingleChatPresenter> implements ISingleChatContract.ISingleChatView, View.OnClickListener
 {
 
-    private PersonalContact personalContact;
+//    private PersonalContact personalContact;
 
     private ImageView headIv;
     private ImageView addContactBtn;
@@ -47,7 +47,7 @@ public class SingleChatSettingActivity extends MVPBaseActivity<ISingleChatContra
         clearHistoryTv = (TextView) findViewById(R.id.im_setting_clear_history_tv);
         ((TextView) findViewById(R.id.title_text)).setText(R.string.im_setting);
 
-        new ContactHeadFetcher(this).loadHead(personalContact, headIv, true);
+//        new ContactHeadFetcher(this).loadHead(personalContact, headIv, true);
         addContactBtn.setOnClickListener(this);
         clearHistoryTv.setOnClickListener(this);
     }
@@ -57,7 +57,7 @@ public class SingleChatSettingActivity extends MVPBaseActivity<ISingleChatContra
     {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra(UIConstants.BUNDLE_KEY);
-        personalContact = (PersonalContact) bundle.get(UIConstants.PERSONAL_CONTACT);
+//        personalContact = (PersonalContact) bundle.get(UIConstants.PERSONAL_CONTACT);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SingleChatSettingActivity extends MVPBaseActivity<ISingleChatContra
         switch (v.getId())
         {
             case R.id.add_member_btn:
-                mPresenter.addMember(personalContact);
+//                mPresenter.addMember(personalContact);
                 break;
             case R.id.im_setting_clear_history_tv:
                 mPresenter.clearHistory();

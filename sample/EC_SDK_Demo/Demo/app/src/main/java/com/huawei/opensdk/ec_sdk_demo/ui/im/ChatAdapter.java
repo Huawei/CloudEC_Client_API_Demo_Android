@@ -14,20 +14,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.huawei.data.entity.InstantMessage;
-import com.huawei.data.unifiedmessage.MediaResource;
-import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
-import com.huawei.opensdk.ec_sdk_demo.logic.im.ChatTools;
-import com.huawei.opensdk.ec_sdk_demo.logic.im.FileTypeLogic;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.MessageItemType;
-import com.huawei.opensdk.ec_sdk_demo.ui.im.contact.HeadIconTools;
+import com.huawei.opensdk.ec_sdk_demo.util.DateUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.CircleProgressBar;
-import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
-import com.huawei.utils.DateUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -231,29 +224,28 @@ public class ChatAdapter extends BaseAdapter
      */
     public MessageItemType.ItemType getItemViewType(MessageItemType item)
     {
-        boolean isSender = item.instantMsg.getFromId().equals(mMyAccount);
-        boolean isIm = (item.instantMsg.getMediaRes() == null);
+        boolean isSender = item.chatMsgInfo.getFromId().equals(mMyAccount);
+//        boolean isIm = (item.instantMsg.getMediaRes() == null);
 
-        if (isIm)
-        {
+//        if (isIm)
+//        {
             return isSender ? MessageItemType.ItemType.MsgSendText : MessageItemType.ItemType.MsgReceiveText;
-        }
-        else
-        {
-            int mediaType = item.instantMsg.getMediaRes().getMediaType();
-            switch (mediaType)
-            {
-                case MediaResource.MEDIA_PICTURE:
-                    return isSender ? MessageItemType.ItemType.MsgSendPic : MessageItemType.ItemType.MsgReceivePic;
-                case MediaResource.MEDIA_AUDIO:
-                    return isSender ? MessageItemType.ItemType.MsgSendAudio : MessageItemType.ItemType.MsgReceiveAudio;
-                case MediaResource.MEDIA_VIDEO:
-                    return isSender ? MessageItemType.ItemType.MsgSendVideo : MessageItemType.ItemType.MsgReceiveVideo;
-                case MediaResource.MEDIA_FILE:
-                    return isSender ? MessageItemType.ItemType.MsgSendFile : MessageItemType.ItemType.MsgReceiveFile;
-            }
-        }
-        return null;
+//        }
+//        else
+//        {
+//            int mediaType = item.instantMsg.getMediaRes().getMediaType();
+//            switch (mediaType)
+//            {
+//                case MediaResource.MEDIA_PICTURE:
+//                    return isSender ? MessageItemType.ItemType.MsgSendPic : MessageItemType.ItemType.MsgReceivePic;
+//                case MediaResource.MEDIA_AUDIO:
+//                    return isSender ? MessageItemType.ItemType.MsgSendAudio : MessageItemType.ItemType.MsgReceiveAudio;
+//                case MediaResource.MEDIA_VIDEO:
+//                    return isSender ? MessageItemType.ItemType.MsgSendVideo : MessageItemType.ItemType.MsgReceiveVideo;
+//                case MediaResource.MEDIA_FILE:
+//                    return isSender ? MessageItemType.ItemType.MsgSendFile : MessageItemType.ItemType.MsgReceiveFile;
+//            }
+//        }
     }
 
     private void loadViewByType(View view, MessageItemType.ItemType itemType, MessageItemType item)
@@ -323,47 +315,47 @@ public class ChatAdapter extends BaseAdapter
 
     private void loadPicture(MessageItemType item, PicMessageHolder picMessageHolder)
     {
-        InstantMessage instantMsg = item.instantMsg;
-        if (instantMsg == null || instantMsg.getMediaRes() == null)
+//        InstantMessage instantMsg = item.instantMsg;
+//        if (instantMsg == null || instantMsg.getMediaRes() == null)
         {
             return;
         }
-        String filepath = getPicThumbNailPath(instantMsg);
-        if (isFileDownload(filepath))
-        {
-            Bitmap bitmap = HeadIconTools.getBitmapByPath(filepath);
-            picMessageHolder.contentImage.setImageBitmap(bitmap);
-        }
-        else
-        {
-            boolean result = ImMgr.getInstance().downloadFile(instantMsg, true);
-            Log.i("ChatAdapter", "result = " + result);
-        }
+//        String filepath = getPicThumbNailPath(instantMsg);
+//        if (isFileDownload(filepath))
+//        {
+//            Bitmap bitmap = HeadIconTools.getBitmapByPath(filepath);
+//            picMessageHolder.contentImage.setImageBitmap(bitmap);
+//        }
+//        else
+//        {
+//            boolean result = ImMgr.getInstance().downloadFile(instantMsg, true);
+//            Log.i("ChatAdapter", "result = " + result);
+//        }
     }
 
     private void loadAudio(MessageItemType item, final AudioMessageHolder audioMessageHolder)
     {
-        InstantMessage instantMsg = item.instantMsg;
+//        InstantMessage instantMsg = item.instantMsg;
         String audioFilepath = "";
-        if (instantMsg == null || instantMsg.getMediaRes() == null)
-        {
-            return;
-        }
-        String filepath = getAudioFilePath(instantMsg);
-        if (isFileDownload(filepath))
-        {
-            audioFilepath = getAudioFilePath(instantMsg);
-        }
-        else
-        {
-            if (!instantMsg.getContent().contains("LOCAL"))
-            {
-                boolean result = ImMgr.getInstance().downloadFile(instantMsg, false);
-                LogUtil.i(UIConstants.DEMO_TAG, "result = " + result);
-            }
-        }
-        MediaResource mediaResource = item.instantMsg.getMediaRes();
-        audioMessageHolder.audioTimeLength.setText(DateUtil.getTime(mediaResource.getDuration()));
+//        if (instantMsg == null || instantMsg.getMediaRes() == null)
+//        {
+//            return;
+//        }
+//        String filepath = getAudioFilePath(instantMsg);
+//        if (isFileDownload(filepath))
+//        {
+//            audioFilepath = getAudioFilePath(instantMsg);
+//        }
+//        else
+//        {
+//            if (!instantMsg.getContent().contains("LOCAL"))
+//            {
+//                boolean result = ImMgr.getInstance().downloadFile(instantMsg, false);
+//                LogUtil.i(UIConstants.DEMO_TAG, "result = " + result);
+//            }
+//        }
+//        MediaResource mediaResource = item.instantMsg.getMediaRes();
+//        audioMessageHolder.audioTimeLength.setText(DateUtil.getTime(mediaResource.getDuration()));
         final String finalAudioFilepath = audioFilepath;
         audioMessageHolder.clickLayout.setOnClickListener(new View.OnClickListener()
         {
@@ -386,7 +378,7 @@ public class ChatAdapter extends BaseAdapter
             }
             else
             {
-                audioHandle = ImMgr.getInstance().startPlay(audioPath, 1);
+//                audioHandle = ImMgr.getInstance().startPlay(audioPath, 1);
                 audioPlaying = true;
             }
         }
@@ -414,8 +406,8 @@ public class ChatAdapter extends BaseAdapter
     {
         if (audioHandle != -1)
         {
-            int result = ImMgr.getInstance().stopPlay(audioHandle);
-            if (result == 0)
+//            int result = ImMgr.getInstance().stopPlay(audioHandle);
+//            if (result == 0)
             {
                 audioHandle = -1;
                 audioPlaying = false;
@@ -428,28 +420,28 @@ public class ChatAdapter extends BaseAdapter
 
     private void loadVideo(MessageItemType item, VideoMessageHolder videoMessageHolder)
     {
-        InstantMessage instantMsg = item.instantMsg;
-        if (instantMsg == null || instantMsg.getMediaRes() == null)
-        {
-            return;
-        }
+//        InstantMessage instantMsg = item.instantMsg;
+//        if (instantMsg == null || instantMsg.getMediaRes() == null)
+//        {
+//            return;
+//        }
 
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        long duration = mediaRes.getDuration() * ONE_SECOND;
-        videoMessageHolder.videoTimeLength.setText(DateUtil.formatMillisInterval(duration, DateUtil.FMT_MS));
-        String filepath = getVideoFilePath(instantMsg);
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        long duration = mediaRes.getDuration() * ONE_SECOND;
+//        videoMessageHolder.videoTimeLength.setText(DateUtil.formatMillisInterval(duration, DateUtil.FMT_MS));
+//        String filepath = getVideoFilePath(instantMsg);
 
-        if (isFileDownload(filepath))
+//        if (isFileDownload(filepath))
         {
             //video Thumbnail
             Bitmap bitmap;
-            bitmap = ChatTools.getVideoThumbnailMap(instantMsg.getMessageId());
-            if (bitmap == null)
+//            bitmap = ChatTools.getVideoThumbnailMap(instantMsg.getMessageId());
+//            if (bitmap == null)
             {
-                bitmap = getVideoThumbnail(filepath);
-                ChatTools.setVideoThumbnailMap(instantMsg.getMessageId(), bitmap);
+//                bitmap = getVideoThumbnail(filepath);
+//                ChatTools.setVideoThumbnailMap(instantMsg.getMessageId(), bitmap);
             }
-            videoMessageHolder.contentImage.setImageBitmap(bitmap);
+//            videoMessageHolder.contentImage.setImageBitmap(bitmap);
         }
         int progress = item.progress;
         if (progress > 0 && progress < 100)
@@ -459,38 +451,38 @@ public class ChatAdapter extends BaseAdapter
         }
         if (progress == 100)
         {
-            Bitmap bitmap = getVideoThumbnail(filepath);
-            ChatTools.setVideoThumbnailMap(instantMsg.getMessageId(), bitmap);
+//            Bitmap bitmap = getVideoThumbnail(filepath);
+//            ChatTools.setVideoThumbnailMap(instantMsg.getMessageId(), bitmap);
         }
     }
 
     private void loadFile(MessageItemType item, final FileMessageHolder fileMessageHolder)
     {
-        InstantMessage instantMsg = item.instantMsg;
-        if (instantMsg == null || instantMsg.getMediaRes() == null)
+//        InstantMessage instantMsg = item.instantMsg;
+//        if (instantMsg == null || instantMsg.getMediaRes() == null)
         {
             return;
         }
-        MediaResource mediaResource = item.instantMsg.getMediaRes();
-        final int size = mediaResource.getSize();
-        fileMessageHolder.fileSize.setText(FileUtil.makeUpSizeShow(size));
-        fileMessageHolder.fileName.setText(mediaResource.getName());
-        fileMessageHolder.fileImage.setImageResource(FileTypeLogic.getLogoIdByType(mediaResource.getName()));
+//        MediaResource mediaResource = item.instantMsg.getMediaRes();
+//        final int size = mediaResource.getSize();
+//        fileMessageHolder.fileSize.setText(FileUtil.makeUpSizeShow(size));
+//        fileMessageHolder.fileName.setText(mediaResource.getName());
+//        fileMessageHolder.fileImage.setImageResource(FileTypeLogic.getLogoIdByType(mediaResource.getName()));
 
-        final String filepath = getFilePath(instantMsg);
-        if (!isFileDownload(filepath))
-        {
-            boolean result = ImMgr.getInstance().downloadFile(instantMsg, false);
-            LogUtil.i(UIConstants.DEMO_TAG, "result = " + result);
-        }
-        fileMessageHolder.clickLayout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                fileLayoutClick(fileMessageHolder, filepath);
-            }
-        });
+//        final String filepath = getFilePath(instantMsg);
+//        if (!isFileDownload(filepath))
+//        {
+//            boolean result = ImMgr.getInstance().downloadFile(instantMsg, false);
+//            LogUtil.i(UIConstants.DEMO_TAG, "result = " + result);
+//        }
+//        fileMessageHolder.clickLayout.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                fileLayoutClick(fileMessageHolder, filepath);
+//            }
+//        });
 
     }
 
@@ -512,85 +504,89 @@ public class ChatAdapter extends BaseAdapter
 
     private void loadCommonData(MessageItemType item, BaseMessageHolder holder)
     {
-        String contactName = item.instantMsg.getFromId();
+        String contactName = item.chatMsgInfo.getFromName();
+        if (null == contactName || contactName.equals(""))
+        {
+            contactName = item.chatMsgInfo.getFromId();
+        }
         holder.chatNameText.setText(contactName);
 
-        Bitmap headIcon = HeadIconTools.getInstance().getHeadImage(contactName);
-        if (headIcon != null)
+//        Bitmap headIcon = HeadIconTools.getInstance().getHeadImage(contactName);
+//        if (headIcon != null)
         {
-            holder.chatIconImageView.setImageBitmap(headIcon);
+//            holder.chatIconImageView.setImageBitmap(headIcon);
         }
-        else
+//        else
         {
             holder.chatIconImageView.setImageResource(R.drawable.default_head);
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         dateFormat.applyPattern(DateUtil.FMT_YMDHM);
-        String time = dateFormat.format(item.instantMsg.getTimestamp());
+        String time = dateFormat.format(item.chatMsgInfo.getUtcStamp());
         holder.chatTimeText.setText(time);
     }
 
-    private String getPicThumbNailPath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        String picName = mediaRes.getName();
-        String[] pic = picName.split("\\.");
-        String fileThumbNailName = pic[0] + "_s." + pic[1];
-        if (!TextUtils.isEmpty(fileThumbNailName))
-        {
-            String filepath = ChatTools.APP_PATH + File.separator + "Img" + File.separator + fileThumbNailName;
-            return filepath;
-        }
-        return null;
-    }
+//    private String getPicThumbNailPath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        String picName = mediaRes.getName();
+//        String[] pic = picName.split("\\.");
+//        String fileThumbNailName = pic[0] + "_s." + pic[1];
+//        if (!TextUtils.isEmpty(fileThumbNailName))
+//        {
+//            String filepath = ChatTools.APP_PATH + File.separator + "Img" + File.separator + fileThumbNailName;
+//            return filepath;
+//        }
+//        return null;
+//    }
 
-    private String getAudioFilePath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        String fileName = mediaRes.getName();
+//    private String getAudioFilePath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        String fileName = mediaRes.getName();
+//
+//        if (!TextUtils.isEmpty(fileName))
+//        {
+//            String filepath = ChatTools.APP_PATH + File.separator + "Audio" + File.separator + fileName;
+//            return filepath;
+//        }
+//        return null;
+//    }
 
-        if (!TextUtils.isEmpty(fileName))
-        {
-            String filepath = ChatTools.APP_PATH + File.separator + "Audio" + File.separator + fileName;
-            return filepath;
-        }
-        return null;
-    }
+//    private String getFilePath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        String fileName = mediaRes.getName();
+//
+//        if (!TextUtils.isEmpty(fileName))
+//        {
+//            String filepath = ChatTools.APP_PATH + File.separator + "File" + File.separator +
+//                    LoginMgr.getInstance().getAccount() + File.separator + fileName;
+//            return filepath;
+//        }
+//        return null;
+//    }
 
-    private String getFilePath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        String fileName = mediaRes.getName();
-
-        if (!TextUtils.isEmpty(fileName))
-        {
-            String filepath = ChatTools.APP_PATH + File.separator + "File" + File.separator +
-                    LoginMgr.getInstance().getAccount() + File.separator + fileName;
-            return filepath;
-        }
-        return null;
-    }
-
-    private String getVideoFilePath(InstantMessage instantMsg)
-    {
-        MediaResource mediaRes = instantMsg.getMediaRes();
-        String fileName = mediaRes.getName();
-        if (!TextUtils.isEmpty(fileName))
-        {
-            return ChatTools.APP_PATH + File.separator + "Video" + File.separator + fileName;
-        }
-        return null;
-    }
+//    private String getVideoFilePath(InstantMessage instantMsg)
+//    {
+//        MediaResource mediaRes = instantMsg.getMediaRes();
+//        String fileName = mediaRes.getName();
+//        if (!TextUtils.isEmpty(fileName))
+//        {
+//            return ChatTools.APP_PATH + File.separator + "Video" + File.separator + fileName;
+//        }
+//        return null;
+//    }
 
     private void saveDateToItemMap(MessageItemType item)
     {
-        InstantMessage instantMessage = item.instantMsg;
-        MediaResource resource = instantMessage.getMediaRes();
-        boolean exist = itemMap.get(getKey(instantMessage.getId(), resource.getMediaId())) != null;
-        if (!exist)
-        {
-            itemMap.put(getKey(instantMessage.getId(), resource.getMediaId()), item);
-        }
+//        InstantMessage instantMessage = item.instantMsg;
+//        MediaResource resource = instantMessage.getMediaRes();
+//        boolean exist = itemMap.get(getKey(instantMessage.getId(), resource.getMediaId())) != null;
+//        if (!exist)
+//        {
+//            itemMap.put(getKey(instantMessage.getId(), resource.getMediaId()), item);
+//        }
     }
 
     /**

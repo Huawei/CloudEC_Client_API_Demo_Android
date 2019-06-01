@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
+import com.huawei.ecterminalsdk.base.TsdkConfRecordMode;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.logic.BaseView;
 
@@ -25,6 +26,10 @@ public interface ConfCreateContract
         void setStartTime(String startTime);
 
         void setMediaType(TsdkConfMediaType mediaType);
+
+        void setRecordType(TsdkConfRecordMode recordType);
+
+        void setAutoRecord(boolean isAtuo);
 
         void setBookType(boolean isInstantConference);
 

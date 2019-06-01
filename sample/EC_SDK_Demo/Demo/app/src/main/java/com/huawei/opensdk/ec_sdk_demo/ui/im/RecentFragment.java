@@ -7,20 +7,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.huawei.contacts.ContactCache;
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.ConstGroup;
-import com.huawei.data.entity.RecentChatContact;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.mvp.RecentChatContract;
-import com.huawei.opensdk.ec_sdk_demo.logic.im.mvp.RecentChatHelper;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.mvp.RecentChatPresenter;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.AbsFragment;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
+import com.huawei.opensdk.imservice.ImContactInfo;
 import com.huawei.opensdk.imservice.ImMgr;
+import com.huawei.opensdk.imservice.ImRecentChatInfo;
 
 import java.util.List;
 
@@ -35,6 +33,8 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
     private RecentChatAdapter mAdapter;
     private RecentChatPresenter mPresenter;
 
+    private ImRecentChatInfo mCurrentRecentChat;
+
     private Handler mHandler = new Handler()
     {
         @Override
@@ -45,9 +45,9 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
                 case REFRESH_RECENT_LIST:
                     if (msg.obj instanceof List)
                     {
-                        List<RecentChatContact> list = (List<RecentChatContact>) msg.obj;
+                        List<ImRecentChatInfo> list = (List<ImRecentChatInfo>) msg.obj;
                         LogUtil.i(UIConstants.DEMO_TAG, "refresh recent contact list view, size = " + list.size());
-                        RecentChatHelper.sort(list);
+//                        RecentChatHelper.sort(list);
                         mAdapter.setData(list);
                         mAdapter.notifyDataSetChanged();
                     }
@@ -72,7 +72,7 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
         mPresenter.regRecentSessionReceiver();
         mRecentLv = (ListView) mView.findViewById(R.id.recent_list);
         mAdapter = new RecentChatAdapter(getActivity());
-        final List<RecentChatContact> list = mPresenter.loadRecentChats();
+        final List<ImRecentChatInfo> list = mPresenter.loadRecentChats();
         if (null != list){
             mAdapter.setData(list);
         }
@@ -83,8 +83,9 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                RecentChatContact chatContact = mPresenter.getRecentChat().get(position);
-                skipToChatActivity(chatContact);
+                mCurrentRecentChat = mPresenter.getRecentChat().get(position);
+                ImMgr.getInstance().setCurrentRecentChat(mCurrentRecentChat);
+                skipToChatActivity();
             }
         });
     }
@@ -97,7 +98,7 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
     }
 
     @Override
-    public void refreshRecentChatList(List<RecentChatContact> list)
+    public void refreshRecentChatList(List<ImRecentChatInfo> list)
     {
         Message msg = Message.obtain();
         msg.what = REFRESH_RECENT_LIST;
@@ -105,20 +106,22 @@ public class RecentFragment extends AbsFragment implements RecentChatContract.Re
         mHandler.sendMessage(msg);
     }
 
-    private void skipToChatActivity(RecentChatContact chatContact)
+    private void skipToChatActivity()
     {
-        String account = chatContact.getContactAccount();
-        if (chatContact.getType() == RecentChatContact.ESPACECHATTER)
+        String tag = mCurrentRecentChat.getTag();
+        ImMgr.getInstance().setCurrentChatId(tag);
+        if (!mCurrentRecentChat.isGroupChat())
         {
             Intent intent = new Intent(IntentConstant.IM_CHAT_ACTIVITY_ACTION);
-            PersonalContact pContact = ContactCache.getIns().getContactByAccount(account);
-            intent.putExtra(UIConstants.CHAT_TYPE, pContact);
+            ImContactInfo chatObject = new ImContactInfo();
+            chatObject.setAccount(mCurrentRecentChat.getTag());
+            chatObject.setName(mCurrentRecentChat.getChatName());
+            intent.putExtra(UIConstants.CHAT_TYPE, chatObject);
             ActivityUtil.startActivity(getActivity(), intent);
         }
-        else if (chatContact.getType() == RecentChatContact.DISCUSSIONCHATTER ||
-                chatContact.getType() == RecentChatContact.GROUPCHATTER)
+        else
         {
-            ConstGroup group = ImMgr.getInstance().getConstGroupById(account);
+            ImChatGroupInfo group = ImMgr.getInstance().getChatGroupInfo(tag);
             Intent intent = new Intent(IntentConstant.IM_CHAT_ACTIVITY_ACTION);
             intent.putExtra(UIConstants.CHAT_TYPE, group);
             ActivityUtil.startActivity(getActivity(), intent);

@@ -1,6 +1,6 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.im.mvp;
 
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -20,8 +20,8 @@ public class ImSearchPresenter extends MVPBasePresenter<ImSearchContract.ImSearc
             switch (broadcastName)
             {
                 case CustomBroadcastConstants.ACTION_IM_SEARCH_CONTACT_RESULT:
-                    List<PersonalContact> contactList = (List<PersonalContact>) obj;
-                    getView().refreshContactList(contactList);
+//                    List<PersonalContact> contactList = (List<PersonalContact>) obj;
+//                    getView().refreshContactList(contactList);
                     break;
                 default:
                     break;

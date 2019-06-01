@@ -1,6 +1,6 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.contact.mvp;
 
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.PersonalContact;
 
 public interface ISingleChatContract
 {
@@ -11,7 +11,7 @@ public interface ISingleChatContract
 
     interface ISingleChatPresenter
     {
-        void addMember(PersonalContact personalContact);
+//        void addMember(PersonalContact personalContact);
 
         void clearHistory();
     }

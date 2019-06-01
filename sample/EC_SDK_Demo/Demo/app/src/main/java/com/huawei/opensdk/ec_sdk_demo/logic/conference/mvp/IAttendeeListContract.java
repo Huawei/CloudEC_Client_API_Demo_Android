@@ -68,6 +68,8 @@ public interface IAttendeeListContract
 
         void lockConf(boolean islock);
 
+        void recordConf(boolean isRecord);
+
         void handUpSelf();
 
         void cancelMemberHandUp(Member member);
@@ -107,6 +109,10 @@ public interface IAttendeeListContract
         boolean isConfMute();
 
         boolean isConfLock();
+
+        boolean isRecord();
+
+        boolean isSupportRecord();
 
         List<Member> updateAttendeeList();
 

@@ -210,7 +210,65 @@
             android:background="#ffffff"/>
     </LinearLayout>
 
-    <!--申请主席-->
+    <!--开启录制-->
+    <LinearLayout android:id="@+id/start_record_ll"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="12dp"
+                android:src="@drawable/conf_open_video"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/start_record"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ffffff"/>
+    </LinearLayout>
+
+    <!--停止录制-->
+    <LinearLayout android:id="@+id/stop_record_ll"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="12dp"
+                android:src="@drawable/video_data_change_visible"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/stop_record"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ffffff"/>
+    </LinearLayout>
+
+        <!--申请主席-->
     <LinearLayout android:id="@+id/request_chairman_ll"
         android:layout_width="200dp"
         android:layout_height="wrap_content"

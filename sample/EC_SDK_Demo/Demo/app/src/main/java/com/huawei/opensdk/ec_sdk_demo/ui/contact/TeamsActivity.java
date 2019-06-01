@@ -1,97 +1,239 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.contact;
 
+import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.PersonalTeam;
-import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
-import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.adapter.TeamAdapter;
+import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
+import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
+import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
+import com.huawei.opensdk.imservice.ImConstant;
+import com.huawei.opensdk.imservice.ImContactGroupInfo;
 import com.huawei.opensdk.imservice.ImMgr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class is about contacts teams list activity.
  */
-public class TeamsActivity extends BaseActivity implements AdapterView.OnItemClickListener {
+public class TeamsActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private TextView tvTitle;
-    private ImageView ivIsChecked;
+    private TextView tvRightTitle;
     private ListView listView;
     private TeamAdapter teamAdapter;
-    private List<PersonalContact> personalContactList;
-    private List<PersonalTeam> personalTeamList;
-    private PersonalTeam personalTeam;
-    private static int teamIndex;
 
-    public static int getTeamIndex() {
-        return teamIndex;
-    }
-
-    public static void setTeamIndex(int teamIndex) {
-        TeamsActivity.teamIndex = teamIndex;
-    }
+    private List<ImContactGroupInfo> contactGroupInfoList;
+    private List<Object> items = new ArrayList<>();
+    private long checkGroupId = -1;
 
     @Override
     public void initializeComposition() {
         setContentView(R.layout.teams);
         tvTitle = (TextView) findViewById(R.id.title_text);
+        tvRightTitle = (TextView) findViewById(R.id.right_text);
         listView = (ListView) findViewById(R.id.team_list);
 
         tvTitle.setText(getString(R.string.team_check));
+        tvRightTitle.setText(getString(R.string.new_team));
 
-        View headView = getLayoutInflater().inflate(R.layout.team_item, null);
-        TextView tvAllContacts = (TextView) headView.findViewById(R.id.team_name);
-        TextView tvAllCount = (TextView) headView.findViewById(R.id.members_count);
-        ivIsChecked = (ImageView) headView.findViewById(R.id.team_type_img);
-
-        tvAllContacts.setText(getString(R.string.all_contacts));
-        tvAllCount.setText("(" + personalContactList.size() + ")");
-        ivIsChecked.setImageResource(R.drawable.search_member_team);
-        if (tvAllContacts.getText().toString().equals(ContactFragment.getCheckedTeamName()))
-        {
-            ivIsChecked.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            ivIsChecked.setVisibility(View.GONE);
-        }
-        listView.addHeaderView(headView);
-
-        teamAdapter = new TeamAdapter(this);
-        teamAdapter.setDate(personalTeamList);
-        listView.setAdapter(teamAdapter);
-
+        refreshContactGroup();
+        tvRightTitle.setOnClickListener(this);
         listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (checkGroupId == contactGroupInfoList.get(position).getGroupId())
+                {
+                    return false;
+                }
+                showItemClickDialog(position);
+                return true;
+            }
+        });
     }
 
     @Override
     public void initializeData() {
-        personalContactList = ImMgr.getInstance().getFriends();
-        personalTeamList = ImMgr.getInstance().getTeams();
+        teamAdapter = new TeamAdapter(this);
+        Intent intent = getIntent();
+        checkGroupId = intent.getLongExtra(UIConstants.IM_CHECK_CONTACT_GROUP_NAME, -1);
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-        if (0 == i)
+        Intent intent = new Intent();
+        intent.putExtra(UIConstants.IM_RETURN_CONTACT_GROUP_ID, contactGroupInfoList.get(i).getGroupId());
+        setResult(UIConstants.IM_RESULT_CODE_CONTACT_GROUP, intent);
+        finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId())
         {
-            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_REFRESH_TEAM_MEMBER, -1);
-            finish();
+            case R.id.right_text:
+                showTeamNameDialog(0, R.string.new_team);
+                break;
+                default:
+                    break;
+        }
+    }
+
+    private void refreshContactGroup()
+    {
+        contactGroupInfoList = ImMgr.getInstance().getAllContactGroupList();
+        if (null == contactGroupInfoList || 0 == contactGroupInfoList.size())
+        {
+            return;
+        }
+        for (ImContactGroupInfo contactGroupInfo : contactGroupInfoList)
+        {
+            if (checkGroupId == contactGroupInfo.getGroupId())
+            {
+                teamAdapter.setCheckGroupId(checkGroupId);
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                teamAdapter.setDate(contactGroupInfoList);
+                listView.setAdapter(teamAdapter);
+            }
+        });
+    }
+
+    private void showTeamNameDialog(final long teamId, final int id)
+    {
+        final EditDialog dialog = new EditDialog(this, id);
+        dialog.setRightButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommonUtil.hideSoftInput(TeamsActivity.this);
+                if (TextUtils.isEmpty(dialog.getText()))
+                {
+                    showToast(R.string.invalid_number);
+                    return;
+                }
+                if (id == R.string.new_team)
+                {
+                    manageContactGroup(ImConstant.ContactGroupOpType.ADD_CONTACT_GROUP, teamId, dialog.getText());
+                }
+                else
+                {
+                    manageContactGroup(ImConstant.ContactGroupOpType.MODIFY_CONTACT_GROUP, teamId, dialog.getText());
+                }
+            }
+        });
+        dialog.show();
+    }
+
+    private void showItemClickDialog(final int index)
+    {
+        items.clear();
+        if (1 == contactGroupInfoList.size())
+        {
+            items.add(getString(R.string.rename_team));
+            items.add(getString(R.string.delete_team));
+        }
+        else if (0 == index)
+        {
+            items.add(getString(R.string.move_team_down));
+            items.add(getString(R.string.rename_team));
+            items.add(getString(R.string.delete_team));
+        }
+        else if (index == contactGroupInfoList.size() - 1)
+        {
+            items.add(getString(R.string.move_team_up));
+            items.add(getString(R.string.rename_team));
+            items.add(getString(R.string.delete_team));
         }
         else
         {
-            personalTeam = personalTeamList.get(i - 1);
-            setTeamIndex(i - 1);
-            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_REFRESH_TEAM_MEMBER, personalTeam);
-            finish();
+            items.add(getString(R.string.move_team_down));
+            items.add(getString(R.string.move_team_up));
+            items.add(getString(R.string.rename_team));
+            items.add(getString(R.string.delete_team));
         }
+        final long chooseId = contactGroupInfoList.get(index).getGroupId();
+        final SimpleListDialog listDialog = new SimpleListDialog(this, items);
+        listDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listDialog.dismiss();
+                if ((items.get(position)).equals(getString(R.string.delete_team)))
+                {
+                    manageContactGroup(ImConstant.ContactGroupOpType.DEL_CONTACT_GROUP, chooseId, null);
+                }
+                else if ((items.get(position)).equals(getString(R.string.rename_team)))
+                {
+                    showTeamNameDialog(chooseId, R.string.rename_team);
+                }
+                else if ((items.get(position)).equals(getString(R.string.move_team_up)))
+                {
+                    updateOrder(index, index - 1);
+                }
+                else
+                {
+                    updateOrder(index, index + 1);
+                }
+            }
+        });
+        listDialog.show();
+    }
+
+    private void manageContactGroup(int opType, long groupId, String groupName)
+    {
+        int opResult;
+        switch (opType)
+        {
+            case ImConstant.ContactGroupOpType.ADD_CONTACT_GROUP:
+                long newGroupId = ImMgr.getInstance().addContactGroup(groupName);
+                if (-1 == newGroupId)
+                {
+                    showToast(R.string.new_team_failed);
+                    return;
+                }
+                break;
+            case ImConstant.ContactGroupOpType.DEL_CONTACT_GROUP:
+                opResult = ImMgr.getInstance().delContactGroup(groupId);
+                if (0 != opResult)
+                {
+                    showToast(R.string.del_team_failed);
+                    return;
+                }
+                break;
+            case ImConstant.ContactGroupOpType.MODIFY_CONTACT_GROUP:
+                opResult = ImMgr.getInstance().modifyContactGroup(groupId, groupName);
+                if (0 != opResult)
+                {
+                    showToast(R.string.mod_team_failed);
+                    return;
+                }
+                break;
+                default:
+                    break;
+        }
+        refreshContactGroup();
+    }
+
+    private void updateOrder(int index1, int index2)
+    {
+        int result = ImMgr.getInstance().updateGroupOrder(contactGroupInfoList, index1, index2);
+        if (0 != result)
+        {
+            showToast(R.string.update_team_order_failed);
+            return;
+        }
+        refreshContactGroup();
     }
 }

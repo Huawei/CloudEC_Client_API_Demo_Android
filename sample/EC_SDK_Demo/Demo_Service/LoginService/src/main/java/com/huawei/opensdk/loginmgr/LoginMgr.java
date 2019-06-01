@@ -9,18 +9,22 @@ import com.huawei.ecterminalsdk.base.TsdkAuthType;
 import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
+import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
+import com.huawei.ecterminalsdk.base.TsdkServiceAccountType;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
 import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.imservice.ImAccountInfo;
+import com.huawei.opensdk.imservice.ImConstant;
 import com.huawei.opensdk.imservice.ImMgr;
 
 import static com.huawei.ecterminalsdk.base.TsdkServerType.TSDK_E_SERVER_TYPE_PORTAL;
+import static com.huawei.ecterminalsdk.base.TsdkServiceAccountType.TSDK_E_IM_SERVICE_ACCOUNT;
+import static com.huawei.ecterminalsdk.base.TsdkServiceAccountType.TSDK_E_VOIP_SERVICE_ACCOUNT;
 
 /**
  * This class is about login manager
@@ -58,6 +62,12 @@ public class LoginMgr {
     private String terminal;
 
     private String sipNumber;
+
+    /**
+     * Whether login is successful
+     * im是否登录成功
+     */
+    private boolean isImLogin = false;
 
     /**
      * Define a TupEaddrContactorInfo object
@@ -157,18 +167,18 @@ public class LoginMgr {
     public void handleAuthSuccess(int userId, TsdkImLoginParam imLoginParam) {
         LogUtil.e(TAG, "authorize success.");
         // 启动IM的登录
-        if (TsdkManager.getInstance().getAppInfo().getSupportIm() == 1 && null != imLoginParam) {
-            ImAccountInfo imAccountInfo = new ImAccountInfo();
-            imAccountInfo.setAccount(imLoginParam.getAccount());
-            imAccountInfo.setToken(imLoginParam.getToken());
-            String[] MaaUri = imLoginParam.getMaaServerUri().split(":");
-            imAccountInfo.setMaaServer(MaaUri[0]);
-            imAccountInfo.setMaaServerPort(Integer.parseInt(MaaUri[1]));
-            imAccountInfo.setPassword(imLoginParam.getPassword());
-            imAccountInfo.setPushServer(imLoginParam.getPushServerUri());
-
-            sendHandlerMessage(LoginEvent.LOGIN_E_EVT_AUTH_SUCCESS.getIndex(), imAccountInfo);
-        }
+//        if (TsdkManager.getInstance().getAppInfo().getSupportIm() == 1 && null != imLoginParam) {
+//            ImAccountInfo imAccountInfo = new ImAccountInfo();
+//            imAccountInfo.setAccount(imLoginParam.getAccount());
+//            imAccountInfo.setToken(imLoginParam.getToken());
+//            String[] MaaUri = imLoginParam.getMaaServerUri().split(":");
+//            imAccountInfo.setMaaServer(MaaUri[0]);
+//            imAccountInfo.setMaaServerPort(Integer.parseInt(MaaUri[1]));
+//            imAccountInfo.setPassword(imLoginParam.getPassword());
+//            imAccountInfo.setPushServer(imLoginParam.getPushServerUri());
+//
+//            sendHandlerMessage(LoginEvent.LOGIN_E_EVT_AUTH_SUCCESS.getIndex(), imAccountInfo);
+//        }
     }
 
     /**
@@ -206,37 +216,59 @@ public class LoginMgr {
      * [en]This method is used to handle the success login
      * [cn]处理登录成功事件
      *
-     * @param userId            [en]Indicates user id
-     *                          [cn]用户标识
+     * @param userId                   [en]Indicates user id
+     *                                 [cn]用户标识
+     * @param serviceAccountType       [en]Indicates service account type
+     *                                 [cn]VOIP/im登录账号类型
+     * @param loginSuccessInfo         [en]Indicates login success info
+     *                                 [cn]登陆成功的相关信息
      */
-    public void handleLoginSuccess(int userId, TsdkLoginSuccessInfo successInfo) {
-        LogUtil.i(TAG, "voip login success");
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_SUCCESS, userId, "voip login success");
+    public void handleLoginSuccess(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
+        LogUtil.i(TAG, "login success");
+        if (TSDK_E_VOIP_SERVICE_ACCOUNT == serviceAccountType)
+        {
+            this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.VOIP_LOGIN_SUCCESS, userId, "voip login success");
+        }
+        else
+        {
+            this.isImLogin = true;
+            ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.ON_LINE);
+            this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.IM_LOGIN_SUCCESS, userId, "im login success");
+        }
     }
 
     /**
      * [en]This method is used to handle the failed login
      * [cn]处理登录失败事件
      *
-     * @param userId            [en]Indicates user id
-     *                          [cn]用户标识
-     * @param result            [en]Indicates response results
-     *                          [cn]响应结果
+     * @param userId                [en]Indicates user id
+     *                              [cn]用户标识
+     * @param serviceAccountType    [en]Indicates service account type
+     *                              [cn]服务账号类型
+     * @param loginFailedInfo       [en]Indicates information about login success
+     *                              [cn]登录失败信息
      */
-    public void handleLoginFailed(int userId, TsdkCommonResult result) {
-        LogUtil.e(TAG, "voip login failed: " + result.getReasonDescription());
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, result.getResult(), result.getReasonDescription());
+    public void handleLoginFailed(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
+        LogUtil.e(TAG, "voip login failed: " + loginFailedInfo.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, loginFailedInfo.getReasonCode(), loginFailedInfo.getReasonDescription());
     }
 
     /**
      * [en]This method is used to handle the success logout
      * [cn]处理登出成功事件
      *
-     * @param userId            [en]Indicates user id
-     *                          [cn]用户标识
+     * @param userId                   [en]Indicates user id
+     *                                 [cn]用户标识
+     * @param serviceAccountType       [en]Indicates service account type
+     *                                 [cn]VOIP/im登录账号类型
      */
-    public void handleLogoutSuccess(int userId ) {
+    public void handleLogoutSuccess(int userId, TsdkServiceAccountType serviceAccountType) {
         LogUtil.e(TAG, "logout success " );
+        if (TSDK_E_IM_SERVICE_ACCOUNT == serviceAccountType)
+        {
+            this.isImLogin = false;
+            ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.AWAY);
+        }
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "logout success ");
     }
 
@@ -264,6 +296,8 @@ public class LoginMgr {
     public void handleForceLogout(int userId ) {
         LogUtil.i(TAG, "voip force logout");
         isForceLogout = true;
+        this.isImLogin = false;
+        ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.AWAY);
         this.logout();
 
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "voip force logout");
@@ -362,6 +396,10 @@ public class LoginMgr {
         return sipNumber;
     }
 
+    public boolean isImLogin() {
+        return isImLogin;
+    }
+
     public TsdkContactsInfo getSelfInfo() {
         return selfInfo;
     }
@@ -401,7 +439,7 @@ public class LoginMgr {
         if (msg.what == LoginEvent.LOGIN_E_EVT_AUTH_SUCCESS.getIndex()) {
             //IM login
             //登录IM
-            ImMgr.getInstance().login((ImAccountInfo) msg.obj);
+//            ImMgr.getInstance().login((ImAccountInfo) msg.obj);
         }
     }
 

@@ -3,8 +3,8 @@ package com.huawei.opensdk.ec_sdk_demo.logic.im.mvp;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.huawei.dao.impl.RecentChatContactDao;
-import com.huawei.data.entity.RecentChatContact;
+//import com.huawei.dao.impl.RecentChatContactDao;
+//import com.huawei.data.entity.RecentChatContact;
 import com.huawei.opensdk.ec_sdk_demo.logic.im.RecentChatComparator;
 
 import java.util.Collections;
@@ -113,37 +113,37 @@ public class RecentChatHelper
 
 
 
-    private static RecentChatContact getRecentChatContact(String chatId, int msgType, String nickName)
-    {
-        RecentChatContact chatContact = RecentChatContactDao.getContact(chatId, msgType);
+//    private static RecentChatContact getRecentChatContact(String chatId, int msgType, String nickName)
+//    {
+//        RecentChatContact chatContact = RecentChatContactDao.getContact(chatId, msgType);
+//
+//        if (chatContact == null)
+//        {
+//            chatContact = new RecentChatContact(chatId, msgType, nickName);
+//        }
+//        else if (TextUtils.isEmpty(chatContact.getNickname()))
+//        {
+//            chatContact.setNickname(nickName);
+//        }
+//
+//        return chatContact;
+//    }
 
-        if (chatContact == null)
-        {
-            chatContact = new RecentChatContact(chatId, msgType, nickName);
-        }
-        else if (TextUtils.isEmpty(chatContact.getNickname()))
-        {
-            chatContact.setNickname(nickName);
-        }
-
-        return chatContact;
-    }
-
-    /**
-     * Sort.
-     *
-     * @param recentChatContacts the recent chat contacts
-     */
-    public static void sort(List<RecentChatContact> recentChatContacts)
-    {
-        try
-        {
-            Collections.sort(recentChatContacts, new RecentChatComparator());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            Log.e("RecentChatHelper", e.toString());
-        }
-    }
+//    /**
+//     * Sort.
+//     *
+//     * @param recentChatContacts the recent chat contacts
+//     */
+//    public static void sort(List<RecentChatContact> recentChatContacts)
+//    {
+//        try
+//        {
+//            Collections.sort(recentChatContacts, new RecentChatComparator());
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//            Log.e("RecentChatHelper", e.toString());
+//        }
+//    }
 }

@@ -1,17 +1,18 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.im;
 
-import com.huawei.data.entity.RecentChatContact;
+//import com.huawei.data.entity.RecentChatContact;
 
 import java.io.Serializable;
 import java.util.Comparator;
 
-public class RecentChatComparator implements Comparator<RecentChatContact>, Serializable
+//public class RecentChatComparator implements Comparator<RecentChatContact>, Serializable
+public class RecentChatComparator implements Serializable
 {
-    @Override
-    public int compare(RecentChatContact lhs, RecentChatContact rhs)
-    {
-        return compareRecentChat(lhs.getEndTime().getTime(), rhs.getEndTime().getTime());
-    }
+//    @Override
+//    public int compare(RecentChatContact lhs, RecentChatContact rhs)
+//    {
+//        return compareRecentChat(lhs.getEndTime().getTime(), rhs.getEndTime().getTime());
+//    }
 
     private int compareRecentChat(long o1, long o2)
     {

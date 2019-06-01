@@ -58,6 +58,8 @@ import java.util.List;
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 import static com.huawei.ecterminalsdk.base.TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO;
 import static com.huawei.ecterminalsdk.base.TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE;
+import static com.huawei.ecterminalsdk.base.TsdkConfRecordStatus.TSDK_E_CONF_RECORD_START;
+import static com.huawei.ecterminalsdk.base.TsdkConfRecordStatus.TSDK_E_CONF_RECORD_STOP;
 
 /**
  * This class is about meeting function management.
@@ -338,6 +340,8 @@ public class MeetingMgr implements IMeetingMgr{
         confBaseInfo.setConfState(ConfConvertUtil.convertConfctrlConfState(conference.getConfState()));
         confBaseInfo.setMediaType(conference.getConfMediaType());
         confBaseInfo.setLock(conference.isLock());
+        confBaseInfo.setRecord(conference.isRecord());
+        confBaseInfo.setSupportRecord(conference.isSupportRecordBroadcast());
 
         if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == conference.getConfEnvType()){
             confBaseInfo.setMuteAll(conference.isAllMute());
@@ -453,11 +457,15 @@ public class MeetingMgr implements IMeetingMgr{
             bookConfInfo.setConfType(TsdkConfType.TSDK_E_CONF_RESERVED);
         }
 
+        // 创建会议时设置为高清会议
+        bookConfInfo.setIsHdConf(1);
         bookConfInfo.setSubject(bookConferenceInfo.getSubject());
         bookConfInfo.setConfMediaType(bookConferenceInfo.getMediaType());
         bookConfInfo.setStartTime(bookConferenceInfo.getStartTime());
         bookConfInfo.setDuration(bookConferenceInfo.getDuration());
         bookConfInfo.setSize(bookConferenceInfo.getSize());
+        bookConfInfo.setIsAutoRecord(bookConferenceInfo.getIs_auto()? 1:0);
+        bookConfInfo.setRecordMode(bookConferenceInfo.getRecordType());
 
         List<TsdkAttendeeBaseInfo> attendeeList = ConfConvertUtil.memberListToAttendeeList(bookConferenceInfo.getMemberList());
         bookConfInfo.setAttendeeList(attendeeList);
@@ -533,6 +541,8 @@ public class MeetingMgr implements IMeetingMgr{
 
         TsdkQueryConfDetailReq queryReq = new TsdkQueryConfDetailReq();
         queryReq.setConfId(confID);
+        queryReq.setPageIndex(1);
+        queryReq.setPageSize(20);
 
         int result = TsdkManager.getInstance().getConferenceManager().queryConferenceDetail(queryReq);
         if (result != 0)
@@ -702,7 +712,9 @@ public class MeetingMgr implements IMeetingMgr{
         List<TsdkAttendeeBaseInfo> attendeeList = new ArrayList<>();
         attendeeList.add(attendeeBaseInfo);
 
-        TsdkAddAttendeesInfo addAttendeeInfo = new TsdkAddAttendeesInfo(attendeeList, attendeeList.size());
+        TsdkAddAttendeesInfo addAttendeeInfo = new TsdkAddAttendeesInfo();
+        addAttendeeInfo.setAttendeeList(attendeeList);
+        addAttendeeInfo.setAttendeeNum(attendeeList.size());
 
         int result =  currentConference.addAttendee(addAttendeeInfo);
 
@@ -785,6 +797,31 @@ public class MeetingMgr implements IMeetingMgr{
 
         return result;
     }
+
+    /**
+     * This method is used to record conference
+     * 录播会议
+     * @param isRecode 是否开启录制
+     * @return
+     */
+    public int recordConf(boolean isRecode)
+    {
+        int result;
+
+        if (null == currentConference) {
+            Log.e(TAG, "record  conf failed, currentConference is null ");
+            return -1;
+        }
+
+        if (isRecode) {
+            result = currentConference.setRecordBroadcast(TSDK_E_CONF_RECORD_START);
+        } else {
+            result = currentConference.setRecordBroadcast(TSDK_E_CONF_RECORD_STOP);
+        }
+
+        return result;
+    }
+
 
     /**
      * This method is used to mute attendee
@@ -1507,6 +1544,7 @@ public class MeetingMgr implements IMeetingMgr{
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_DATA_CONF_RESULT, result);
     }
 
+
     /**
      * This method is used to conf ctrl operation result.
      * 会控操作结果
@@ -1603,6 +1641,14 @@ public class MeetingMgr implements IMeetingMgr{
             //释放主席权限
             case TSDK_E_CONF_RELEASE_CHAIRMAN:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RELEASE_CHAIRMAN_RESULT, ret);
+                break;
+            //开始录制会议
+            case TSDK_E_CONF_START_RECORD_BROADCAST:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_RECORD_RESULT, ret);
+                break;
+            //停止录制会议
+            case TSDK_E_CONF_STOP_RECORD_BROADCAST:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.STOP_RECORD_RESULT, ret);
                 break;
             default:
                 break;

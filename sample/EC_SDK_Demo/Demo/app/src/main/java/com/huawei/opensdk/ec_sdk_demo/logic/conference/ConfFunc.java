@@ -152,8 +152,6 @@ public class ConfFunc implements IConfNotification
             case JOIN_VOICE_CONF_SUCCESS:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CONF_CALL_CONNECTED, params);
                 mHandler.sendMessage(mHandler.obtainMessage(JOIN_VOICE_CONF_SUCCESS, params));
-
-
                 break;
 
             case JOIN_VIDEO_CONF_SUCCESS:
@@ -251,6 +249,14 @@ public class ConfFunc implements IConfNotification
 
             case CANCEL_BROADCAST_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT, params);
+                break;
+
+            case START_RECORD_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.START_RECORD_RESULT, params);
+                break;
+
+            case STOP_RECORD_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.STOP_RECORD_RESULT, params);
                 break;
 
             case GET_DATA_CONF_PARAM_RESULT:

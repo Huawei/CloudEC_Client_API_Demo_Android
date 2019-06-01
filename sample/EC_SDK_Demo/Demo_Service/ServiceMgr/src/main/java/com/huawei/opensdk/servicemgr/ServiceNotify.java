@@ -3,6 +3,15 @@ package com.huawei.opensdk.servicemgr;
 
 import android.util.Log;
 
+import com.huawei.ecterminalsdk.base.TsdkBatchChatMsgInfo;
+import com.huawei.ecterminalsdk.base.TsdkBeAddedFriendInfo;
+import com.huawei.ecterminalsdk.base.TsdkBeAddedToChatGroupInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatGroupInfoUpdateType;
+import com.huawei.ecterminalsdk.base.TsdkChatGroupUpdateInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatMsgInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatMsgUndeliverInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawResult;
 import com.huawei.ecterminalsdk.base.TsdkConfAppShareType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
@@ -12,19 +21,32 @@ import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
 import com.huawei.ecterminalsdk.base.TsdkCtdCallStatus;
+import com.huawei.ecterminalsdk.base.TsdkDelChatGroupMemberResult;
 import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
+import com.huawei.ecterminalsdk.base.TsdkForceLogoutInfo;
 import com.huawei.ecterminalsdk.base.TsdkGetIconResult;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
+import com.huawei.ecterminalsdk.base.TsdkImUserInfo;
+import com.huawei.ecterminalsdk.base.TsdkImUserStatusUpdateInfo;
+import com.huawei.ecterminalsdk.base.TsdkInputtingStatusInfo;
 import com.huawei.ecterminalsdk.base.TsdkIptServiceInfoSet;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
+import com.huawei.ecterminalsdk.base.TsdkLeaveChatGroupResult;
+import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
+import com.huawei.ecterminalsdk.base.TsdkMsgReadIndInfo;
+import com.huawei.ecterminalsdk.base.TsdkReqJoinChatGroupMsg;
+import com.huawei.ecterminalsdk.base.TsdkRspJoinChatGroupMsg;
 import com.huawei.ecterminalsdk.base.TsdkSearchContactsResult;
 import com.huawei.ecterminalsdk.base.TsdkSearchDepartmentResult;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
+import com.huawei.ecterminalsdk.base.TsdkSendChatMsgResult;
+import com.huawei.ecterminalsdk.base.TsdkServiceAccountType;
 import com.huawei.ecterminalsdk.base.TsdkSessionCodec;
 import com.huawei.ecterminalsdk.base.TsdkSessionModified;
 import com.huawei.ecterminalsdk.base.TsdkSetIptServiceResult;
+import com.huawei.ecterminalsdk.base.TsdkSmsInfo;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
@@ -33,12 +55,16 @@ import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkNotify;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
 import com.huawei.ecterminalsdk.models.conference.TsdkConference;
+import com.huawei.ecterminalsdk.models.im.TsdkChatGroup;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.ctdservice.CtdMgr;
 import com.huawei.opensdk.callmgr.iptService.IptMgr;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
+import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
+
+import java.util.List;
 
 
 public class ServiceNotify implements TsdkNotify{
@@ -74,24 +100,23 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtLoginSuccess(int userId, TsdkLoginSuccessInfo loginSuccessInfo) {
+    public void onEvtLoginSuccess(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
         Log.i(TAG, "onEvtLoginSuccess notify.");
-        LoginMgr.getInstance().handleLoginSuccess(userId, loginSuccessInfo);
+        LoginMgr.getInstance().handleLoginSuccess(userId, serviceAccountType, loginSuccessInfo);
     }
 
     @Override
-    public void onEvtLoginFailed(int userId, TsdkCommonResult result) {
+    public void onEvtLoginFailed(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
         Log.i(TAG, "onEvtLoginFailed notify.");
-        LoginMgr.getInstance().handleLoginFailed(userId, result);
-
+        LoginMgr.getInstance().handleLoginFailed(userId, serviceAccountType, loginFailedInfo);
     }
 
     @Override
-    public void onEvtLogoutSuccess(int userId) {
+    public void onEvtLogoutSuccess(int userId, TsdkServiceAccountType serviceAccountType) {
         Log.i(TAG, "onEvtLogoutSuccess notify.");
-        LoginMgr.getInstance().handleLogoutSuccess(userId);
-
+        LoginMgr.getInstance().handleLogoutSuccess(userId, serviceAccountType);
     }
+
 
     @Override
     public void onEvtLogoutFailed(int userId, TsdkCommonResult result) {
@@ -101,7 +126,7 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtForceLogout(int userId) {
+    public void onEvtForceLogout(int userId, TsdkServiceAccountType serviceAccountType, TsdkForceLogoutInfo forceLogoutInfo) {
         Log.i(TAG, "onEvtForceLogout notify.");
         LoginMgr.getInstance().handleForceLogout(userId);
     }
@@ -110,6 +135,11 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtVoipAccountStatus(int userId, TsdkVoipAccountInfo voipAccountInfo) {
         Log.i(TAG, "onEvtVoipAccountStatus notify.");
         LoginMgr.getInstance().handleVoipAccountStatus(userId, voipAccountInfo);
+    }
+
+    @Override
+    public void onEvtImAccountStatus(int userId) {
+        Log.i(TAG, "onEvtImAccountStatus notify.");
     }
 
     @Override
@@ -343,6 +373,7 @@ public class ServiceNotify implements TsdkNotify{
         MeetingMgr.getInstance().handleConfctrlOperationResult(conference, result);
     }
 
+
     @Override
     public void onEvtInfoAndStatusUpdate(TsdkConference conference) {
         Log.i(TAG, "onEvtInfoAndStatusUpdate notify.");
@@ -447,6 +478,114 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtGetIconResult(int querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
         Log.i(TAG, "onEvtGetIconResult notify.");
         EnterpriseAddressBookMgr.getInstance().handleGetIconResult(querySeqNo, result, getIconResult);
+    }
+
+    @Override
+    public void onEvtAddFriendInd(TsdkBeAddedFriendInfo beAddedFriendInfo) {
+
+    }
+
+    @Override
+    public void onEvtUserStatusUpdate(List<TsdkImUserStatusUpdateInfo> userStatusInfoList) {
+        Log.i(TAG, "onEvtUserStatusUpdate notify.");
+        ImMgr.getInstance().handleUserStatusUpdate(userStatusInfoList);
+    }
+
+    @Override
+    public void onEvtUserInfoUpdate(List<TsdkImUserInfo> userInfoList) {
+        Log.i(TAG, "onEvtUserInfoUpdate notify.");
+        ImMgr.getInstance().handleUserInfoUpdate(userInfoList);
+    }
+
+    @Override
+    public void onEvtJoinChatGroupReq(TsdkChatGroup chatGroup, TsdkReqJoinChatGroupMsg reqJoinChatGroupMsg) {
+        Log.i(TAG, "onEvtJoinChatGroupReq notify.");
+    }
+
+    @Override
+    public void onEvtJoinChatGroupRsp(TsdkChatGroup chatGroup, TsdkRspJoinChatGroupMsg rspJoinChatGroupMsg) {
+        Log.i(TAG, "onEvtJoinChatGroupRsp notify.");
+        ImMgr.getInstance().handleJoinChatGroupRsp(chatGroup, rspJoinChatGroupMsg);
+    }
+
+    @Override
+    public void onEvtJoinChatGroupInd(TsdkChatGroup chatGroup, TsdkBeAddedToChatGroupInfo beAddedToChatGroupInfo) {
+        Log.i(TAG, "onEvtJoinChatGroupInd notify.");
+        ImMgr.getInstance().handleJoinChatGroupInd(chatGroup, beAddedToChatGroupInfo);
+    }
+
+    @Override
+    public void onEvtDelChatGroupMemberResult(TsdkChatGroup chatGroup, TsdkDelChatGroupMemberResult delChatGroupMemberResult) {
+        Log.i(TAG, "onEvtDelChatGroupMemberResult notify.");
+    }
+
+    @Override
+    public void onEvtLeaveChatGroupResult(TsdkChatGroup chatGroup, TsdkLeaveChatGroupResult leaveChatGroupResult) {
+        Log.i(TAG, "onEvtLeaveChatGroupResult notify.");
+        ImMgr.getInstance().handleLeaveChatGroupResult(leaveChatGroupResult);
+    }
+
+    @Override
+    public void onEvtChatGroupInfoUpdate(TsdkChatGroup chatGroup, TsdkChatGroupUpdateInfo chatGroupUpdateInfo, TsdkChatGroupInfoUpdateType updateType) {
+        Log.i(TAG, "onEvtChatGroupInfoUpdate notify.");
+        ImMgr.getInstance().handleChatGroupInfoUpdate(chatGroup, chatGroupUpdateInfo, updateType);
+    }
+
+
+    @Override
+    public void onEvtInputtingStatusInd(TsdkInputtingStatusInfo inputtingStatusInfo) {
+        Log.i(TAG, "onEvtInputtingStatusInd notify.");
+        ImMgr.getInstance().handleInputtingStatusInd(inputtingStatusInfo);
+    }
+
+    @Override
+    public void onEvtChatMsg(TsdkChatMsgInfo chatMsgInfo) {
+        Log.i(TAG, "onEvtChatMsg notify.");
+        ImMgr.getInstance().handleChatMsg(chatMsgInfo);
+    }
+
+    @Override
+    public void onEvtBatchChatMsg(TsdkBatchChatMsgInfo batchChatMsgInfo) {
+        Log.i(TAG, "onEvtBatchChatMsg notify.");
+        ImMgr.getInstance().handleBatchChatMsg(batchChatMsgInfo);
+    }
+
+    @Override
+    public void onEvtSystemBulletin(TsdkChatMsgInfo chatMsgInfo) {
+
+    }
+
+    @Override
+    public void onEvtSms(TsdkSmsInfo smsInfo) {
+
+    }
+
+    @Override
+    public void onEvtUndeliverInd(TsdkChatMsgUndeliverInfo chatMsgUndeliverInfo) {
+
+    }
+
+    @Override
+    public void onEvtMsgReadInd(TsdkMsgReadIndInfo msgReadIndInfo) {
+
+    }
+
+    @Override
+    public void onEvtMsgSendResult(TsdkSendChatMsgResult sendChatMsgResult) {
+        Log.i(TAG, "onEvtMsgSendResult notify.");
+        ImMgr.getInstance().handleMsgSendResult(sendChatMsgResult);
+    }
+
+    @Override
+    public void onEvtMsgWithdrawResult(TsdkChatMsgWithdrawResult chatMsgWithdrawResult) {
+        Log.i(TAG, "onEvtMsgWithdrawResult notify.");
+        ImMgr.getInstance().handleMsgWithdrawResult(chatMsgWithdrawResult);
+    }
+
+    @Override
+    public void onEvtMsgWithdrawInd(TsdkChatMsgWithdrawInfo chatMsgWithdrawInfo) {
+        Log.i(TAG, "onEvtMsgWithdrawInd notify.");
+        ImMgr.getInstance().handleMsgWithdrawInd(chatMsgWithdrawInfo);
     }
 
     @Override

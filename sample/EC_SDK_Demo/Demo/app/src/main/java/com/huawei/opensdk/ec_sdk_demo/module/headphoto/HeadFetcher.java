@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import com.huawei.common.library.asyncimage.ImageWorker;
-import com.huawei.ecs.mtk.log.Logger;
-import com.huawei.log.TagInfo;
-import com.huawei.utils.img.BitmapUtil;
+//import com.huawei.common.library.asyncimage.ImageWorker;
+//import com.huawei.ecs.mtk.log.Logger;
+//import com.huawei.log.TagInfo;
+//import com.huawei.utils.img.BitmapUtil;
 
 import java.io.File;
 import java.util.concurrent.RejectedExecutionException;
@@ -17,7 +17,8 @@ import java.util.concurrent.RejectedExecutionException;
  * This abstract class is about get avatar
  * 供头像获取使用
  */
-public abstract class HeadFetcher extends ImageWorker
+//public abstract class HeadFetcher extends ImageWorker
+public abstract class HeadFetcher
 {
     protected final Bitmap outlineBitmap;
 
@@ -25,11 +26,11 @@ public abstract class HeadFetcher extends ImageWorker
 
     protected HeadFetcher(Context context, int defaultRes)
     {
-        super(context);
+//        super(context);
 
         // 获取存放文件的根目录
         sysFile = context.getFilesDir();
-        Logger.debug(TagInfo.APPTAG, "" + sysFile);
+//        Logger.debug(TagInfo.APPTAG, "" + sysFile);
 
         //设置正在加载时显示的头像
         outlineBitmap = HeadCache.getIns().getRoundCornerBgSmall();
@@ -37,10 +38,10 @@ public abstract class HeadFetcher extends ImageWorker
         //设置默认头像
         setDefaultHead(defaultRes);
 
-        setImageFadeIn(false);
-        setForHeadShow(true);
+//        setImageFadeIn(false);
+//        setForHeadShow(true);
 
-        setImageCache(HeadCache.getIns().getHeadCache());
+//        setImageCache(HeadCache.getIns().getHeadCache());
     }
 
 
@@ -49,11 +50,11 @@ public abstract class HeadFetcher extends ImageWorker
         Bitmap bitmap = HeadCache.getIns().getDefaultBitmap(String.valueOf(res));
         if (bitmap == null)
         {
-            bitmap = BitmapFactory.decodeResource(mContext.getResources(), res);
-            bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap);
+//            bitmap = BitmapFactory.decodeResource(mContext.getResources(), res);
+//            bitmap = BitmapUtil.getRoundCornerBitmap(bitmap, outlineBitmap);
             HeadCache.getIns().setDefaultBitmap(String.valueOf(res), bitmap);
         }
-        setLoadingImage(bitmap);
+//        setLoadingImage(bitmap);
     }
 
     protected void execute(AsyncTask<Object, Void, Object> task, Object data)
@@ -65,7 +66,7 @@ public abstract class HeadFetcher extends ImageWorker
         }
         catch (RejectedExecutionException e)
         {
-            Logger.warn(TagInfo.TAG, e);
+//            Logger.warn(TagInfo.TAG, e);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.im.mvp;
 
-import com.huawei.data.entity.RecentChatContact;
+import com.huawei.opensdk.imservice.ImRecentChatInfo;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public interface RecentChatContract
 {
     interface RecentChatView
     {
-        void refreshRecentChatList(List<RecentChatContact> list);
+        void refreshRecentChatList(List<ImRecentChatInfo> list);
     }
 
     interface RecentChatPresenter
@@ -18,7 +18,7 @@ public interface RecentChatContract
 
         void unregRecentSessionReceiver();
 
-        List<RecentChatContact> loadRecentChats();
+        List<ImRecentChatInfo> loadRecentChats();
 
         void resetData();
     }

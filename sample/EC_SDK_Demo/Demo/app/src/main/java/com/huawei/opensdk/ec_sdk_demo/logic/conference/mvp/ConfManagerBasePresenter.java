@@ -104,6 +104,159 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     getView().showCustomToast(R.string.share_end);
                     break;
 
+                // 升级会议结果
+                case CustomBroadcastConstants.UPGRADE_CONF_RESULT:
+                    result = (int) obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.upgrade_conf_fail);
+                        return;
+                    } else {
+                        getView().showCustomToast(R.string.upgrade_conf_success);
+                    }
+                    break;
+
+                // 静音会议结果
+                case CustomBroadcastConstants.MUTE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.mute_conf_fail);
+                    } else {
+                        getView().showCustomToast(R.string.mute_conf_success);
+                    }
+                    break;
+
+                // 取消静音会议结果
+                case CustomBroadcastConstants.UN_MUTE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.un_mute_conf_fail);
+                    } else {
+                        getView().showCustomToast(R.string.un_mute_conf_success);
+                    }
+                    break;
+
+                // 锁定会议结果
+                case CustomBroadcastConstants.LOCK_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.lock_conf_fail);
+                    } else {
+                        getView().showCustomToast(R.string.lock_conf_success);
+                    }
+                    break;
+
+                // 取消锁定会议结果
+                case CustomBroadcastConstants.UN_LOCK_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.un_lock_conf_fail);
+                    } else {
+                        getView().showCustomToast(R.string.un_lock_conf_success);
+                    }
+                    break;
+
+                // 邀请与会者结果
+                case CustomBroadcastConstants.ADD_ATTENDEE_RESULT:
+                    result = (int)obj;
+                    LogUtil.i(UIConstants.DEMO_TAG, "add attendee result: " + result);
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.add_attendee_fail);
+                        return;
+                    }
+                    break;
+
+                // 删除与会者结果
+                case CustomBroadcastConstants.DEL_ATTENDEE_RESULT:
+                    result = (int)obj;
+                    LogUtil.i(UIConstants.DEMO_TAG, "add attendee result: " + result);
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.del_attendee_fail);
+                        return;
+                    }
+                    break;
+
+                // 静音与会者结果
+                case CustomBroadcastConstants.MUTE_ATTENDEE_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.mute_attendee_fail);
+                        return;
+                    }
+                    break;
+
+                // 取消静音与会者结果
+                case CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.un_mute_attendee_fail);
+                        return;
+                    }
+                    break;
+
+                // 举手结果
+                case CustomBroadcastConstants.HAND_UP_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.handup_fail);
+                        return;
+                    }
+                    break;
+
+                // 取消举手结果
+                case CustomBroadcastConstants.CANCEL_HAND_UP_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.cancel_handup_fail);
+                        return;
+                    }
+                    break;
+
+                // 设置会议视频模式结果
+                case CustomBroadcastConstants.SET_CONF_MODE_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.set_conf_mode_fail);
+                        return;
+                    }
+                    break;
+
+                // 选看会场结果
+                case CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.watch_conf_fail);
+                        return;
+                    }
+                    break;
+
+                // 广播与会者结果
+                case CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.broadcast_conf_fail);
+                        return;
+                    }
+                    break;
+
+                // 取消广播与会者结果
+                case CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.cancel_broadcast_fail);
+                        return;
+                    }
+                    break;
+
                 // 请求主席结果
                 case CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT:
                     result = (int)obj;
@@ -113,6 +266,16 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         return;
                     }
                     setSelfPresenter();
+                    break;
+
+                // 释放主席结果
+                case CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.release_chairman_fail);
+                        return;
+                    }
                     break;
 
                 // 发言人通知

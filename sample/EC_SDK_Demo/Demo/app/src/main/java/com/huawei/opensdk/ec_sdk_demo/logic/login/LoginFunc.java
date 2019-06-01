@@ -17,6 +17,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.login.LoginActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
+import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.ILoginEventNotifyUI;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
@@ -27,11 +28,12 @@ import java.util.concurrent.Executors;
 
 public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
 {
-    private static final int LOGIN_SUCCESS = 100;
-    private static final int LOGIN_FAILED = 101;
-    private static final int LOGOUT = 102;
-    private static final int FIREWALL_DETECT_FAILED = 103;
-    private static final int BUILD_STG_FAILED = 104;
+    private static final int VOIP_LOGIN_SUCCESS = 100;
+    private static final int IM_LOGIN_SUCCESS = 101;
+    private static final int LOGIN_FAILED = 102;
+    private static final int LOGOUT = 103;
+    private static final int FIREWALL_DETECT_FAILED = 104;
+    private static final int BUILD_STG_FAILED = 105;
 
     private static LoginFunc INSTANCE = new LoginFunc();
 
@@ -72,9 +74,14 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     {
         switch (evt)
         {
-            case LOGIN_SUCCESS:
-                LogUtil.i(UIConstants.DEMO_TAG, "login success");
-                sendHandlerMessage(LOGIN_SUCCESS, description);
+            case VOIP_LOGIN_SUCCESS:
+                LogUtil.i(UIConstants.DEMO_TAG, "voip login success");
+                sendHandlerMessage(VOIP_LOGIN_SUCCESS, description);
+                break;
+            case IM_LOGIN_SUCCESS:
+                ImMgr.getInstance().getContactAndChatGroups(true, "");
+                LogUtil.i(UIConstants.DEMO_TAG, "im login success");
+                sendHandlerMessage(IM_LOGIN_SUCCESS, description);
                 break;
             case LOGIN_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "login fail");
@@ -106,8 +113,8 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     {
         switch (msg.what)
         {
-            case LOGIN_SUCCESS:
-                LogUtil.i(UIConstants.DEMO_TAG, "login success,notify UI!");
+            case VOIP_LOGIN_SUCCESS:
+                LogUtil.i(UIConstants.DEMO_TAG, "voip login success,notify UI!");
                 Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                 ActivityUtil.startActivity(LocContext.getContext(), IntentConstant.MAIN_ACTIVITY_ACTION);
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_SUCCESS, null);
@@ -118,6 +125,19 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                     public void run()
                     {
                         EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
+                    }
+                });
+                break;
+            case IM_LOGIN_SUCCESS:
+                LogUtil.i(UIConstants.DEMO_TAG, "im login success,notify UI!");
+                Toast.makeText(LocContext.getContext(), (String) msg.obj, Toast.LENGTH_LONG).show();
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_LOGIN_SUCCESS, null);
+                Executors.newSingleThreadExecutor().execute(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        ImMgr.getInstance().getUserInfo(LoginMgr.getInstance().getAccount());
                     }
                 });
                 break;

@@ -22,11 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.huawei.contacts.ContactClientStatus;
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.entity.InstantMessage;
-import com.huawei.data.unifiedmessage.MediaResource;
-import com.huawei.data.entity.RecentChatContact;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
@@ -38,10 +33,15 @@ import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.ui.im.contact.HeadIconTools;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
-import com.huawei.opensdk.imservice.ImMgr;
-import com.huawei.utils.SoftInputUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.SoftInputUtil;
+import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
+import com.huawei.opensdk.imservice.ImChatMsgInfo;
+import com.huawei.opensdk.imservice.ImConstant;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This class is about chat Activity.
@@ -58,6 +58,7 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     private ChatAdapter mAdapter;
     private TextView mTitleTv;
     private TextView mStatusTv;
+    private TextView mInputtingTv;
     private ProgressDialog mLoadHistoryDialog;
     private Button mHistoryBtn;
     private ViewGroup mEmotionArea;
@@ -75,6 +76,14 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     private ImageView mPictureSendBtn;
     private ImageView mVideoSendBtn;
 
+    private String mMyAccount;
+    private boolean isInput = false;
+    private boolean isStart = true;
+    private int lastLength; // 执行一次计时器前的文本长度
+    private int currentLength; // 当前文本长度
+    private Timer mTimer;
+    private MyTimerTask myTimerTask;
+
     private Handler mHandler = new Handler()
     {
         @Override
@@ -90,30 +99,6 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
                         mAdapter.setMessages(list);
                         mAdapter.notifyDataSetChanged();
                         setListViewSelection();
-                    }
-                    break;
-                case SHOW_TOAST:
-                    Toast.makeText(ChatActivity.this, getString(R.string.record_failed), Toast.LENGTH_SHORT).show();
-                    break;
-                case PERSONAL_STATUS:
-                    PersonalContact contact = (PersonalContact) msg.obj;
-                    int status = contact.getStatus(false);
-                    switch (status)
-                    {
-                        case ContactClientStatus.ON_LINE:
-                            mStatusTv.setText("["+getString(R.string.online)+"]");
-                            break;
-                        case ContactClientStatus.BUSY:
-                            mStatusTv.setText("["+getString(R.string.busy)+"]");
-                            break;
-                        case ContactClientStatus.XA:
-                            mStatusTv.setText("["+getString(R.string.leave)+"]");
-                            break;
-                        case ContactClientStatus.AWAY:
-                            mStatusTv.setText("["+getString(R.string.offline)+"]");
-                            break;
-                        default:
-                            break;
                     }
                     break;
                 default:
@@ -134,6 +119,7 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
         mMoreBtn = (ImageView) findViewById(R.id.btn_more);
         mTitleTv = (TextView) findViewById(R.id.title_text);
         mStatusTv = (TextView) findViewById(R.id.status_tv);
+        mInputtingTv = (TextView) findViewById(R.id.inputting_tv);
         mHistoryBtn = (Button) findViewById(R.id.btn_history);
         mChatLv = (ListView) findViewById(R.id.chat_lv);
         mInputEt = (EditText) findViewById(R.id.et_txt_input);
@@ -164,7 +150,7 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
             mStatusTv.setText("[" + getString(R.string.offline) + "]");
         }
 
-        if (mPresenter.getChatType() != RecentChatContact.ESPACECHATTER)
+        if (mPresenter.getChatType() != ImConstant.ChatMsgType.SINGLE_CHAT)
         {
             mCallBtn.setVisibility(View.GONE);
             mContactsBtn.setImageResource(R.drawable.im_setting_group_selector);
@@ -184,7 +170,13 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
 
         mInputEt.addTextChangedListener(mTextWatcher);
 
-        mPresenter.loadHistoryMessage();
+        if (!mPresenter.isIsGroup())
+        {
+            mPresenter.loadStatus();
+        }
+
+//        mPresenter.loadHistoryMessage();
+        mPresenter.loadUnReadMessage();
 
         mChatLv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
         {
@@ -206,73 +198,93 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
                 hideSoftBoard();
                 hideUnderLayout();
                 MessageItemType item = mPresenter.getMessages().get(position);
-                if (item.instantMsg == null)
+                if (item.chatMsgInfo == null)
                 {
                     return;
                 }
 
-                InstantMessage message = item.instantMsg;
-                if (message.getMediaType() == MediaResource.MEDIA_PICTURE || message.getMediaType() == MediaResource.MEDIA_VIDEO)
-                {
-                    Intent intent = new Intent(IntentConstant.MEDIA_SCAN_ACTIVITY_ACTION);
-                    intent.putExtra(UIConstants.MEDIA_RESOURCE, message);
-                    ActivityUtil.startActivity(ChatActivity.this, intent);
-                }
+//                InstantMessage message = item.instantMsg;
+//                if (message.getMediaType() == MediaResource.MEDIA_PICTURE || message.getMediaType() == MediaResource.MEDIA_VIDEO)
+//                {
+//                    Intent intent = new Intent(IntentConstant.MEDIA_SCAN_ACTIVITY_ACTION);
+//                    intent.putExtra(UIConstants.MEDIA_RESOURCE, message);
+//                    ActivityUtil.startActivity(ChatActivity.this, intent);
+//                }
             }
         });
+    }
+
+    @Override
+    public void initializeData()
+    {
+        mAdapter = new ChatAdapter(this);
+        Object date = getIntent().getSerializableExtra(UIConstants.CHAT_TYPE);
+//        recentChat = getIntent().getSerializableExtra(UIConstants.RECENT_CHAT);
+        mMyAccount = mPresenter.getMyAccount();
+        mPresenter.initData(date);
+        mPresenter.registerBroadcast();
+        mPresenter.subscribeContactState();
     }
 
     private void showDeleteDialog(final int position)
     {
         final List<MessageItemType> messages = mPresenter.getMessages();
         final MessageItemType item = messages.get(position);
-        final InstantMessage instantMessage;
-        if (item.instantMsg != null)
+
+        final TripleDialog dialog = new TripleDialog(this);
+        dialog.hideTitleButton();
+        if (item.chatMsgInfo.getFromId().equals(mMyAccount))
         {
-            instantMessage = item.instantMsg;
+            dialog.setLeftText(R.string.opr_msg_withdraw);
+            dialog.setRightText(R.string.delete);
         }
         else
         {
-            return;
+            dialog.hideDownloadButton();
+            dialog.setRightText(R.string.delete);
         }
-        mDeleteMsgDialog = new Dialog(this, R.style.Theme_dialog);
-        mDeleteMsgDialog.setContentView(R.layout.dialog_delete_message);
-        TextView deleteMsg = (TextView) mDeleteMsgDialog.findViewById(R.id.delete_message_tv);
-        TextView deleteAllMsg = (TextView) mDeleteMsgDialog.findViewById(R.id.delete_all_messages_tv);
-        deleteMsg.setOnClickListener(new View.OnClickListener()
-        {
+        dialog.setLeftButtonListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                ImMgr.getInstance().deleteMessage(mPresenter.getChatType(), mPresenter.getChatId(), (short) 0, instantMessage.getMessageId(), instantMessage.getId());
-                mDeleteMsgDialog.dismiss();
-                mDeleteMsgDialog = null;
-                messages.remove(position);
-                mAdapter.notifyDataSetChanged();
+            public void onClick(View v) {
+                mPresenter.withdrawMessage(position);
             }
         });
-        deleteAllMsg.setOnClickListener(new View.OnClickListener()
-        {
+        dialog.setRightButtonListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
-                ImMgr.getInstance().deleteAllMessages(mPresenter.getChatType(), mPresenter.getChatId(), (short) 1, null, null);
-                mDeleteMsgDialog.dismiss();
-                mDeleteMsgDialog = null;
-                messages.clear();
-                mAdapter.notifyDataSetChanged();
+            public void onClick(View v) {
+                mPresenter.delHistoryMessage(position);
             }
         });
-        mDeleteMsgDialog.show();
+        dialog.show();
     }
 
     @Override
-    public void updatePersonalStatus(PersonalContact contact)
+    public void updatePersonalStatus(final ImConstant.ImStatus status)
     {
-        Message msg = Message.obtain();
-        msg.obj = contact;
-        msg.what = PERSONAL_STATUS;
-        mHandler.sendMessage(msg);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (status) {
+                    case ON_LINE:
+                        mStatusTv.setText("[" + getString(R.string.online) + "]");
+                        break;
+                    case BUSY:
+                        mStatusTv.setText("[" + getString(R.string.busy) + "]");
+                        break;
+                    case XA:
+                        mStatusTv.setText("[" + getString(R.string.leave) + "]");
+                        break;
+                    case AWAY:
+                        mStatusTv.setText("[" + getString(R.string.offline) + "]");
+                        break;
+                    case DND:
+                        mStatusTv.setText("[" + getString(R.string.dnd) + "]");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -284,6 +296,40 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
             public void run()
             {
                 mTitleTv.setText(obj);
+            }
+        });
+    }
+
+    @Override
+    public void showInputtingStatus(final boolean isInputting) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isInputting)
+                {
+                    mInputtingTv.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    mInputtingTv.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void showWithdrawResult(final String origin) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mMyAccount.equals(origin))
+                {
+                    Toast.makeText(ChatActivity.this, getString(R.string.you) + " " + getString(R.string.opr_msg_withdraw_hint), Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(ChatActivity.this, origin + " " + getString(R.string.opr_msg_withdraw_hint), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -313,7 +359,7 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
                 case MotionEvent.ACTION_UP:
                     LogUtil.i(UIConstants.DEMO_TAG, "ACTION_UP");
                     mRecordAudioIv.setPressed(false);
-                    mPresenter.stopRecord();
+//                    mPresenter.stopRecord();
                     break;
                 default:
                     break;
@@ -345,9 +391,29 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
         @Override
         public void afterTextChanged(Editable s)
         {
-            String ss = s.toString();
-            int length = ss.trim().length();
-            switchSendMsgBtn(length);
+            String msgContent = s.toString();
+            currentLength = msgContent.trim().length();
+            switchSendMsgBtn(currentLength);
+
+            if (mPresenter.isIsGroup())
+            {
+                return;
+            }
+
+            if (isInput)
+            {
+                return;
+            }
+
+            if (0 == currentLength)
+            {
+                return;
+            }
+
+            if (isStart)
+            {
+                startTimer();
+            }
         }
     };
 
@@ -391,16 +457,6 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     };
 
     @Override
-    public void initializeData()
-    {
-        mAdapter = new ChatAdapter(this);
-        Object date = getIntent().getSerializableExtra(UIConstants.CHAT_TYPE);
-        mPresenter.initData(date);
-        mPresenter.registerBroadcast();
-        mPresenter.subscribeContactState();
-    }
-
-    @Override
     protected void onNewIntent(Intent intent)
     {
         Object date = intent.getSerializableExtra(UIConstants.CHAT_TYPE);
@@ -426,9 +482,15 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     }
 
     @Override
-    public void toast()
+    public void toast(final int id)
     {
-        mHandler.sendEmptyMessage(SHOW_TOAST);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChatActivity.this, getString(id), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     /**
@@ -538,16 +600,23 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
                 }
                 break;
             case R.id.btn_chat_send:
-                InstantMessage instantMessage = mPresenter.sendMessage(mInputEt.getText().toString().trim());
-                if (null != instantMessage)
+                if (!mPresenter.isIsGroup())
                 {
-                    mPresenter.refreshViewAfterSendMessage(instantMessage);
+                    mPresenter.setInputStatus(false);
+                    isInput = false;
+                    stopTimer();
+                    isStart = true;
+                }
 
+                ImChatMsgInfo chatMsgInfo = mPresenter.sendMessage(mInputEt.getText().toString().trim());
+                if (null != chatMsgInfo)
+                {
+                    mPresenter.refreshViewAfterSendMessage(chatMsgInfo);
                     mInputEt.setText("");
                 }
                 break;
             case R.id.right_img:
-                mPresenter.gotoDetailActivity();
+//                mPresenter.gotoDetailActivity();
                 break;
             case R.id.call_top:
                 mPresenter.makeCall();
@@ -575,6 +644,20 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (mPresenter.isIsGroup())
+        {
+            return;
+        }
+        if (isInput)
+        {
+            mPresenter.setInputStatus(false);
+        }
+        stopTimer();
+    }
+
+    @Override
     protected void onDestroy()
     {
         super.onDestroy();
@@ -584,6 +667,16 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
             mDeleteMsgDialog.dismiss();
             mDeleteMsgDialog = null;
         }
+
+        if (mPresenter.isIsGroup())
+        {
+            return;
+        }
+        if (isInput)
+        {
+            mPresenter.setInputStatus(false);
+        }
+        stopTimer();
     }
 
     private void hideSoftBoard()
@@ -595,4 +688,57 @@ public class ChatActivity extends MVPBaseActivity<ChatContract.ChatView, ChatPre
     {
         SoftInputUtil.showSoftInput(this, mInputEt);
     }
+
+    private void initTimer()
+    {
+        mTimer = new Timer();
+        myTimerTask = new MyTimerTask();
+    }
+
+    private void startTimer()
+    {
+        initTimer();
+        try {
+            mTimer.schedule(myTimerTask, 0, 1000);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            initTimer();
+        }
+    }
+
+    private void stopTimer()
+    {
+        if (null != mTimer)
+        {
+            mTimer.cancel();
+            mTimer = null;
+        }
+    }
+
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            if (isStart)
+            {
+                lastLength = currentLength;
+                mPresenter.setInputStatus(true);
+                isInput = true;
+                isStart = false;
+                return;
+            }
+
+            if (0 == currentLength || currentLength == lastLength)
+            {
+                mPresenter.setInputStatus(false);
+                stopTimer();
+                isInput = false;
+                isStart = true;
+                return;
+            }
+
+            lastLength = currentLength;
+        }
+    }
+
 }

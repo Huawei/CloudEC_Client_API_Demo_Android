@@ -1,5 +1,6 @@
 package com.huawei.opensdk.contactservice.eaddr;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
@@ -322,16 +323,27 @@ public class EnterpriseAddressBookMgr {
                 QueryContactsInfoResult queryContactsResult = new QueryContactsInfoResult();
                 queryContactsResult.setQuerySeq(seqNo);
                 List<EntAddressBookInfo> contactsList = new ArrayList<>();
-                for (TsdkContactsInfo contactorInfo : contactsInfos)
+                for (TsdkContactsInfo contactsInfo : contactsInfos)
                 {
                     EntAddressBookInfo entAddressBookInfo = new EntAddressBookInfo();
-                    entAddressBookInfo.setEaddrAccount(contactorInfo.getStaffAccount());
-                    if(contactorInfo.getStaffAccount().isEmpty() || contactorInfo.getStaffAccount() == null)
+                    entAddressBookInfo.setEaddrAccount(contactsInfo.getStaffAccount());
+                    entAddressBookInfo.setEaddrName(contactsInfo.getPersonName());
+                    if (TextUtils.isEmpty(contactsInfo.getTerminal()))
                     {
-                        break;
+                        entAddressBookInfo.setTerminal(contactsInfo.getTerminal2());
                     }
-                    entAddressBookInfo.setTerminal(contactorInfo.getTerminal());
-                    entAddressBookInfo.setEaddrDept(contactorInfo.getDepartmentName());
+                    else
+                    {
+                        entAddressBookInfo.setTerminal(contactsInfo.getTerminal());
+                    }
+                    entAddressBookInfo.setEaddrDept(contactsInfo.getDepartmentName());
+                    entAddressBookInfo.setAddress(contactsInfo.getAddress());
+                    entAddressBookInfo.setEmail(contactsInfo.getEmail());
+                    entAddressBookInfo.setGender(contactsInfo.getGender());
+                    entAddressBookInfo.setMobile(contactsInfo.getMobile());
+                    entAddressBookInfo.setSignature(contactsInfo.getSignature());
+                    entAddressBookInfo.setTitle(contactsInfo.getTitle());
+                    entAddressBookInfo.setZipCode(contactsInfo.getZipCode());
                     entAddressBookInfo.setSysIconID(10);
                     contactsList.add(entAddressBookInfo);
                 }

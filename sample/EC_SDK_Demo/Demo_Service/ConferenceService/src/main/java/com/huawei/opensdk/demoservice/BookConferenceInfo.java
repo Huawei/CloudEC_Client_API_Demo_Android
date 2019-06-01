@@ -1,6 +1,7 @@
 package com.huawei.opensdk.demoservice;
 
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
+import com.huawei.ecterminalsdk.base.TsdkConfRecordMode;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,6 +24,19 @@ public class BookConferenceInfo implements Serializable {
      * 媒体类型
      */
     TsdkConfMediaType mediaType;
+
+    /**
+     * record type
+     * 录制类型
+     */
+    TsdkConfRecordMode recordType;
+
+    /**
+     * is auto
+     * 是否自动录制
+
+     */
+    private Boolean is_auto;
 
     /**
      * Conference start time
@@ -68,6 +82,22 @@ public class BookConferenceInfo implements Serializable {
 
     public void setMediaType(TsdkConfMediaType mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public TsdkConfRecordMode getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(TsdkConfRecordMode recordType) {
+        this.recordType = recordType;
+    }
+
+    public Boolean getIs_auto() {
+        return is_auto;
+    }
+
+    public void setIs_auto(Boolean is_auto) {
+        this.is_auto = is_auto;
     }
 
     public String getStartTime() {

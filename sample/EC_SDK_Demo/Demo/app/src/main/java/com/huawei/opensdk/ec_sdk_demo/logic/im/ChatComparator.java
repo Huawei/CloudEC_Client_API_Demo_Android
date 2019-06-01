@@ -10,7 +10,7 @@ public class ChatComparator implements Comparator<MessageItemType>,Serializable
     @Override
     public int compare(MessageItemType itemType1, MessageItemType itemType2)
     {
-        return compareChatMessage(itemType1.instantMsg.getTimestamp().getTime(), itemType2.instantMsg.getTimestamp().getTime());
+        return compareChatMessage(itemType1.chatMsgInfo.getUtcStamp(), itemType2.chatMsgInfo.getUtcStamp());
     }
 
     private int compareChatMessage(long o1, long o2)

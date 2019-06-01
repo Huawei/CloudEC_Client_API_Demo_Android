@@ -6,6 +6,12 @@ package com.huawei.opensdk.imservice;
  */
 public class ImConstant {
 
+    public static final int FIXED = 0;
+    public static final int DISCUSSION = 1;
+    public static final int SET_READ = 2;
+    public static final int WHITDRAW_MESSAGE = 3;
+    public static final int DELETE_MESSAGE = 4;
+
     /**
      * This is a static final class which is about log param..
      * 有关日志配置和应用文件路径配置
@@ -63,11 +69,13 @@ public class ImConstant {
      */
     public enum ImStatus
     {
-        ON_LINE(0), //在线
-        BUSY(1),    //繁忙BUSY = 1
+        AWAY(0),    //离线AWAY = 0
+        ON_LINE(1), //在线 = 1
 
-        XA(3),      //离开XA = 3
-        AWAY(4);    //离线AWAY = 4
+        BUSY(3),    //繁忙BUSY = 3
+        XA(4),      //离开XA = 4
+        DND(5);     //请勿打扰 = 5
+
         private int status;
 
         public int getIndex()
@@ -81,4 +89,73 @@ public class ImConstant {
         }
     }
 
+    /**
+     *
+     */
+    public static final class ChatGroupUpdateType
+    {
+        public static final int CHAT_GROUP_INFO_UPDATE = 0;
+        public static final int CHAT_GROUP_ADD_MEMBER =1;
+        public static final int CHAT_GROUP_DEL_MEMBER = 2;
+        public static final int CHAT_GROUP_OWNER_UPDATE = 3;
+        public static final int CHAT_GROUP_DISMISS = 4;
+    }
+
+    public static final class GroupOpType
+    {
+        public static final int CHAT_GROUP_MODIFY_DEFAULT_PARAM = 0;      // 修改默认参数，即群组中可修改的所有参数
+        public static final int CHAT_GROUP_MODIFY_OWNER = 1;              // 修改(转移)群组管理员
+        public static final int CHAT_GROUP_MODIFY_MSG_PROMOT_POLICY = 2;  // 修改群组消息提示策略
+        public static final int CHAT_GROUP_MODIFY_FIX_DISCUSS_STAUTS = 3; // 修改讨论组固化状态
+        public static final int CHAT_GROUP_MODIFY_GROUP_TYPE = 4;         // 修改群组类型
+    }
+
+    public static final class ContactGroupOpType
+    {
+        public static final int ADD_CONTACT_GROUP = 0;     // 添加联系人分组
+        public static final int DEL_CONTACT_GROUP = 1;     // 删除联系人分组
+        public static final int MODIFY_CONTACT_GROUP = 2;  // 重命名联系人分组
+    }
+
+    public static final class OpContactType
+    {
+        public static final int CONTACT_MOVE_TO_NEW_GROUP = 0; // 将分组成员移动至其他分组
+        public static final int CONTACT_COPY_TO_NEW_GROUP = 1; // 将分组成员复制至其他分组
+    }
+
+    public enum ChatMsgType
+    {
+        SINGLE_CHAT(0),           // 单聊
+        FIXED_GROUP_CHAT(2),      // 固定群聊
+        DISCUSSION_GROUP_CHAT(6); // 多人会话讨论组
+
+        private int index;
+
+        ChatMsgType(int index)
+        {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
+
+    public enum ChatMsgMediaType
+    {
+        CHAT_MSG_MEDIA_TYPE_TEXT(0),
+        CHAT_MSG_MEDIA_TYPE_AUDIO(1),
+        CHAT_MSG_MEDIA_TYPE_VIDEO(2),
+        CHAT_MSG_MEDIA_TYPE_IMAGE(3);
+
+        private int index;
+
+        ChatMsgMediaType(int index){
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+    }
 }

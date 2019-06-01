@@ -216,6 +216,8 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         LinearLayout cancelMuteAllLayout = (LinearLayout) popupView.findViewById(R.id.cancel_mute_all_ll);
         LinearLayout lockLayout = (LinearLayout) popupView.findViewById(R.id.lock_conf_ll);
         LinearLayout unlockLayout = (LinearLayout) popupView.findViewById(R.id.un_lock_conf_ll);
+        LinearLayout startRecordLayout = (LinearLayout) popupView.findViewById(R.id.start_record_ll);
+        LinearLayout endRecordLayout = (LinearLayout) popupView.findViewById(R.id.stop_record_ll);
         LinearLayout upgradeLayout = (LinearLayout) popupView.findViewById(R.id.upgrade_conf_ll);
         LinearLayout requestChairManLayout = (LinearLayout) popupView.findViewById(R.id.request_chairman_ll);
         LinearLayout releaseChairManLayout = (LinearLayout) popupView.findViewById(R.id.release_chairman_ll);
@@ -271,6 +273,22 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                 lockLayout.setVisibility(View.GONE);
             }
 
+            if(mPresenter.isSupportRecord()) {
+                if (mPresenter.isRecord()) {
+                    startRecordLayout.setVisibility(View.GONE);
+                    endRecordLayout.setVisibility(View.VISIBLE);
+                    //mRecordTip.setVisibility(View.VISIBLE);
+                } else {
+                    startRecordLayout.setVisibility(View.VISIBLE);
+                    endRecordLayout.setVisibility(View.GONE);
+                    //mRecordTip.setVisibility(View.GONE);
+                }
+            }else
+            {
+                startRecordLayout.setVisibility(View.GONE);
+                endRecordLayout.setVisibility(View.GONE);
+            }
+
             requestChairManLayout.setVisibility(View.GONE);
             releaseChairManLayout.setVisibility(View.VISIBLE);
             handUpLayout.setVisibility(View.GONE);
@@ -285,6 +303,9 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
 
             requestChairManLayout.setVisibility(View.VISIBLE);
             releaseChairManLayout.setVisibility(View.GONE);
+
+            startRecordLayout.setVisibility(View.GONE);
+            endRecordLayout.setVisibility(View.GONE);
 
             if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType())
             {
@@ -321,6 +342,8 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         upgradeLayout.setOnClickListener(moreButtonListener);
         requestChairManLayout.setOnClickListener(moreButtonListener);
         releaseChairManLayout.setOnClickListener(moreButtonListener);
+        startRecordLayout.setOnClickListener(moreButtonListener);
+        endRecordLayout.setOnClickListener(moreButtonListener);
 
         mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
         mPopupWindow.showAtLocation(findViewById(R.id.conf_manager_ll), Gravity.RIGHT | Gravity.BOTTOM, 0, confButtonGroup.getHeight());
@@ -361,6 +384,13 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                 case R.id.release_chairman_ll:
                     mPresenter.releaseChairman();
                     break;
+                case R.id.start_record_ll:
+                    mPresenter.recordConf(true);
+                    break;
+                case R.id.stop_record_ll:
+                    mPresenter.recordConf(false);
+                    break;
+
                 default:
                     break;
             }

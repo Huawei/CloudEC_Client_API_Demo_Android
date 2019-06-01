@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.adapter.SearchAdapter;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
@@ -34,7 +34,7 @@ public class ImSearchActivity extends MVPBaseActivity<ImSearchContract.ImSearchV
     private ListView listView;
     private SearchAdapter adapter;
     private EditText inputEdit;
-    private List<PersonalContact> contactList = new ArrayList<>();
+//    private List<PersonalContact> contactList = new ArrayList<>();
     private String mExtra;
 
 
@@ -65,21 +65,21 @@ public class ImSearchActivity extends MVPBaseActivity<ImSearchContract.ImSearchV
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                PersonalContact personalContact = contactList.get(position);
-                List<PersonalContact> friends = ImMgr.getInstance().getFriends();
-                for (PersonalContact contacts : friends)
-                {
-                    if (contacts.getEspaceNumber().equals(personalContact.getEspaceNumber()))
-                    {
-                        personalContact.setFriend(1);
-                        personalContact.setContactId(contacts.getContactId());
-                        personalContact.setTeamId(contacts.getTeamId());
-                    }
-                }
+//                PersonalContact personalContact = contactList.get(position);
+//                List<PersonalContact> friends = ImMgr.getInstance().getFriends();
+//                for (PersonalContact contacts : friends)
+//                {
+//                    if (contacts.getEspaceNumber().equals(personalContact.getEspaceNumber()))
+//                    {
+//                        personalContact.setFriend(1);
+//                        personalContact.setContactId(contacts.getContactId());
+//                        personalContact.setTeamId(contacts.getTeamId());
+//                    }
+//                }
                 if (UIConstants.GROUP_OPERATE_ADD.equals(mExtra))
                 {
                     Intent intent = new Intent();
-                    intent.putExtra(UIConstants.PERSONAL_CONTACT, personalContact);
+//                    intent.putExtra(UIConstants.PERSONAL_CONTACT, personalContact);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
@@ -87,7 +87,7 @@ public class ImSearchActivity extends MVPBaseActivity<ImSearchContract.ImSearchV
                 {
                     Intent intent = new Intent(IntentConstant.CONTACT_DETAIL_ACTIVITY_ACTION);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(UIConstants.PERSONAL_CONTACT, personalContact);
+//                    bundle.putSerializable(UIConstants.PERSONAL_CONTACT, personalContact);
                     intent.putExtra(UIConstants.BUNDLE_KEY, bundle);
                     ActivityUtil.startActivity(ImSearchActivity.this, intent);
                 }
@@ -111,23 +111,23 @@ public class ImSearchActivity extends MVPBaseActivity<ImSearchContract.ImSearchV
 
     private void searchContact(String text)
     {
-        ImMgr.getInstance().searchFuzzyContact(text);
+//        ImMgr.getInstance().searchFuzzyContact(text);
     }
 
-    @Override
-    public void refreshContactList(final List<PersonalContact> contactList)
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                ImSearchActivity.this.contactList = contactList;
-                adapter.setContactList(contactList);
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
+//    @Override
+//    public void refreshContactList(final List<PersonalContact> contactList)
+//    {
+//        runOnUiThread(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                ImSearchActivity.this.contactList = contactList;
+//                adapter.setContactList(contactList);
+//                adapter.notifyDataSetChanged();
+//            }
+//        });
+//    }
 
     class MyActionListener implements TextView.OnEditorActionListener
     {

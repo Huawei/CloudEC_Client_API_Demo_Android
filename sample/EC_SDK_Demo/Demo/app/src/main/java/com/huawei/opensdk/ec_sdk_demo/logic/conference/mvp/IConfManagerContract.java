@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.demoservice.ConfConstant;
+
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.logic.BaseView;
 
@@ -102,6 +103,8 @@ public interface IConfManagerContract
 
         void lockConf(boolean isLock);
 
+        void recordConf(boolean isRecord);
+
         void handUpSelf();
 
         boolean isHandUp();
@@ -109,6 +112,10 @@ public interface IConfManagerContract
         boolean isConfMute();
 
         boolean isConfLock();
+
+        boolean isRecord();
+
+        boolean isSupportRecord();
 
         void updateConf();
 

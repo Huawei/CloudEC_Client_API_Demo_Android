@@ -52,7 +52,8 @@ public class LoginConstant {
      */
     public enum LoginUIEvent {
 
-        LOGIN_SUCCESS(),
+        VOIP_LOGIN_SUCCESS(),
+        IM_LOGIN_SUCCESS(),
 
         LOGIN_FAILED(),
 

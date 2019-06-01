@@ -1,15 +1,14 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.contact;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.contacts.ContactLogic;
-import com.huawei.contacts.group.ConstGroupManager;
-import com.huawei.data.ConstGroup;
-import com.huawei.device.DeviceManager;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -19,8 +18,8 @@ import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
 import com.huawei.opensdk.imservice.ImMgr;
-import com.huawei.os.ActivityStack;
 
 import java.util.List;
 
@@ -32,20 +31,23 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
 {
 
     private ListView listView;
-
-    private List<ConstGroup> groupList;
-
     private GroupAdapter groupAdapter;
     private TextView rightTv;
     private TextView titleTv;
-    private String[] mBroadcastNames = new String[]{CustomBroadcastConstants.ACTION_REFRESH_GROUP_MEMBER};
+    private EditText searchEt;
+
+    private List<ImChatGroupInfo> groupList;
+    private String checkedId;
+    private String[] mBroadcastNames = new String[]{CustomBroadcastConstants.ACTION_REFRESH_GROUP_MEMBER,
+            CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_ADD,
+            CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_UPDATE};
 
 
     @Override
     public void initializeData()
     {
         LocBroadcast.getInstance().registerBroadcast(this, mBroadcastNames);
-        groupList = ImMgr.getInstance().getGroups();
+        groupList = ImMgr.getInstance().getAllChatGroupList();
     }
 
     @Override
@@ -56,7 +58,10 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
         listView = (ListView) findViewById(R.id.group_list);
         rightTv = (TextView) findViewById(R.id.right_text);
         titleTv = (TextView) findViewById(R.id.title_text);
+        searchEt = (EditText) findViewById(R.id.et_search);
         rightTv.setText(getString(R.string.create_group));
+        searchEt.setHint(R.string.search_group);
+        searchEt.setImeOptions(EditorInfo.IME_ACTION_SEARCH); // 软键盘显示放大镜图片，搜索
         groupAdapter = new GroupAdapter(this);
         // 滑动优化使用
         groupAdapter.setData(groupList);
@@ -78,7 +83,24 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                gotoGroupChatActivity(position);
+                gotoDetailActivity(position);
+            }
+        });
+
+        searchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                groupList = ImMgr.getInstance().queryChatGroup(searchEt.getText().toString());
+                if (null != groupList || groupList.size() > 0)
+                {
+                    groupAdapter.setData(groupList);
+                    groupAdapter.notifyDataSetChanged();
+                }
+                else
+                {
+                    showToast(R.string.search_group_failed);
+                }
+                return false;
             }
         });
     }
@@ -86,15 +108,21 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
     private void gotoCreateGroupActivity()
     {
         Intent intent = new Intent(IntentConstant.GROUP_CREATE_ACTIVITY_ACTION);
-        ActivityUtil.startActivity(this, intent);
+        ActivityUtil.startActivityForResult(this, intent, UIConstants.IM_REQUEST_CODE_CHAT_GROUP_CREATE);
     }
 
-    private void gotoGroupChatActivity(int position)
+    private void gotoDetailActivity(int position)
     {
-        ConstGroup constGroup = groupList.get(position);
-        Intent intent = new Intent(IntentConstant.IM_CHAT_ACTIVITY_ACTION);
-        intent.putExtra(UIConstants.CHAT_TYPE, constGroup);
-        ActivityUtil.startActivity(this, intent);
+        checkedId = groupList.get(position).getGroupId();
+        ImChatGroupInfo groupInfo = ImMgr.getInstance().getChatGroupInfo(checkedId);
+        if (null == groupInfo)
+        {
+            showToast(R.string.group_info_loading_failed);
+            return;
+        }
+        Intent intent = new Intent(IntentConstant.GROUP_DETAIL_SETTING_ACTIVITY_ACTION);
+        intent.putExtra(UIConstants.IM_CHAT_GROUP_INFO, groupInfo);
+        ActivityUtil.startActivityForResult(this, intent, UIConstants.IM_REQUEST_CODE_CHAT_GROUP_DELETE);
     }
 
     @Override
@@ -105,57 +133,46 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (data == null)
-        {
-            return;
-        }
-        setResult(resultCode, data);
-        ActivityStack.getIns().popup(this);
-    }
-
-    private void onGroupClicked(ConstGroup group)
-    {
-        if (!ContactLogic.getIns().getAbility().isIMAbility())
-        {
-            //ChatUtil.gotoChatSetting(this, group.getGroupId(), RecentChatContact.GROUPCHATTER);
-            return;
-        }
-
-        /*if(!selectGroupFlag)
-        {
-            //讨论组
-            ChatUtil.gotoGroupChat(this, group.getGroupId(), group.getUIName());
-        }
-        else
-        {
-            Intent intent = new Intent();
-            intent.putExtra(IntentData.GROUP_ENTITY, group);
-            setResult(Activity.RESULT_OK, intent);
-
-            ActivityStack.getIns().popup(this);
-        }*/
-    }
+//    private void onGroupClicked(ConstGroup group)
+//    {
+//        if (!ContactLogic.getIns().getAbility().isIMAbility())
+//        {
+//            //ChatUtil.gotoChatSetting(this, group.getGroupId(), RecentChatContact.GROUPCHATTER);
+//            return;
+//        }
+//
+//        /*if(!selectGroupFlag)
+//        {
+//            //讨论组
+//            ChatUtil.gotoGroupChat(this, group.getGroupId(), group.getUIName());
+//        }
+//        else
+//        {
+//            Intent intent = new Intent();
+//            intent.putExtra(IntentData.GROUP_ENTITY, group);
+//            setResult(Activity.RESULT_OK, intent);
+//
+//            ActivityStack.getIns().popup(this);
+//        }*/
+//    }
 
     private void loadGroups()
     {
         //只显示固定群和固化讨论组
-        List<ConstGroup> groups = ConstGroupManager.ins().getShowGroups();
+//        List<ConstGroup> groups = ConstGroupManager.ins().getShowGroups();
 
-        if (!groups.isEmpty())
-        {
-            groupAdapter.setData(groupList);
-        }
+//        if (!groups.isEmpty())
+//        {
+//            groupAdapter.setData(groupList);
+//        }
     }
 
     public void onClick(View v)
     {
-        if(DeviceManager.isFastClick())
-        {
-            return;
-        }
+//        if(DeviceManager.isFastClick())
+//        {
+//            return;
+//        }
     }
 
     @Override
@@ -166,16 +183,42 @@ public class GroupsActivity extends BaseActivity implements View.OnClickListener
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode)
+        {
+            case UIConstants.IM_REQUEST_CODE_CHAT_GROUP_CREATE:
+            case UIConstants.IM_REQUEST_CODE_CHAT_GROUP_DELETE:
+                if (resultCode == UIConstants.IM_RESULT_CODE_CHAT_GROUP_CREATE ||
+                        resultCode == UIConstants.IM_RESULT_CODE_CHAT_GROUP_DELETE)
+                {
+                    refreshGroupList();
+                }
+                break;
+                default:
+                    break;
+        }
+    }
+
+    @Override
     public void onReceive(String broadcastName, Object obj)
     {
-        if (CustomBroadcastConstants.ACTION_REFRESH_GROUP_MEMBER.equals(broadcastName))
+        switch (broadcastName)
         {
-            groupList = ImMgr.getInstance().getGroups();
-            refreshGroupList();
+            case CustomBroadcastConstants.ACTION_REFRESH_GROUP_MEMBER:
+                // todo
+                break;
+            case CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_UPDATE:
+                // 有人邀请加入聊天群组收到的回调通知
+            case CustomBroadcastConstants.ACTION_IM_CHAT_GROUP_ADD:
+                refreshGroupList();
+                break;
+                default:
+                    break;
         }
     }
 
     private void refreshGroupList(){
+        groupList = ImMgr.getInstance().getAllChatGroupList();
         runOnUiThread(new Runnable()
         {
             @Override

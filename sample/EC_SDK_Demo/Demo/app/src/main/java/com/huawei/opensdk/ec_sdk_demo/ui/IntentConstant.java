@@ -32,7 +32,7 @@ public class IntentConstant
     public static final String SINGLE_CHAT_SETTING_ACTIVITY_ACTION = "android.intent.action.single_chat_setting_activity";
     public static final String MEDIA_SCAN_ACTIVITY_ACTION = "android.intent.action.im_media_scan_activity";
     public static final String GROUP_ADD_MEMBER_ACTIVITY_ACTION = "android.intent.action.im_group_add_activity";
-    public static final String GROUP_MEMBER_MEMBER_ACTIVITY_ACTION = "android.intent.action.im_group_member_activity";
+    public static final String GROUP_MEMBER_ACTIVITY_ACTION = "android.intent.action.im_group_member_activity";
     public static final String GROUP_CREATE_ACTIVITY_ACTION = "android.intent.action.im_group_create_activity";
     public static final String SETTING_MORE_ACTIVITY_ACTION = "android.intent.action.im_setting_more_activity";
     public static final String SYSTEM_HEAD_SELECT_ACTIVITY_ACTION = "android.intent.action.im_system_head_activity";

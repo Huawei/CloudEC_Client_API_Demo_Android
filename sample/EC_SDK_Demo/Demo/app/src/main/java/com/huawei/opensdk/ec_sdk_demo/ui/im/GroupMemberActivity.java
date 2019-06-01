@@ -1,17 +1,17 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.im;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.contacts.ContactTools;
-import com.huawei.data.ConstGroup;
-import com.huawei.data.ConstGroupContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.adapter.MemberShowAdapter;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
+import com.huawei.opensdk.imservice.ImContactInfo;
 import com.huawei.opensdk.imservice.ImMgr;
 
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ import java.util.List;
  */
 public class GroupMemberActivity extends BaseActivity
 {
-    private List<ConstGroupContact> mContacts;
-    private List<ConstGroupContact> mDeleteContacts = new ArrayList<>();
+    private List<ImContactInfo> mContacts;
+    private List<ImContactInfo> mDeleteContacts = new ArrayList<>();
     private MemberShowAdapter mAdapter;
     private ListView mGroupMemberLv;
     private TextView mTitleTv;
     private TextView mNameTv;
     private boolean mIsDeleteMode;
     private TextView mOkTv;
-    private ConstGroup mConstGroup;
+    private ImChatGroupInfo mChatGroupInfo;
 
     @Override
     public void initializeComposition()
@@ -41,12 +41,12 @@ public class GroupMemberActivity extends BaseActivity
         mOkTv = (TextView) findViewById(R.id.right_text);
         mNameTv = (TextView) findViewById(R.id.contact_name);
         mTitleTv.setText(getString(R.string.group_member));
-        for (ConstGroupContact contact : mContacts)
+        for (ImContactInfo contact : mContacts)
         {
-            if (contact.getEspaceNumber().equals(mConstGroup.getOwner()))
+            if (contact.getAccount().equals(mChatGroupInfo.getOwnerAccount()))
             {
                 mContacts.remove(contact);
-                mNameTv.setText(ContactTools.getDisplayName(contact));
+                mNameTv.setText(mChatGroupInfo.getOwnerAccount());
                 break;
             }
         }
@@ -60,7 +60,6 @@ public class GroupMemberActivity extends BaseActivity
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                 {
-
                     mDeleteContacts.add(mContacts.get(position));
                     mContacts.remove(position);
                     mAdapter.setMemberList(mContacts);
@@ -73,11 +72,16 @@ public class GroupMemberActivity extends BaseActivity
                 @Override
                 public void onClick(View v)
                 {
-                    for (ConstGroupContact contact : mDeleteContacts)
+                    int result = 0;
+                    for (ImContactInfo contact : mDeleteContacts)
                     {
-                        ImMgr.getInstance().kickGroupMember(mConstGroup, contact.getEspaceNumber());
+                        result = ImMgr.getInstance().delChatGroupMember(contact.getAccount());
                     }
-                    finish();
+                    if (0 != result)
+                    {
+                        showToast(R.string.del_attendee_fail);
+                        finish();
+                    }
                 }
             });
         }
@@ -86,9 +90,10 @@ public class GroupMemberActivity extends BaseActivity
     @Override
     public void initializeData()
     {
-        mContacts = (ArrayList<ConstGroupContact>) getIntent().getSerializableExtra(UIConstants.GROUP_MEMBER);
-        mConstGroup = (ConstGroup)getIntent().getSerializableExtra(UIConstants.CONST_GROUP);
+        Intent intent = getIntent();
+        mChatGroupInfo = (ImChatGroupInfo) intent.getSerializableExtra(UIConstants.IM_CHAT_GROUP_INFO);
+        mContacts = mChatGroupInfo.getList();
         mIsDeleteMode = UIConstants.GROUP_OPERATE_DELETE.equals(getIntent().getStringExtra(UIConstants.GROUP_OPERATE_MODE));
-        mAdapter = new MemberShowAdapter(this, mConstGroup.getOwner());
+        mAdapter = new MemberShowAdapter(this, mChatGroupInfo.getOwnerAccount());
     }
 }

@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
 
-import com.huawei.common.library.asyncimage.ImageCache;
-import com.huawei.common.res.LocContext;
-import com.huawei.ecs.mtk.log.Logger;
-import com.huawei.log.TagInfo;
+//import com.huawei.common.library.asyncimage.ImageCache;
+//import com.huawei.common.res.LocContext;
+//import com.huawei.ecs.mtk.log.Logger;
+//import com.huawei.log.TagInfo;
 import com.huawei.opensdk.ec_sdk_demo.R;
 
 
@@ -17,11 +17,11 @@ public final class HeadCache
 
     private static final int MAX_SIZE = 20;
 
-    private ImageCache imageCache;
+//    private ImageCache imageCache;
 
-    private ImageCache localCache;
+//    private ImageCache localCache;
 
-    private ImageCache publicCache;
+//    private ImageCache publicCache;
 
     private Bitmap circleBgBig = null;
     private Bitmap roundCornerBgBig = null;
@@ -43,18 +43,18 @@ public final class HeadCache
      */
     private HeadCache()
     {
-        Logger.debug(TagInfo.APPTAG, "init");
+//        Logger.debug(TagInfo.APPTAG, "init");
 
-        imageCache = new ImageCache();
+//        imageCache = new ImageCache();
 
-        localCache = new ImageCache();
+//        localCache = new ImageCache();
 
         bitmapMap = new LruCache<String, Bitmap>(MAX_SIZE);
     }
 
     public void setDefaultBitmap(String key, Bitmap defaultBitmap)
     {
-        bitmapMap.put(key, defaultBitmap);
+//        bitmapMap.put(key, defaultBitmap);
     }
 
     public Bitmap getDefaultBitmap(String key)
@@ -67,8 +67,8 @@ public final class HeadCache
         if (circleBgBig == null)
         {
             int resId = R.drawable.bg_call_head;
-            Resources resources = LocContext.getResources();
-            circleBgBig = BitmapFactory.decodeResource(resources, resId);
+//            Resources resources = LocContext.getResources();
+//            circleBgBig = BitmapFactory.decodeResource(resources, resId);
         }
 
         return circleBgBig;
@@ -79,8 +79,8 @@ public final class HeadCache
         if (roundCornerBgBig == null)
         {
             int resId = R.drawable.head_bg_big;
-            Resources resources = LocContext.getResources();
-            roundCornerBgBig = BitmapFactory.decodeResource(resources, resId);
+//            Resources resources = LocContext.getResources();
+//            roundCornerBgBig = BitmapFactory.decodeResource(resources, resId);
         }
 
         return roundCornerBgBig;
@@ -91,8 +91,8 @@ public final class HeadCache
         if (roundCornerBgSmall == null)
         {
             int resId = R.drawable.head_bg;
-            Resources resources = LocContext.getResources();
-            roundCornerBgSmall = BitmapFactory.decodeResource(resources, resId);
+//            Resources resources = LocContext.getResources();
+//            roundCornerBgSmall = BitmapFactory.decodeResource(resources, resId);
         }
 
         return roundCornerBgSmall;
@@ -103,32 +103,32 @@ public final class HeadCache
      */
     public void cleanCache()
     {
-        imageCache.clearCaches();
-        localCache.clearCaches();
-        if (publicCache != null)
-        {
-            publicCache.clearCaches();
-        }
+//        imageCache.clearCaches();
+//        localCache.clearCaches();
+//        if (publicCache != null)
+//        {
+//            publicCache.clearCaches();
+//        }
         bitmapMap.evictAll();
     }
 
-    public ImageCache getHeadCache()
-    {
-        return imageCache;
-    }
+//    public ImageCache getHeadCache()
+//    {
+//        return imageCache;
+//    }
 
-    public ImageCache getPublicHeadCache()
-    {
-        if (publicCache == null)
-        {
-            publicCache = new ImageCache();
-        }
+//    public ImageCache getPublicHeadCache()
+//    {
+//        if (publicCache == null)
+//        {
+//            publicCache = new ImageCache();
+//        }
+//
+//        return publicCache;
+//    }
 
-        return publicCache;
-    }
-
-    public ImageCache getLocalHeadCache()
-    {
-        return localCache;
-    }
+//    public ImageCache getLocalHeadCache()
+//    {
+//        return localCache;
+//    }
 }

@@ -5,8 +5,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.huawei.contacts.ContactCache;
-import com.huawei.contacts.PersonalContact;
+//import com.huawei.contacts.ContactCache;
+//import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 
 /**
@@ -35,13 +35,13 @@ public class ContactHeadFetcher extends HeadFetcher
         localLoader = new ContactHeadLocalLoader(context, outlineBitmap, sysFile);
     }
 
-    @Override
+//    @Override
     protected BitmapDrawable processBitmap(Object data)
     {
         return loadBitmapFromServer((HeadPhoto) data, -1);
     }
 
-    @Override
+//    @Override
     protected BitmapDrawable getBitmapFromDiskCache(Object data)
     {
         HeadPhoto headPhoto = (HeadPhoto) data;
@@ -49,7 +49,7 @@ public class ContactHeadFetcher extends HeadFetcher
         return localLoader.load(headPhoto);
     }
 
-    @Override
+//    @Override
     public void loadImageFromCache(String key, ImageView iv)
     {
         if (TextUtils.isEmpty(key))
@@ -58,7 +58,7 @@ public class ContactHeadFetcher extends HeadFetcher
             return;
         }
 
-        super.loadImageFromCache(key, iv);
+//        super.loadImageFromCache(key, iv);
     }
 
     /**
@@ -78,16 +78,16 @@ public class ContactHeadFetcher extends HeadFetcher
         }
 
         // 获取头像的id
-        PersonalContact pContact = ContactCache.getIns().getContactByAccount(account);
-        if (pContact != null)
-        {
-            loadHead(pContact, headImage, supportDel);
-        }
+//        PersonalContact pContact = ContactCache.getIns().getContactByAccount(account);
+//        if (pContact != null)
+//        {
+//            loadHead(pContact, headImage, supportDel);
+//        }
         else
         {
             //支持陌生人只通过espacenumber获取头像
             HeadPhoto headPhoto = new HeadPhoto(account, "");
-            loadImage(headPhoto, headImage);
+//            loadImage(headPhoto, headImage);
         }
     }
 
@@ -120,47 +120,47 @@ public class ContactHeadFetcher extends HeadFetcher
         }
 
         HeadPhoto headPhoto = new HeadPhoto(account, headId);
-        loadImage(headPhoto, headImage);
+//        loadImage(headPhoto, headImage);
     }
 
-    /**
-     * 只用于列表中加载联系人头像，pContact不为null的情况。
-     * 加载联系人头像，从缓存联系人中获取头像ID，如缓存不存在该联系人，显示默认头像
-     * @param pContact 联系人信息
-     * @param headImage 头像显示的View
-     * @param supportDel 是否支持删除头像
-     */
-    public void loadHead(PersonalContact pContact, ImageView headImage, boolean supportDel)
-    {
-        if (pContact == null)
-        {
-            //联系人为空,设置为默认头像
-            headImage.setImageResource(R.drawable.default_head);
-            return;
-        }
+//    /**
+//     * 只用于列表中加载联系人头像，pContact不为null的情况。
+//     * 加载联系人头像，从缓存联系人中获取头像ID，如缓存不存在该联系人，显示默认头像
+//     * @param pContact 联系人信息
+//     * @param headImage 头像显示的View
+//     * @param supportDel 是否支持删除头像
+//     */
+//    public void loadHead(PersonalContact pContact, ImageView headImage, boolean supportDel)
+//    {
+//        if (pContact == null)
+//        {
+//            //联系人为空,设置为默认头像
+//            headImage.setImageResource(R.drawable.default_head);
+//            return;
+//        }
+//
+//        String account = pContact.getEspaceNumber();
+//        if (TextUtils.isEmpty(account))
+//        {
+//            //联系人账号为空,设置为自定义头像.
+//            headImage.setImageResource(R.drawable.default_head_local);
+//            return;
+//        }
+//
+//        //头像id为空，删除头像。
+//        if (isHeadChangeOrDelete(pContact, supportDel))
+//        {
+//            deletePhoto(account);
+//            headImage.setImageBitmap(getDefaultBitmap(null));
+//            return;
+//        }
+//
+//        //支持陌生人只通过espacenumber获取头像
+//        HeadPhoto headPhoto = new HeadPhoto(account, pContact.getHead());
+//        loadImage(headPhoto, headImage);
+//    }
 
-        String account = pContact.getEspaceNumber();
-        if (TextUtils.isEmpty(account))
-        {
-            //联系人账号为空,设置为自定义头像.
-            headImage.setImageResource(R.drawable.default_head_local);
-            return;
-        }
-
-        //头像id为空，删除头像。
-        if (isHeadChangeOrDelete(pContact, supportDel))
-        {
-            deletePhoto(account);
-            headImage.setImageBitmap(getDefaultBitmap(null));
-            return;
-        }
-
-        //支持陌生人只通过espacenumber获取头像
-        HeadPhoto headPhoto = new HeadPhoto(account, pContact.getHead());
-        loadImage(headPhoto, headImage);
-    }
-
-    @Override
+//    @Override
     protected boolean forceRequestFromServer(Object data)
     {
         HeadPhoto headPhoto = (HeadPhoto) data;
@@ -179,14 +179,14 @@ public class ContactHeadFetcher extends HeadFetcher
 
     private void deletePhoto(String account)
     {
-        HeadPhotoUtil.deletePhoto(mContext, account);
-        getImageCache().removeBitmapFromCache(account);
+//        HeadPhotoUtil.deletePhoto(mContext, account);
+//        getImageCache().removeBitmapFromCache(account);
     }
 
-    private boolean isHeadChangeOrDelete(PersonalContact pContact, boolean supportDel)
-    {
-        return (pContact.isSelf() || supportDel || pContact.isFriend()) && TextUtils.isEmpty(pContact.getHead());
-    }
+//    private boolean isHeadChangeOrDelete(PersonalContact pContact, boolean supportDel)
+//    {
+//        return (pContact.isSelf() || supportDel || pContact.isFriend()) && TextUtils.isEmpty(pContact.getHead());
+//    }
 
     public void loadHead(String espacenumber, ImageView bigHead)
     {

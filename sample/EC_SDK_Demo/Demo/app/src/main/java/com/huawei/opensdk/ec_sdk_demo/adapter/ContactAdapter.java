@@ -8,9 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.contacts.PersonalContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.ContactHeadFetcher;
+import com.huawei.opensdk.imservice.ImContactInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ContactAdapter extends BaseAdapter
 {
     private Context context;
     private ContactHeadFetcher headFetcher;
-    private List<PersonalContact> contactList = new ArrayList<>();
+    private List<ImContactInfo> contactList = new ArrayList<>();
 
     public ContactAdapter(Context context)
     {
@@ -52,7 +52,7 @@ public class ContactAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        PersonalContact personalContact = contactList.get(position);
+        ImContactInfo contactInfo = contactList.get(position);
         ViewHolder viewHolder;
         if (convertView == null)
         {
@@ -67,13 +67,22 @@ public class ContactAdapter extends BaseAdapter
         {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.nameTv.setText(personalContact.getName());
-        viewHolder.infoTv.setText(personalContact.getSignature());
-        headFetcher.loadHead(personalContact, viewHolder.headIv, true);
+        viewHolder.nameTv.setText(contactInfo.getName());
+        viewHolder.infoTv.setText(contactInfo.getSignature());
+//        headFetcher.loadHead(personalContact, viewHolder.headIv, true);
+        // TODO: 2019/1/21 此处头像暂为默认 后续修改
+        if (1 == contactInfo.getContactType())
+        {
+            viewHolder.headIv.setImageResource(R.drawable.default_head);
+        }
+        else
+        {
+            viewHolder.headIv.setImageResource(R.drawable.default_head_local);
+        }
         return convertView;
     }
 
-    public void setData(List<PersonalContact> contactList)
+    public void setData(List<ImContactInfo> contactList)
     {
         this.contactList = contactList;
     }

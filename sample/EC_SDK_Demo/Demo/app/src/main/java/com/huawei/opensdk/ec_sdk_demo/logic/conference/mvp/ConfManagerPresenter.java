@@ -57,7 +57,23 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.DEL_LOCAL_VIEW,
                 CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS,
                 CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS,
+                CustomBroadcastConstants.UPGRADE_CONF_RESULT,
+                CustomBroadcastConstants.UN_MUTE_CONF_RESULT,
+                CustomBroadcastConstants.MUTE_CONF_RESULT,
+                CustomBroadcastConstants.LOCK_CONF_RESULT,
+                CustomBroadcastConstants.UN_LOCK_CONF_RESULT,
+                CustomBroadcastConstants.ADD_ATTENDEE_RESULT,
+                CustomBroadcastConstants.DEL_ATTENDEE_RESULT,
+                CustomBroadcastConstants.MUTE_ATTENDEE_RESULT,
+                CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT,
+                CustomBroadcastConstants.HAND_UP_RESULT,
+                CustomBroadcastConstants.CANCEL_HAND_UP_RESULT,
+                CustomBroadcastConstants.SET_CONF_MODE_RESULT,
+                CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT,
+                CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT,
+                CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT,
                 CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT,
+                CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT,
                 CustomBroadcastConstants.SPEAKER_LIST_IND,
                 CustomBroadcastConstants.GET_CONF_END};
     }
@@ -282,6 +298,19 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     }
 
     @Override
+    public void recordConf(boolean isRecord)
+    {
+        int result = MeetingMgr.getInstance().recordConf(isRecord);
+        if (result != 0) {
+            if (isRecord) {
+                getView().showCustomToast(R.string.start_record_fail);
+            } else {
+                getView().showCustomToast(R.string.stop_record_fail);
+            }
+        }
+    }
+
+    @Override
     public void handUpSelf() {
         Member self = getSelf();
         if (self == null)
@@ -329,6 +358,26 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             return false;
         }
         return confBaseInfo.isLock() ;
+    }
+
+    @Override
+    public boolean isRecord() {
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (confBaseInfo == null)
+        {
+            return false;
+        }
+        return confBaseInfo.isRecord() ;
+    }
+
+    @Override
+    public boolean isSupportRecord() {
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (confBaseInfo == null)
+        {
+            return false;
+        }
+        return confBaseInfo.isSupportRecord() ;
     }
 
     @Override

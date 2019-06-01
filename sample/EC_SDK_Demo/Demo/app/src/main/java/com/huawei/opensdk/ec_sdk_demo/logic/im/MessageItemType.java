@@ -1,6 +1,8 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.im;
 
-import com.huawei.data.entity.InstantMessage;
+//import com.huawei.data.entity.InstantMessage;
+
+import com.huawei.opensdk.imservice.ImChatMsgInfo;
 
 /**
  * This class is about message item type.
@@ -55,7 +57,7 @@ public class MessageItemType
         /**
          * Msg receive file item type.
          */
-        MsgReceiveFile;
+        MsgReceiveFile
     }
 
     /**
@@ -68,7 +70,7 @@ public class MessageItemType
     /**
      * The Instant msg.
      */
-    public InstantMessage instantMsg = null;
+    public ImChatMsgInfo chatMsgInfo = null;
 
     /**
      * The Content.

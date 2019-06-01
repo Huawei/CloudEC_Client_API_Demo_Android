@@ -3,6 +3,7 @@ package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 import android.text.TextUtils;
 
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
+import com.huawei.ecterminalsdk.base.TsdkConfRecordMode;
 import com.huawei.opensdk.demoservice.BookConferenceInfo;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
@@ -36,6 +37,18 @@ public class ConfCreatePresenter implements ConfCreateContract.IConfCreatePresen
     public void setMediaType(TsdkConfMediaType mediaType)
     {
         bookConferenceInfo.setMediaType(mediaType);
+    }
+
+    @Override
+    public void setRecordType(TsdkConfRecordMode recordType)
+    {
+        bookConferenceInfo.setRecordType(recordType);
+    }
+
+    @Override
+    public void setAutoRecord(boolean isAuto)
+    {
+        bookConferenceInfo.setIs_auto(isAuto);
     }
 
     @Override

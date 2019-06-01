@@ -7,15 +7,15 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
-import com.huawei.common.res.LocContext;
-import com.huawei.contacts.ContactLogic;
-import com.huawei.contacts.PersonalContact;
-import com.huawei.ecs.mtk.log.Logger;
-import com.huawei.log.TagInfo;
-import com.huawei.msghandler.maabusiness.GetHeadImageRequest;
+//import com.huawei.common.res.LocContext;
+//import com.huawei.contacts.ContactLogic;
+//import com.huawei.contacts.PersonalContact;
+//import com.huawei.ecs.mtk.log.Logger;
+//import com.huawei.log.TagInfo;
+//import com.huawei.msghandler.maabusiness.GetHeadImageRequest;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.utils.StringUtil;
-import com.huawei.utils.img.BitmapUtil;
+//import com.huawei.utils.StringUtil;
+//import com.huawei.utils.img.BitmapUtil;
 
 import java.io.File;
 import java.util.HashMap;
@@ -58,33 +58,33 @@ public final class HeadPhotoUtil
     }
 
 
-    public static void loadBgHeadPhoto(PersonalContact pContact, ImageView imageView)
-    {
-        if (null == pContact)
-        {
-            //联系人为空,设置为默认头像
-            imageView.setImageResource(R.drawable.default_head);
-            return;
-        }
-
-        String eSpaceNumber = pContact.getEspaceNumber();
-        if (TextUtils.isEmpty(eSpaceNumber))
-        {
-            //联系人账号为空,设置为自定义头像.
-            imageView.setImageResource(R.drawable.default_head_local);
-            return;
-        }
-
-        String headId = pContact.getHead();
-        if (TextUtils.isEmpty(headId))
-        {
-            imageView.setImageResource(R.drawable.default_head);
-        }
-        else
-        {
-            loadBgHeadPhoto(imageView, eSpaceNumber, headId);
-        }
-    }
+//    public static void loadBgHeadPhoto(PersonalContact pContact, ImageView imageView)
+//    {
+//        if (null == pContact)
+//        {
+//            //联系人为空,设置为默认头像
+//            imageView.setImageResource(R.drawable.default_head);
+//            return;
+//        }
+//
+//        String eSpaceNumber = pContact.getEspaceNumber();
+//        if (TextUtils.isEmpty(eSpaceNumber))
+//        {
+//            //联系人账号为空,设置为自定义头像.
+//            imageView.setImageResource(R.drawable.default_head_local);
+//            return;
+//        }
+//
+//        String headId = pContact.getHead();
+//        if (TextUtils.isEmpty(headId))
+//        {
+//            imageView.setImageResource(R.drawable.default_head);
+//        }
+//        else
+//        {
+//            loadBgHeadPhoto(imageView, eSpaceNumber, headId);
+//        }
+//    }
 
     private static void loadBgHeadPhoto(ImageView imageView, String eSpaceNumber, String headId)
     {
@@ -94,14 +94,14 @@ public final class HeadPhotoUtil
             imageView.setImageResource(R.drawable.default_head);
 
             String fileName = HeadPhotoUtil.createHeadFileName(eSpaceNumber, headId);
-            File file = new File(LocContext.getFilesDir(), fileName);
-            if (!file.exists())
-            {
-                Logger.warn(TagInfo.APPTAG, fileName + "file not exit!");
-            }
+//            File file = new File(LocContext.getFilesDir(), fileName);
+//            if (!file.exists())
+//            {
+//                Logger.warn(TagInfo.APPTAG, fileName + "file not exit!");
+//            }
 
-            int sideLength = ContactLogic.getIns().getMyOtherInfo().getPictureSideLength();
-            imageView.setImageBitmap(BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(), sideLength, sideLength));
+//            int sideLength = ContactLogic.getIns().getMyOtherInfo().getPictureSideLength();
+//            imageView.setImageBitmap(BitmapUtil.decodeBitmapFromFile(file.getAbsolutePath(), sideLength, sideLength));
         }
         else
         {
@@ -179,7 +179,7 @@ public final class HeadPhotoUtil
      */
     public void deletePhotoDir()
     {
-        deletePhoto(LocContext.getContext(), SUFFIX);
+//        deletePhoto(LocContext.getContext(), SUFFIX);
     }
 
     /**
@@ -194,7 +194,7 @@ public final class HeadPhotoUtil
         File[] files = sysFile.listFiles(new HeadNameFilter(filter));
         if (files != null && files.length > 0)
         {
-            Logger.debug(TagInfo.APPTAG, "/length=" + files.length);
+//            Logger.debug(TagInfo.APPTAG, "/length=" + files.length);
             for (File sFile : files)
             {
                 deleteFile(sFile);
@@ -208,8 +208,8 @@ public final class HeadPhotoUtil
         {
             if(!sFile.delete())
             {
-                Logger.debug(TagInfo.APPTAG, "Delete photo " +
-                        "file fail, File is " + sFile.getPath());
+//                Logger.debug(TagInfo.APPTAG, "Delete photo " +
+//                        "file fail, File is " + sFile.getPath());
             }
         }
     }
@@ -221,21 +221,21 @@ public final class HeadPhotoUtil
      */
     public static Bitmap getDefaultHeadImg(String headid)
     {
-        int head = StringUtil.stringToInt(headid);
-        if (head == GetHeadImageRequest.DEFAULT_HEAD_ID_LITTLE)
-        {
-            int mResource = R.drawable.default_head;
-            Resources r = LocContext.getResources();
-            return BitmapFactory.decodeResource(r, mResource);
-        }
-
-        if (head > GetHeadImageRequest.DEFAULT_HEAD_ID_LITTLE
-                && head <= GetHeadImageRequest.DEFAULT_HEAD_ID_LARGE)
-        {
-            int drawable = DEF_HEADS[head];
-            Resources r = LocContext.getResources();
-            return BitmapFactory.decodeResource(r, drawable);
-        }
+//        int head = StringUtil.stringToInt(headid);
+//        if (head == GetHeadImageRequest.DEFAULT_HEAD_ID_LITTLE)
+//        {
+//            int mResource = R.drawable.default_head;
+//            Resources r = LocContext.getResources();
+//            return BitmapFactory.decodeResource(r, mResource);
+//        }
+//
+//        if (head > GetHeadImageRequest.DEFAULT_HEAD_ID_LITTLE
+//                && head <= GetHeadImageRequest.DEFAULT_HEAD_ID_LARGE)
+//        {
+//            int drawable = DEF_HEADS[head];
+//            Resources r = LocContext.getResources();
+//            return BitmapFactory.decodeResource(r, drawable);
+//        }
 
         return null;
     }

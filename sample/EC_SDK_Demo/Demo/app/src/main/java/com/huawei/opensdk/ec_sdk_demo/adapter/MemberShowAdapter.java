@@ -8,11 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.contacts.ContactTools;
-import com.huawei.contacts.PersonalContact;
-import com.huawei.data.ConstGroupContact;
+//import com.huawei.contacts.ContactTools;
+//import com.huawei.contacts.PersonalContact;
+//import com.huawei.data.ConstGroupContact;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.ContactHeadFetcher;
+import com.huawei.opensdk.imservice.ImContactInfo;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class MemberShowAdapter extends BaseAdapter
     private final String ownerNumber;
     private LayoutInflater inflater;
 
-    private List<ConstGroupContact> mContacts;
+    private List<ImContactInfo> mContacts;
 
     public MemberShowAdapter(Context context, String ownerNumber)
     {
@@ -35,7 +36,7 @@ public class MemberShowAdapter extends BaseAdapter
         this.ownerNumber = ownerNumber;
     }
 
-    public void setMemberList(List<ConstGroupContact> members)
+    public void setMemberList(List<ImContactInfo> members)
     {
         this.mContacts = members;
     }
@@ -74,10 +75,11 @@ public class MemberShowAdapter extends BaseAdapter
         {
             viewHolder = (GroupMemberViewHolder) convertView.getTag();
         }
-        PersonalContact contact = mContacts.get(position);
-        viewHolder.contactName.setText(ContactTools.getDisplayName(contact));
-        headFetcher.loadHead(contact, viewHolder.contactHead, false);
-        viewHolder.contactHead.setScaleType(ImageView.ScaleType.FIT_XY);
+        ImContactInfo contact = mContacts.get(position);
+        viewHolder.contactName.setText(contact.getAccount());
+//        headFetcher.loadHead(contact, viewHolder.contactHead, false);
+        // TODO: 2019/1/28 先使用默认头像
+        viewHolder.contactHead.setImageResource(R.drawable.default_head);
         return convertView;
     }
 

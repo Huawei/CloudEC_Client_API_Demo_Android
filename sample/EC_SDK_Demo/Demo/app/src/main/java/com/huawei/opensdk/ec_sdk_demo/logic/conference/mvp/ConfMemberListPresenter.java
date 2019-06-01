@@ -33,26 +33,11 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.CONF_STATE_UPDATE,
             CustomBroadcastConstants.REQUEST_CONF_RIGHT_RESULT,
             CustomBroadcastConstants.GET_CONF_SUBSCRIBE_RESULT,
-            CustomBroadcastConstants.ADD_ATTENDEE_RESULT,
-            CustomBroadcastConstants.MUTE_ATTENDEE_RESULT,
-            CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT,
-            CustomBroadcastConstants.MUTE_ATTENDEE_RESULT,
-            CustomBroadcastConstants.UN_MUTE_CONF_RESULT,
-            CustomBroadcastConstants.MUTE_CONF_RESULT,
-            CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT,
-            CustomBroadcastConstants.LOCK_CONF_RESULT,
-            CustomBroadcastConstants.UN_LOCK_CONF_RESULT,
-//            CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT,
-            CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT,
-            CustomBroadcastConstants.HAND_UP_RESULT,
-            CustomBroadcastConstants.CANCEL_HAND_UP_RESULT,
-            CustomBroadcastConstants.SET_CONF_MODE_RESULT,
             CustomBroadcastConstants.SPEAKER_LIST_IND,
             CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT,
             CustomBroadcastConstants.BROADCAST_ATTENDEE_CONF_RESULT,
             CustomBroadcastConstants.CANCEL_BROADCAST_CONF_RESULT,
             CustomBroadcastConstants.CONF_INFO_PARAM,
-            CustomBroadcastConstants.UPGRADE_CONF_RESULT,
             CustomBroadcastConstants.UPDATE_HOST_INFO,
             CustomBroadcastConstants.DATA_CONF_USER_LEAVE,
             CustomBroadcastConstants.DATA_CONFERENCE_USER_JOIN,
@@ -143,88 +128,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                     }
                     break;
 
-                // 邀请与会者结果
-                case CustomBroadcastConstants.ADD_ATTENDEE_RESULT:
-                    result = (int)obj;
-                    LogUtil.i(UIConstants.DEMO_TAG, "add attendee result: " + result);
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.add_attendee_fail);
-                        return;
-                    }
-                    break;
-
-                // 删除与会者结果
-                case CustomBroadcastConstants.DEL_ATTENDEE_RESULT:
-                    result = (int)obj;
-                    LogUtil.i(UIConstants.DEMO_TAG, "add attendee result: " + result);
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.del_attendee_fail);
-                        return;
-                    }
-                    break;
-
-                // 静音与会者结果
-                case CustomBroadcastConstants.MUTE_ATTENDEE_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.mute_attendee_fail);
-                        return;
-                    }
-                    break;
-
-                // 取消静音与会者结果
-                case CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.un_mute_attendee_fail);
-                        return;
-                    }
-                    break;
-
-                // 静音会议结果
-                case CustomBroadcastConstants.MUTE_CONF_RESULT:
-                    result = (int)obj;
-                    if (result != 0) {
-                        getView().showCustomToast(R.string.mute_conf_fail);
-                    } else {
-                        getView().showCustomToast(R.string.mute_conf_success);
-                    }
-                    break;
-
-                // 取消静音会议结果
-                case CustomBroadcastConstants.UN_MUTE_CONF_RESULT:
-                    result = (int)obj;
-                    if (result != 0) {
-                        getView().showCustomToast(R.string.un_mute_conf_fail);
-                    } else {
-                        getView().showCustomToast(R.string.un_mute_conf_success);
-                    }
-                    break;
-
-                // 锁定会议结果
-                case CustomBroadcastConstants.LOCK_CONF_RESULT:
-                    result = (int)obj;
-                    if (result != 0) {
-                        getView().showCustomToast(R.string.lock_conf_fail);
-                    } else {
-                        getView().showCustomToast(R.string.lock_conf_success);
-                    }
-                    break;
-
-                // 取消锁定会议结果
-                case CustomBroadcastConstants.UN_LOCK_CONF_RESULT:
-                    result = (int)obj;
-                    if (result != 0) {
-                        getView().showCustomToast(R.string.un_lock_conf_fail);
-                    } else {
-                        getView().showCustomToast(R.string.un_lock_conf_success);
-                    }
-                    break;
-
                 //  请求主席结果
 //                case CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT:
 //                    result = (int)obj;
@@ -234,36 +137,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
 //                        return;
 //                    }
 //                    break;
-
-                // 释放主席结果
-                case CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.release_chairman_fail);
-                        return;
-                    }
-                    break;
-
-                // 举手结果
-                case CustomBroadcastConstants.HAND_UP_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.handup_fail);
-                        return;
-                    }
-                    break;
-
-                // 取消举手结果
-                case CustomBroadcastConstants.CANCEL_HAND_UP_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.cancel_handup_fail);
-                        return;
-                    }
-                    break;
 
                 // 会议即将结束通知
                 case CustomBroadcastConstants.WILL_TIMEOUT:
@@ -285,15 +158,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                     }
                     String[] speakerName = MeetingMgr.getInstance().getSpeakers();
                     getView().updateSpeaker(speakerName, false);
-                    break;
-
-                case CustomBroadcastConstants.SET_CONF_MODE_RESULT:
-                    result = (int)obj;
-                    if (result != 0)
-                    {
-                        getView().showCustomToast(R.string.set_conf_mode_fail);
-                        return;
-                    }
                     break;
 
                 case CustomBroadcastConstants.WATCH_ATTENDEE_CONF_RESULT:
@@ -323,16 +187,6 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                     }
                     break;
 
-                case CustomBroadcastConstants.UPGRADE_CONF_RESULT:
-                    result = (int) obj;
-                    if (result != 0) {
-                        getView().showCustomToast(R.string.upgrade_conf_fail);
-                        return;
-                    } else {
-                        getView().showCustomToast(R.string.upgrade_conf_success);
-                    }
-                    break;
-
                 case CustomBroadcastConstants.UPDATE_HOST_INFO:
 //                    conferenceEntity.setDataConfChairman((String) obj);
                     break;
@@ -343,6 +197,26 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                 case CustomBroadcastConstants.GET_CONF_END:
                     getView().finishActivity();
 					break;
+
+                // 开始录制会议结果
+                case CustomBroadcastConstants.START_RECORD_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.start_record_fail);
+                    } else {
+                        getView().showCustomToast(R.string.start_record_success);
+                    }
+                    break;
+
+                // 停止录制会议结果
+                case CustomBroadcastConstants.STOP_RECORD_RESULT:
+                    result = (int)obj;
+                    if (result != 0) {
+                        getView().showCustomToast(R.string.stop_record_fail);
+                    } else {
+                        getView().showCustomToast(R.string.stop_record_success);
+                    }
+                    break;
 
                 default:
                     break;
@@ -490,6 +364,19 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                 getView().showCustomToast(R.string.lock_conf_fail);
             } else {
                 getView().showCustomToast(R.string.un_lock_conf_fail);
+            }
+        }
+    }
+
+    @Override
+    public void recordConf(boolean isRecord)
+    {
+        int result = MeetingMgr.getInstance().recordConf(isRecord);
+        if (result != 0) {
+            if (isRecord) {
+                getView().showCustomToast(R.string.start_record_fail);
+            } else {
+                getView().showCustomToast(R.string.stop_record_fail);
             }
         }
     }
@@ -674,6 +561,28 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
         }
         return confBaseInfo.isLock();
     }
+
+    @Override
+    public boolean isRecord() {
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (confBaseInfo == null)
+        {
+            return false;
+        }
+        return confBaseInfo.isRecord() ;
+    }
+
+
+    @Override
+    public boolean isSupportRecord() {
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (confBaseInfo == null)
+        {
+            return false;
+        }
+        return confBaseInfo.isSupportRecord() ;
+    }
+
 
     @Override
     public List<Member> updateAttendeeList() {

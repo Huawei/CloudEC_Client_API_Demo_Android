@@ -8,12 +8,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.data.ConstGroup;
+import com.huawei.ecterminalsdk.base.TsdkChatGroupInfo;
+import com.huawei.ecterminalsdk.base.TsdkChatGroupType;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.GroupHeadFetcher;
+import com.huawei.opensdk.imservice.ImChatGroupInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * This adapter is about group.
@@ -22,7 +25,8 @@ import java.util.List;
 public class GroupAdapter extends BaseAdapter
 {
     private Context context;
-    private List<ConstGroup> groupList = new ArrayList<>();
+    private List<ImChatGroupInfo> groupList = new ArrayList<>();
+    private ImChatGroupInfo chatGroupInfo;
     private GroupHeadFetcher headFetcher;
 
     public GroupAdapter(Context context)
@@ -52,7 +56,7 @@ public class GroupAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        ConstGroup constGroup = groupList.get(position);
+        chatGroupInfo = groupList.get(position);
         ViewHolder viewHolder;
         if (convertView == null)
         {
@@ -67,13 +71,15 @@ public class GroupAdapter extends BaseAdapter
         {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.nameTv.setText(constGroup.getName());
-        headFetcher.loadHead(constGroup, viewHolder.headIv);
-        viewHolder.lockIv.setVisibility(ConstGroup.FIXED == constGroup.getGroupType() ? View.VISIBLE : View.GONE);
+        viewHolder.nameTv.setText(chatGroupInfo.getGroupName());
+        // TODO: 2019/1/22 此处头像暂为默认，后续修改
+        viewHolder.headIv.setImageResource(R.drawable.group_head);
+//        headFetcher.loadHead(constGroup, viewHolder.headIv);
+        viewHolder.lockIv.setVisibility(TsdkChatGroupType.TSDK_E_CHAT_GROUP_FIXED_GROUP.getIndex() == chatGroupInfo.getGroupType() ? View.VISIBLE : View.GONE);
         return convertView;
     }
 
-    public void setData(List<ConstGroup> groupList)
+    public void setData(List<ImChatGroupInfo> groupList)
     {
         this.groupList = groupList;
     }

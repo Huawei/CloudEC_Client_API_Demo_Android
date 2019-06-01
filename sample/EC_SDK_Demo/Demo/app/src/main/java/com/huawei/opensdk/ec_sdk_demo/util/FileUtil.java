@@ -7,9 +7,9 @@ import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.huawei.ecs.mtk.log.Logger;
-import com.huawei.groupzone.data.FileType;
-import com.huawei.log.TagInfo;
+//import com.huawei.ecs.mtk.log.Logger;
+//import com.huawei.groupzone.data.FileType;
+//import com.huawei.log.TagInfo;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 
@@ -216,29 +216,29 @@ public final class FileUtil
      */
     public static int openBySystem(Context context , String gfFilePath)
     {
-        String mimeType = FileType.getMimeType(gfFilePath);
-        if (TextUtils.isEmpty(mimeType))
+//        String mimeType = FileType.getMimeType(gfFilePath);
+//        if (TextUtils.isEmpty(mimeType))
         {
-            Logger.debug(TagInfo.APPTAG, "mime type = " + mimeType);
+//            Logger.debug(TagInfo.APPTAG, "mime type = " + mimeType);
             return OpenResult.OPEN_BY_THIRDPARTY_FAIL;
         }
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addCategory(Intent.CATEGORY_DEFAULT);
+//        Intent intent = new Intent(Intent.ACTION_VIEW);
+//        intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-        Uri uri = Uri.fromFile(com.huawei.utils.FileUtil.newFile(gfFilePath));
-        intent.setDataAndType(uri, mimeType);
+//        Uri uri = Uri.fromFile(com.huawei.utils.FileUtil.newFile(gfFilePath));
+//        intent.setDataAndType(uri, mimeType);
 
-        try
-        {
-            context.startActivity(intent);
-            return OpenResult.OPEN_SUCCESS;
-        }
-        catch (ActivityNotFoundException e)
-        {
-            Logger.error(TagInfo.APPTAG, e.toString());
-            return OpenResult.OPEN_BY_THIRDPARTY_FAIL;
-        }
+//        try
+//        {
+//            context.startActivity(intent);
+//            return OpenResult.OPEN_SUCCESS;
+//        }
+//        catch (ActivityNotFoundException e)
+//        {
+////            Logger.error(TagInfo.APPTAG, e.toString());
+//            return OpenResult.OPEN_BY_THIRDPARTY_FAIL;
+//        }
     }
 
     private interface OpenResult

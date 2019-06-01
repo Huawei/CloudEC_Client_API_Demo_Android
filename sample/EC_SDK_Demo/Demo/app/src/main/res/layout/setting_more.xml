@@ -55,7 +55,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/personal_setting_divider_gray"/>
 
-                <!--<LinearLayout
+                <LinearLayout
                     android:id="@+id/signature_layout"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -71,12 +71,12 @@
                         android:layout_marginBottom="5dp"
                         android:ellipsize="end"
                         android:maxLines="2"
-                        android:visibility="invisible"/>
+                        android:visibility="visible"/>
 
                     <TextView
                         style="@style/setting_text_hint"
                         android:text="@string/signature"/>
-                </LinearLayout>-->
+                </LinearLayout>
 
                 <View
                     android:layout_width="fill_parent"
@@ -111,7 +111,7 @@
                     android:layout_height="0.5dp"
                     android:background="@color/personal_setting_divider_gray"/>
 
-                <!--<RelativeLayout
+                <RelativeLayout
                     android:id="@+id/personal_info"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/personal_setting_divider_gray"/>-->
+                    android:background="@color/personal_setting_divider_gray"/>
 
             </LinearLayout>
         </ScrollView>

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/detail_background">
 
-    <com.huawei.widget.LScrollView android:id="@+id/detail_sv"
+    <com.huawei.opensdk.ec_sdk_demo.widget.LScrollView android:id="@+id/detail_sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fadingEdge="none"
@@ -489,7 +489,7 @@
                 style="@style/chatBtnStyle"
                 android:layout_below="@id/blog_area"/>
         </RelativeLayout>
-    </com.huawei.widget.LScrollView>
+    </com.huawei.opensdk.ec_sdk_demo.widget.LScrollView>
 
     <include layout="@layout/title_fluent"
         android:id="@+id/include" />

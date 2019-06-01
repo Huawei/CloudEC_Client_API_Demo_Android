@@ -133,6 +133,9 @@
     <string name="conference_video">Video meeting</string>
     <string name="conference_voice_data">Voice + Data meeting</string>
     <string name="conference_video_data">Video + Data meeting</string>
+    <string name="recode_conference">Recode Conference</string>
+    <string name="recode_conference_disable">Disable</string>
+    <string name="recode_conference_enable">Enable</string>
     <string name="members_number">Member No.</string>
     <string name="conference_members">Participants</string>
     <string name="add">Add member</string>
@@ -190,13 +193,22 @@
     <string name="chat_groups">ChatGroups</string>
     <string name="group">Group</string>
     <string name="group_name">Group Name</string>
+    <string name="group_type">GroupType</string>
     <string name="group_announce">Bulletin</string>
     <string name="group_info">Description</string>
-    <string name="group_setting_all_member_nubmer">Totle %1$s numbers</string>
     <string name="discussion_exit">Exit and Delete</string>
     <string name="group_transform">Lock</string>
     <string name="loading">Loading</string>
     <string name="record_failed">record failed, record time length less than One Seconds</string>
+    <string name="fixed_group">Fixed group</string>
+    <string name="discussion_group">Discussion group</string>
+    <string name="group_info_loading_failed">Failed to obtain group information.</string>
+    <string name="add_member_failed">Add Member Failed</string>
+    <string name="add_member_success">Add Member Success</string>
+    <string name="del_member_success">Delete Member Success</string>
+    <string name="update_chat_group_success">Update Chat Group Success</string>
+    <string name="dis_chat_group_success">Dismiss Chat Group Success</string>
+    <string name="leave_chat_group_success">Leave Chat Group Success</string>
 
     <string name="post">Title</string>
     <string name="user_number">Soft Tel</string>
@@ -210,11 +222,14 @@
 
     <string name="add_friend_failed">Add friend failed</string>
     <string name="delete_friend_failed">Delete friend failed</string>
+    <string name="leave_chat_group_failed">Leave Chat Group Failed</string>
 
     <string name="leave">leave</string>
     <string name="online">online</string>
     <string name="busy">busy</string>
     <string name="offline">offline</string>
+    <string name="dnd">DND</string>
+    <string name="set_status_fail">Failed to set the user status.</string>
 
     <string name="format_not_supported">Format not supported</string>
     <string name="media_picture">[Picture]</string>
@@ -243,6 +258,8 @@
     <string name="create_group_fail">Create group failed</string>
     <string name="constant_group">Groups</string>
     <string name="my_state">My Status</string>
+    <string name="team_check">Packet filtering</string>
+    <string name="group_member_empty">No group members.</string>
 
     <string name="set_mode_failed">Failed to set conference mode.</string>
     <string name="set_conf_mode">Set Conference Mode</string>
@@ -250,8 +267,50 @@
     <string name="voice_control_mode">Voice Control Mode</string>
     <string name="free_mode">Free Mode</string>
     <string name="upgrade_conf">Upgrade conference</string>
-    <string name="set_presenter_failed">Set presenter failed</string>
     <string name="main_conference">Main Conf Hall</string>
+    <string name="signature_default">Enter your signature</string>
+    <string name="input_group_name">Input group name</string>
+    <string name="input_group_bulletin">Input group bulletin</string>
+    <string name="input_group_description">Input group description</string>
+    <string name="search_group">Input group name or number to find</string>
+    <string name="new_team">New Team</string>
+    <string name="move_team_up">Move group up</string>
+    <string name="move_team_down">Move group down</string>
+    <string name="rename_team">Rename group</string>
+    <string name="delete_team">Delete group</string>
+    <string name="create_new_group">Please create a contact group first</string>
+    <string name="delfriendsuccess">Contact deleted successfully.</string>
+    <string name="move_im_contact">Move contacts to</string>
+    <string name="copy_im_contact">Copy contacts to</string>
+    <string name="move_copy_contact_success">Move or Copy contact successful</string>
+    <string name="no_more_data">No more information</string>
+    <string name="opr_msg_withdraw">Recall</string>
+    <string name="delete">Delete</string>
+    <string name="delete_all_record">Delete all records</string>
+    <string name="opr_msg_withdraw_hint">recalled a message.</string>
+    <string name="you">You</string>
+    <string name="input_in_process">The other is typing...</string>
+    <string name="no_op_group">There are currently no groups that can be copied or moved</string>
 
+    <string name="set_presenter_failed">Set presenter failed</string>
+    <string name="set_info_failed">Set own information failed</string>
+    <string name="update_chat_group_failed">Update Chat Group Failed</string>
+    <string name="search_group_failed">Search group failed</string>
+    <string name="new_team_failed">New team failed</string>
+    <string name="del_team_failed">Delete team failed</string>
+    <string name="mod_team_failed">Modify team failed</string>
+    <string name="update_team_order_failed">Update team order failed</string>
+    <string name="move_copy_contact_failed">Move or Copy contact failed</string>
+    <string name="detect_user_status_failed">Detect user status failed</string>
+    <string name="send_message_failed">Send message failed</string>
+    <string name="withdraw_message_failed">Withdraw message failed</string>
+    <string name="delete_message_failed">Delete message failed</string>
+    <string name="set_read_failed">Set message read failed</string>
+    <string name="set_input_failed">Set input status failed</string>
+
+
+    <!-- ==================权限申请对话框（alertdialog）================== -->
+    <string name="permission_dialog_title">权限申请</string>
+    <string name="permission_dialog_message">为了您能正常使用，需要以下权限</string>
 
 </resources>

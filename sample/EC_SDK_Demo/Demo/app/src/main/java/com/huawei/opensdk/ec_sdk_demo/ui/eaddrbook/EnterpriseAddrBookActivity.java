@@ -1,7 +1,6 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -42,11 +41,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
     private Toast toast;
     private EnterpriseListAdapter enterpriseListAdapter;
 
-    private static List<EntAddressBookInfo> list = new ArrayList<>();
-    public static List<EntAddressBookInfo> getList() {
-        return list;
-    }
-
+    private List<EntAddressBookInfo> list = new ArrayList<>();
     private String mIconPath;
     private int mIconId;
     private int searchSeq;
@@ -83,7 +78,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
         eaddrSearch = (ImageView)findViewById(R.id.book_right);
         eaddrList = (ListView)findViewById(R.id.search_list);
 
-        enterpriseListAdapter = new EnterpriseListAdapter(this,list);
+        enterpriseListAdapter = new EnterpriseListAdapter(this, list);
         eaddrList.setAdapter(enterpriseListAdapter);
 
         eaddrBack.setOnClickListener(this);
@@ -181,9 +176,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(IntentConstant.EADDR_INFO_ACTIVITY_ACTION);
-        Bundle bundle = new Bundle();
-        bundle.putInt(UIConstants.CONTACT_POSITION, position);
-        intent.putExtras(bundle);
+        intent.putExtra(UIConstants.CONTACT_INFO, list.get(position));
         ActivityUtil.startActivity(this, intent);
     }
 

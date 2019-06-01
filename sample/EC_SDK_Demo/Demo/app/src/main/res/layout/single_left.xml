@@ -55,5 +55,15 @@
             android:textColor="@color/white"
             android:textSize="@dimen/sp14"
             android:visibility="gone"/>
+
+        <TextView android:id="@+id/inputting_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp6"
+            android:singleLine="true"
+            android:text="@string/input_in_process"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp12"
+            android:visibility="gone"/>
     </LinearLayout>
 </LinearLayout>

@@ -8,12 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.huawei.data.PersonalTeam;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.opensdk.ec_sdk_demo.ui.contact.ContactFragment;
+import com.huawei.opensdk.imservice.ImContactGroupInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * This adapter is about user teams list.
@@ -22,15 +22,21 @@ import java.util.List;
 public class TeamAdapter extends BaseAdapter {
 
     private Context context;
-    private List<PersonalTeam> teamsList = new ArrayList<>();
-    private PersonalTeam personalTeam;
+    private List<ImContactGroupInfo> contactGroupList = new ArrayList<>();
+    private ImContactGroupInfo contactGroupInfo;
+    private long checkGroupId = -1;
 
     public TeamAdapter(Context context) {
         this.context = context;
     }
 
-    public void setDate(List<PersonalTeam> date) {
-        this.teamsList = date;
+    public void setDate(List<ImContactGroupInfo> date) {
+        this.contactGroupList = date;
+    }
+
+    public void setCheckGroupId(long checkGroupId)
+    {
+        this.checkGroupId = checkGroupId;
     }
 
     /**
@@ -47,12 +53,12 @@ public class TeamAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return teamsList.size();
+        return contactGroupList.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return teamsList.get(i);
+        return contactGroupList.get(i);
     }
 
     @Override
@@ -77,10 +83,10 @@ public class TeamAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        personalTeam = teamsList.get(i);
-        viewHolder.tvName.setText(personalTeam.getTeamName());
-        viewHolder.tvCount.setText("(" + personalTeam.getContactList().size() + ")");
-        if (ContactFragment.getCheckedTeamName().equals(personalTeam.getTeamName()))
+        contactGroupInfo = contactGroupList.get(i);
+        viewHolder.tvName.setText(contactGroupInfo.getGroupName());
+        viewHolder.tvCount.setText("(" + contactGroupInfo.getGroupMember() + ")");
+        if (checkGroupId == contactGroupInfo.getGroupId())
         {
             viewHolder.ivCheck.setVisibility(View.VISIBLE);
         }

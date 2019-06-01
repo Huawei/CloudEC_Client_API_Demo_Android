@@ -9,6 +9,18 @@
 
     <include layout="@layout/title_transparent"/>
 
+    <!-- record point -->
+    <ImageView
+        android:id="@+id/record_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="55dip"
+        android:layout_marginRight="40dip"
+        android:background="@drawable/red_shape"
+        android:visibility="gone"/>
+
     <RelativeLayout
         android:id="@+id/audio_conf_layout_logo"
         android:layout_marginTop="@dimen/dp170"

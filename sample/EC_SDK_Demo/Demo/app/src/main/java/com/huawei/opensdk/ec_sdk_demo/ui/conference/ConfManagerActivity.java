@@ -19,9 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.huawei.common.res.LocContext;
+
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
+import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.demoservice.ConfConstant;
@@ -61,6 +62,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private FrameLayout mConfRemoteVideoLayout;
     private FrameLayout mConfSmallLayout;
     private FrameLayout mHideVideoLayout;
+    private ImageView mRecordPoint;
 
     private FrameLayout mHideLocalVideoBtn;
     private FrameLayout mShowLocalVideoBtn;
@@ -119,6 +121,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mVideoConfLayout = (RelativeLayout) findViewById(R.id.conference_video_layout);
         mTitleLayout = (RelativeLayout) findViewById(R.id.title_layout_transparent);
         mConfMediaLayout = (LinearLayout) findViewById(R.id.media_btn_group);
+        mRecordPoint = (ImageView) findViewById(R.id.record_view);
 
         //title
         mLeaveIV = (ImageView) findViewById(R.id.leave_iv);
@@ -491,6 +494,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 case R.id.set_conf_mode_ll:
                     showConfMode();
                     break;
+                case R.id.start_record_ll:
+                    mPresenter.recordConf(true);
+                    break;
+                case R.id.stop_record_ll:
+                    mPresenter.recordConf(false);
+                    break;
                 default:
                     break;
             }
@@ -619,6 +628,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if( mPresenter.isSupportRecord()&& mPresenter.isRecord())
+                {
+                    mRecordPoint.setVisibility(View.VISIBLE);
+                }else{
+                    mRecordPoint.setVisibility(View.GONE);
+                }
                 mTitleTV.setText(mPresenter.getSubject());
             }
         });
@@ -797,6 +812,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         LinearLayout cancelMuteAllLayout = (LinearLayout) popupView.findViewById(R.id.cancel_mute_all_ll);
         LinearLayout lockLayout = (LinearLayout) popupView.findViewById(R.id.lock_conf_ll);
         LinearLayout unlockLayout = (LinearLayout) popupView.findViewById(R.id.un_lock_conf_ll);
+        LinearLayout startRecordLayout = (LinearLayout) popupView.findViewById(R.id.start_record_ll);
+        LinearLayout endRecordLayout = (LinearLayout) popupView.findViewById(R.id.stop_record_ll);
         LinearLayout upgradeLayout = (LinearLayout) popupView.findViewById(R.id.upgrade_conf_ll);
         LinearLayout requestChairManLayout = (LinearLayout) popupView.findViewById(R.id.request_chairman_ll);
         LinearLayout releaseChairManLayout = (LinearLayout) popupView.findViewById(R.id.release_chairman_ll);
@@ -834,23 +851,32 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             }
 
             // 融合会议显示锁定
-            if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType())
-            {
-                if (mPresenter.isConfLock())
-                {
+            if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()) {
+                if (mPresenter.isConfLock()) {
                     unlockLayout.setVisibility(View.VISIBLE);
                     lockLayout.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     unlockLayout.setVisibility(View.GONE);
                     lockLayout.setVisibility(View.VISIBLE);
                 }
-            }
-            else
-            {
+
+            } else {
                 unlockLayout.setVisibility(View.GONE);
                 lockLayout.setVisibility(View.GONE);
+            }
+
+            if(mPresenter.isSupportRecord()) {
+                if (mPresenter.isRecord()) {
+                    startRecordLayout.setVisibility(View.GONE);
+                    endRecordLayout.setVisibility(View.VISIBLE);
+                } else {
+                    startRecordLayout.setVisibility(View.VISIBLE);
+                    endRecordLayout.setVisibility(View.GONE);
+                }
+            }else
+            {
+                startRecordLayout.setVisibility(View.GONE);
+                endRecordLayout.setVisibility(View.GONE);
             }
 
             requestChairManLayout.setVisibility(View.GONE);
@@ -868,6 +894,9 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             requestChairManLayout.setVisibility(View.VISIBLE);
             releaseChairManLayout.setVisibility(View.GONE);
             seConfModeLayout.setVisibility(View.GONE);
+
+            startRecordLayout.setVisibility(View.GONE);
+            endRecordLayout.setVisibility(View.GONE);
 
             if(TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType())
             {
@@ -915,6 +944,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         cancelMuteAllLayout.setOnClickListener(moreButtonListener);
         lockLayout.setOnClickListener(moreButtonListener);
         unlockLayout.setOnClickListener(moreButtonListener);
+        startRecordLayout.setOnClickListener(moreButtonListener);
+        endRecordLayout.setOnClickListener(moreButtonListener);
         upgradeLayout.setOnClickListener(moreButtonListener);
         requestChairManLayout.setOnClickListener(moreButtonListener);
         releaseChairManLayout.setOnClickListener(moreButtonListener);
@@ -1049,4 +1080,5 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             });
         }
     }
+
 }

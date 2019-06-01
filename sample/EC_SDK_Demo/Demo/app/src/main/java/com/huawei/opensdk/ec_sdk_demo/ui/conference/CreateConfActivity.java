@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
+import com.huawei.ecterminalsdk.base.TsdkConfRecordMode;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
 import com.huawei.opensdk.demoservice.Member;
@@ -45,6 +46,7 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
     private RelativeLayout confTimeRL;
     private RelativeLayout confTypeRL;
     private RelativeLayout accessNumberRL;
+    private RelativeLayout recordTypeRL;
     private TextView accessNumberTV;
     private ListView listView;
     private Button addMemberBtn;
@@ -52,6 +54,7 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
     private ImageButton clearSubjectBtn;
     private TextView startTimeText;
     private TextView confTypeText;
+    private TextView recordTypeText;
     private DateEntity dateEntity;
     private LinearLayout rightButtonLL;
 
@@ -66,12 +69,14 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         subjectET = (EditText) findViewById(R.id.conf_subject_et);
         confTimeRL = (RelativeLayout) findViewById(R.id.conference_time_view);
         confTypeRL = (RelativeLayout) findViewById(R.id.rl_conference_type);
+        recordTypeRL = (RelativeLayout) findViewById(R.id.record_mode_type);
         accessNumberTV = (TextView) findViewById(R.id.conference_members_number);
         listView = (ListView) findViewById(R.id.member_list);
         addMemberBtn = (Button) findViewById(R.id.add_member_btn);
         clearSubjectBtn = (ImageButton) findViewById(R.id.meeting_clear_subject);
         startTimeText = (TextView) findViewById(R.id.conf_create_time);
         confTypeText = (TextView) findViewById(R.id.tv_conference_type);
+        recordTypeText = (TextView) findViewById(R.id.tv_recode_mode_type);
         accessNumberRL = (RelativeLayout) findViewById(R.id.conference_end_time_view);
         rightButtonLL = (LinearLayout) findViewById(R.id.right_img_layout);
 
@@ -79,6 +84,7 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         rightTV.setText(R.string.create_conf);
         rightButtonLL.setOnClickListener(this);
         confTypeRL.setOnClickListener(this);
+        recordTypeRL.setOnClickListener(this);
         confTimeRL.setOnClickListener(this);
         addMemberBtn.setOnClickListener(this);
         clearSubjectBtn.setOnClickListener(this);
@@ -90,6 +96,8 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         String defaultSubject = LoginMgr.getInstance().getAccount() + "'s Meeting";
         mPresenter.setSubject(defaultSubject);
         mPresenter.setMediaType(TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE);
+        mPresenter.setRecordType(TsdkConfRecordMode.TSDK_E_CONF_RECORD_DISABLE);
+        mPresenter.setAutoRecord(false);
 
         //Join the meeting as chairman
         Member chairman = new Member();
@@ -134,6 +142,9 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
             case R.id.rl_conference_type:
                 showTypePicker();
                 break;
+            case R.id.record_mode_type:
+                showModePicker();
+                break;
             case R.id.right_img_layout:
                 mPresenter.setSubject(subjectET.getText().toString());
                 mPresenter.createConference();
@@ -168,6 +179,35 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
             }
         });
         dialog.show();
+    }
+
+    private void showModePicker()
+    {
+        TripleDialog typePickerDialog = new TripleDialog(this);
+        typePickerDialog.setLeftText(R.string.recode_conference_disable);
+        typePickerDialog.setRightText(R.string.recode_conference_enable);
+
+        typePickerDialog.setLeftButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mPresenter.setRecordType(TsdkConfRecordMode.TSDK_E_CONF_RECORD_DISABLE);
+                updateRecordModeView(TsdkConfRecordMode.TSDK_E_CONF_RECORD_DISABLE);
+            }
+        });
+        typePickerDialog.setRightButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mPresenter.setRecordType(TsdkConfRecordMode.TSDK_E_CONF_RECORD_RECORD_BROADCAST);
+                updateRecordModeView(TsdkConfRecordMode.TSDK_E_CONF_RECORD_RECORD_BROADCAST);
+
+            }
+        });
+
+        typePickerDialog.show();
     }
 
     private void showTypePicker()
@@ -225,6 +265,22 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
             }
         });
         typePickerDialog.show();
+    }
+
+    private void updateRecordModeView(TsdkConfRecordMode type)
+    {
+        switch (type)
+        {
+            case TSDK_E_CONF_RECORD_DISABLE:
+                recordTypeText.setText(R.string.recode_conference_disable);
+                break;
+            case TSDK_E_CONF_RECORD_RECORD_BROADCAST:
+                recordTypeText.setText(R.string.recode_conference_enable);
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void updateTypeView(TsdkConfMediaType type)

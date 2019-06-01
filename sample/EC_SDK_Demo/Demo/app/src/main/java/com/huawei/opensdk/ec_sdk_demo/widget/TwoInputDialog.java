@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.huawei.opensdk.ec_sdk_demo.R;
 
 public class TwoInputDialog extends BaseDialog
 {
+    private TextView titleTV;
     private EditText inputET1;
     private EditText inputET2;
     private ImageView clearNameIV;
@@ -19,9 +21,11 @@ public class TwoInputDialog extends BaseDialog
     {
         super(context);
         setContentView(R.layout.three_input_layout);
-        setTitle(R.string.add_member);
+//        setTitle(R.string.add_member);
         setLeftButtonListener(null);
         setCanceledOnTouchOutside(false);
+        titleTV = (TextView) findViewById(R.id.dialog_title);
+        titleTV.setText(R.string.add_member);
         inputET1 = (EditText) findViewById(R.id.dialog_edittext);
         inputET2 = (EditText) findViewById(R.id.dialog_edittext1);
 

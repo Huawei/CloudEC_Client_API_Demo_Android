@@ -79,6 +79,9 @@ public class ConfConstant {
         LOCK_CONF_RESULT(),
         UN_LOCK_CONF_RESULT(),
 
+        START_RECORD_RESULT(),
+        STOP_RECORD_RESULT(),
+
         HAND_UP_RESULT(),
         CANCEL_HAND_UP_RESULT(),
 
