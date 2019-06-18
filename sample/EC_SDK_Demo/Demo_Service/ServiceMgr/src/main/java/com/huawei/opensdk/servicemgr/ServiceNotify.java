@@ -61,7 +61,6 @@ import com.huawei.opensdk.callmgr.ctdservice.CtdMgr;
 import com.huawei.opensdk.callmgr.iptService.IptMgr;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
-import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
 import java.util.List;
@@ -488,13 +487,11 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtUserStatusUpdate(List<TsdkImUserStatusUpdateInfo> userStatusInfoList) {
         Log.i(TAG, "onEvtUserStatusUpdate notify.");
-        ImMgr.getInstance().handleUserStatusUpdate(userStatusInfoList);
     }
 
     @Override
     public void onEvtUserInfoUpdate(List<TsdkImUserInfo> userInfoList) {
         Log.i(TAG, "onEvtUserInfoUpdate notify.");
-        ImMgr.getInstance().handleUserInfoUpdate(userInfoList);
     }
 
     @Override
@@ -505,13 +502,11 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtJoinChatGroupRsp(TsdkChatGroup chatGroup, TsdkRspJoinChatGroupMsg rspJoinChatGroupMsg) {
         Log.i(TAG, "onEvtJoinChatGroupRsp notify.");
-        ImMgr.getInstance().handleJoinChatGroupRsp(chatGroup, rspJoinChatGroupMsg);
     }
 
     @Override
     public void onEvtJoinChatGroupInd(TsdkChatGroup chatGroup, TsdkBeAddedToChatGroupInfo beAddedToChatGroupInfo) {
         Log.i(TAG, "onEvtJoinChatGroupInd notify.");
-        ImMgr.getInstance().handleJoinChatGroupInd(chatGroup, beAddedToChatGroupInfo);
     }
 
     @Override
@@ -522,32 +517,27 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtLeaveChatGroupResult(TsdkChatGroup chatGroup, TsdkLeaveChatGroupResult leaveChatGroupResult) {
         Log.i(TAG, "onEvtLeaveChatGroupResult notify.");
-        ImMgr.getInstance().handleLeaveChatGroupResult(leaveChatGroupResult);
     }
 
     @Override
     public void onEvtChatGroupInfoUpdate(TsdkChatGroup chatGroup, TsdkChatGroupUpdateInfo chatGroupUpdateInfo, TsdkChatGroupInfoUpdateType updateType) {
         Log.i(TAG, "onEvtChatGroupInfoUpdate notify.");
-        ImMgr.getInstance().handleChatGroupInfoUpdate(chatGroup, chatGroupUpdateInfo, updateType);
     }
 
 
     @Override
     public void onEvtInputtingStatusInd(TsdkInputtingStatusInfo inputtingStatusInfo) {
         Log.i(TAG, "onEvtInputtingStatusInd notify.");
-        ImMgr.getInstance().handleInputtingStatusInd(inputtingStatusInfo);
     }
 
     @Override
     public void onEvtChatMsg(TsdkChatMsgInfo chatMsgInfo) {
         Log.i(TAG, "onEvtChatMsg notify.");
-        ImMgr.getInstance().handleChatMsg(chatMsgInfo);
     }
 
     @Override
     public void onEvtBatchChatMsg(TsdkBatchChatMsgInfo batchChatMsgInfo) {
         Log.i(TAG, "onEvtBatchChatMsg notify.");
-        ImMgr.getInstance().handleBatchChatMsg(batchChatMsgInfo);
     }
 
     @Override
@@ -573,19 +563,16 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtMsgSendResult(TsdkSendChatMsgResult sendChatMsgResult) {
         Log.i(TAG, "onEvtMsgSendResult notify.");
-        ImMgr.getInstance().handleMsgSendResult(sendChatMsgResult);
     }
 
     @Override
     public void onEvtMsgWithdrawResult(TsdkChatMsgWithdrawResult chatMsgWithdrawResult) {
         Log.i(TAG, "onEvtMsgWithdrawResult notify.");
-        ImMgr.getInstance().handleMsgWithdrawResult(chatMsgWithdrawResult);
     }
 
     @Override
     public void onEvtMsgWithdrawInd(TsdkChatMsgWithdrawInfo chatMsgWithdrawInfo) {
         Log.i(TAG, "onEvtMsgWithdrawInd notify.");
-        ImMgr.getInstance().handleMsgWithdrawInd(chatMsgWithdrawInfo);
     }
 
     @Override

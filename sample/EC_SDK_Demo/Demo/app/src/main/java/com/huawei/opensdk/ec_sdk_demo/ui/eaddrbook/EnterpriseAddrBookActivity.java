@@ -242,7 +242,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                         {
                             if (list.get(j).getEaddrAccount().equals(defIconInfo.getAccount()) &&  !"".equals(defIcon))
                             {
-                                mIconPath = Environment.getExternalStorageDirectory() + File.separator + "tupcontact" + File.separator + "icon" + File.separator + defIcon;
+                                mIconPath = Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo" + File.separator + "icon" + File.separator + defIcon;
                                 list.get(j).setHeadIconPath(mIconPath);
                                 break;
                             }

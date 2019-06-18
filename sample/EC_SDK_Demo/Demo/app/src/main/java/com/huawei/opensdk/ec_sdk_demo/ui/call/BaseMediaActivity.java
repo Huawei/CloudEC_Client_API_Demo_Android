@@ -92,6 +92,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
     private CallFunc mCallFunc;
 
+    private boolean mMuteStatus;
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -102,7 +104,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
                 case CALL_CONNECTED:
                     showButtons();
-                    //boolean isVideoCall = (boolean) msg.obj;
                     mAudioAcceptCallArea.setVisibility(View.GONE);
                     mVideoAcceptCallArea.setVisibility(View.GONE);
                     mDivertCallArea.setVisibility(View.GONE);
@@ -134,7 +135,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                                             if (null == Looper.myLooper()) {
                                                 Looper.prepare();
                                             }
-                                            //CallMgr.getInstance().agreeUpgradeVideoControl();
                                             CallMgr.getInstance().acceptAddVideo(mCallID);
                                         }
                                     });
@@ -143,7 +143,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     cancelDisDiaTimer();
-                                    // CallMgr.getInstance().rejectUpgradeVideo();
                                     CallMgr.getInstance().rejectAddVideo(mCallID);
                                 }
                             });
@@ -216,6 +215,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mTransferMeeting.setOnClickListener(this);
 
         hideViews();
+        refreshMuteStatus();
+        refreshSpeakerStatus();
     }
 
     private void startDismissDiaLogTimer() {
@@ -251,7 +252,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
             }
 
             CallMgr.getInstance().rejectAddVideo(this.callID);
-            //CallMgr.getInstance().rejectUpgradeVideo();
             LogUtil.i(UIConstants.DEMO_TAG, "dialog time out disAgreeUpg");
         }
     }
@@ -269,12 +269,22 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
         mMuteArea.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mPlateButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
-        //mSpeakerButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mSpeakerButton.setVisibility(View.VISIBLE);
         mUpgradeVideoArea.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mBlindTransferButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mHoldCallButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mTransferMeeting.setVisibility(isCall ? View.VISIBLE : View.GONE);
+    }
+
+    private void refreshMuteStatus()
+    {
+        mMuteStatus = mCallFunc.isMuteStatus();
+        mMuteArea.setActivated(mMuteStatus);
+    }
+
+    private void refreshSpeakerStatus()
+    {
+        mSpeakerButton.setActivated(CallMgr.getInstance().getCurrentAudioRoute() == CallConstant.TYPE_LOUD_SPEAKER);
     }
 
     @Override
@@ -305,17 +315,16 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                 mPlateControl.hideDialPlate();
                 break;
             case R.id.mute_btn:
-                boolean mMuteStatus = mCallFunc.isMuteStatus();
                 if (CallMgr.getInstance().muteMic(mCallID, !mMuteStatus)) {
                     mCallFunc.setMuteStatus(!mMuteStatus);
-                    mMuteArea.setActivated(!mMuteStatus);
+                    refreshMuteStatus();
                 }
                 break;
             case R.id.speaker_btn:
-                mSpeakerButton.setActivated(CallMgr.getInstance().switchAudioRoute() == CallConstant.TYPE_LOUD_SPEAKER);
+                CallMgr.getInstance().switchAudioRoute();
+                refreshSpeakerStatus();
                 break;
             case R.id.upgrade_video_btn:
-                //CallMgr.getInstance().audioToVideo();
                 CallMgr.getInstance().addVideo(mCallID);
                 break;
             case R.id.blind_transfer:
@@ -440,7 +449,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
         mBlindTransferButton.setVisibility(View.VISIBLE);
         mHoldCallButton.setVisibility(View.VISIBLE);
         mTransferMeeting.setVisibility(View.VISIBLE);
-        mSpeakerButton.setActivated(CallMgr.getInstance().getCurrentAudioRoute() == CallConstant.TYPE_LOUD_SPEAKER);
+        refreshSpeakerStatus();
     }
 
 }

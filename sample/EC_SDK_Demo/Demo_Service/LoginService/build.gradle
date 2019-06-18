@@ -26,5 +26,4 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(path: ':Demo_Service:CommonService')
-    compile project(path: ':Demo_Service:ImService')
 }

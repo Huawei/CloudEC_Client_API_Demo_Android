@@ -6,8 +6,11 @@ import android.text.TextUtils;
 
 import com.huawei.ecterminalsdk.base.TsdkAppFilePathInfo;
 import com.huawei.ecterminalsdk.base.TsdkAppInfoParam;
+import com.huawei.ecterminalsdk.base.TsdkAvcCapsLevel;
+import com.huawei.ecterminalsdk.base.TsdkAvcCapsLevelInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfCtrlParam;
 import com.huawei.ecterminalsdk.base.TsdkConfCtrlProtocol;
+import com.huawei.ecterminalsdk.base.TsdkDisplayLocalInfo;
 import com.huawei.ecterminalsdk.base.TsdkLogLevel;
 import com.huawei.ecterminalsdk.base.TsdkLogParam;
 import com.huawei.ecterminalsdk.base.TsdkMediaSrtpMode;
@@ -19,7 +22,6 @@ import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.CrashUtil;
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.imservice.ImMgr;
 
 import java.io.File;
 
@@ -52,6 +54,17 @@ public class ServiceMgr
      */
     private String appPath;
 
+    /**
+     * The coding ability level
+     * AVC视频编码能力级别
+     */
+    private int videoEncodeLeave = 1;
+
+    /**
+     * The decoding capability level
+     * AVC视频解码能力级别
+     */
+    private int videoDecodeLeave = 1;
 
     /**
      *
@@ -59,17 +72,24 @@ public class ServiceMgr
      */
     private TsdkManager tsdkManager;
 
-    private static final String CONTACT_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "tupcontact";
+    private static final String CONTACT_FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo";
 
     /* 应用程序根据自身业务支持情况进行设置 */
-    private int appType = 0;
     private boolean isSupportAudioAndVideoCall = true;
     private boolean isSupportAudioAndVideoConf = true;
     private boolean isSupportDataConf = true;
     private boolean isSupportCTD = true;
-    private boolean isSupportIM = true;
-    private boolean isSupportRichMediaMessage = true;
+    private boolean isSupportIM = false;
+    private boolean isSupportRichMediaMessage = false;
     private boolean isSupportAddressbook = true;
+
+    public int getVideoEncodeLeave() {
+        return videoEncodeLeave;
+    }
+
+    public int getVideoDecodeLeave() {
+        return videoDecodeLeave;
+    }
 
     /**
      * This method is used to get instance object of ServiceMgr.
@@ -289,6 +309,61 @@ public class ServiceMgr
         }
     }
 
+    /**
+     * This method is used to set AVC video capability level information.
+     * 设置AVC视频能力级别信息
+     *
+     * @param encodeLevel   编码能力级别
+     * @param decodeLevel   解码能力级别
+     */
+    public void setAvcCapsLevel(int encodeLevel, int decodeLevel)
+    {
+        this.videoEncodeLeave = encodeLevel;
+        this.videoDecodeLeave = decodeLevel;
 
+        //Set avc caps level
+        TsdkAvcCapsLevel enCapsLevel = transCapsLevel(encodeLevel);
+        TsdkAvcCapsLevel deCapsLevel = transCapsLevel(decodeLevel);
+
+        TsdkAvcCapsLevelInfo avcCapsLevelInfo = new TsdkAvcCapsLevelInfo(enCapsLevel, deCapsLevel);
+        TsdkManager.getInstance().setConfigParam(avcCapsLevelInfo);
+    }
+
+    /**
+     * This method is used to set local information of the conference display.
+     * 设置会议中显示的本端信息
+     * @param displayName 本地显示名称
+     */
+    public void setDisplayLocalInfo(String displayName)
+    {
+        TsdkDisplayLocalInfo displayLocalInfo = new TsdkDisplayLocalInfo(displayName);
+        TsdkManager.getInstance().setConfigParam(displayLocalInfo);
+    }
+
+    private TsdkAvcCapsLevel transCapsLevel(int leave)
+    {
+        TsdkAvcCapsLevel capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_HD;
+        switch (leave)
+        {
+            case 0:
+                capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_OHD;
+                break;
+            case 1:
+                capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_HD;
+                break;
+            case 2:
+                capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_SD;
+                break;
+            case 3:
+                capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_SMOOTH;
+                break;
+            case 4:
+                capsLevel = TsdkAvcCapsLevel.TSDK_E_AVC_CAPS_LEVEL_SAVE_TRAFFIC;
+                break;
+            default:
+                break;
+        }
+        return capsLevel;
+    }
 }
 

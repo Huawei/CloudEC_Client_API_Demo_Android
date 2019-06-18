@@ -48,7 +48,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
     static class ContactViewHolder
     {
         private ImageView ivHead;
-        private TextView tvAccount;
+        private TextView tvName;
         private TextView tvDept;
     }
 
@@ -79,7 +79,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
             viewHolder = new ContactViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.activity_enterprise_list,null);
             viewHolder.ivHead = (ImageView) convertView.findViewById(R.id.head);
-            viewHolder.tvAccount = (TextView) convertView.findViewById(R.id.user_account);
+            viewHolder.tvName = (TextView) convertView.findViewById(R.id.user_name);
             viewHolder.tvDept = (TextView) convertView.findViewById(R.id.dept);
             convertView.setTag(viewHolder);
         }
@@ -101,7 +101,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
         {
             viewHolder.ivHead.setImageResource(entAddressBookInfo.getSysIconID());
         }
-        viewHolder.tvAccount.setText(entAddressBookInfo.getEaddrAccount());
+        viewHolder.tvName.setText(entAddressBookInfo.getEaddrName());
         viewHolder.tvDept.setText(entAddressBookInfo.getEaddrDept());
         return convertView;
     }

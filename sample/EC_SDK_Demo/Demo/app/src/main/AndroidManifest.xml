@@ -229,167 +229,36 @@
                 <category android:name="android.intent.category.sdkdemo"/>
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.im.ImSearchActivity"
+        <activity android:name=".ui.eaddrbook.EnterpriseAddrSetIconActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.im_search_activity"/>
+                <action android:name="android.intent.action.eaddr_set_icon_activity" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.im.ChatActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.im_chat_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.contact.GroupsActivity"
+        <activity android:name=".ui.eaddrbook.EnterpriseAddrIconSelectActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.groups_activity"/>
+                <action android:name="android.intent.action.eaddr_icon_select_activity" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.contact.TeamsActivity"
+        <activity android:name=".ui.servicesetting.AvcCapsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.teams_activity"/>
+                <action android:name="android.intent.action.avc_caps_activity" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-
-        </activity>
-
-        <activity android:name=".ui.contact.ContactDetailActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.contact_detail_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.im.VideoSelectedActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.video_selected_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.GroupDetailSettingActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.group_detail_setting_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.SingleChatSettingActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.single_chat_setting_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.MediaScanActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_media_scan_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.GroupMemberAddActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_group_add_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.GroupMemberActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_group_member_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.CreateGroupActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_group_create_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.SettingMoreActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_setting_more_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.im.SystemHeadIconSelectActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.im_system_head_activity"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.sdkdemo"/>
-            </intent-filter>
-        </activity>
-
-
-        //IM模块必须添加该服务
-        <service android:name="com.huawei.service.EspaceService"/>
     </application>
 
 </manifest>

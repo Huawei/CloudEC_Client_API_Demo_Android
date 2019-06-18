@@ -37,7 +37,6 @@ import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.CallFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.ConfFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.eaddrbook.EnterpriseAddrBookFunc;
-import com.huawei.opensdk.ec_sdk_demo.logic.im.ImFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.login.ILoginContract;
 import com.huawei.opensdk.ec_sdk_demo.logic.login.LoginFunc;
 import com.huawei.opensdk.ec_sdk_demo.logic.login.LoginModel;
@@ -48,7 +47,6 @@ import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.PermissionDialog;
 import com.huawei.opensdk.ec_sdk_demo.util.ZipUtil;
-import com.huawei.opensdk.imservice.ImMgr;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
@@ -393,7 +391,6 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
         CallMgr.getInstance().regCallServiceNotification(CallFunc.getInstance());
         CtdMgr.getInstance().regCtdNotification(CallFunc.getInstance());
         MeetingMgr.getInstance().regConfServiceNotification(ConfFunc.getInstance());
-        ImMgr.getInstance().regImServiceNotification(ImFunc.getInstance());
         EnterpriseAddressBookMgr.getInstance().registerNotification(EnterpriseAddrBookFunc.getInstance());
 
         ServiceMgr.getServiceMgr().securityParam(

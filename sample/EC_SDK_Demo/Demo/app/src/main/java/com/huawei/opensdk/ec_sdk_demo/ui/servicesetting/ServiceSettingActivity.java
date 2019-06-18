@@ -13,6 +13,7 @@ public class ServiceSettingActivity extends BaseActivity implements View.OnClick
     public void initializeComposition() {
         setContentView(R.layout.activity_service_setting);
         findViewById(R.id.ipt_service_setting).setOnClickListener(this);
+        findViewById(R.id.other_setting).setOnClickListener(this);
     }
 
     @Override
@@ -27,6 +28,9 @@ public class ServiceSettingActivity extends BaseActivity implements View.OnClick
         {
             case R.id.ipt_service_setting:
                 ActivityUtil.startActivity(ServiceSettingActivity.this, IntentConstant.IPT_REGISTER_ACTIVITY_ACTION, new String[]{IntentConstant.DEFAULT_CATEGORY});
+                break;
+            case R.id.other_setting:
+                ActivityUtil.startActivity(ServiceSettingActivity.this, IntentConstant.AVC_CAPS_ACTIVITY_ACTION);
                 break;
             default:
                 break;

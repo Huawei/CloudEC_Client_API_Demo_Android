@@ -1855,6 +1855,10 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
+        //DocumentId等于0说明是异常离会
+        if (0 == wbDelDocInfo.getWbBaseInfo().getDocumentId()){
+            documentId.clear();
+        }
         Iterator<Integer> iterator = documentId.iterator();
         while (iterator.hasNext())
         {

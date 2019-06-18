@@ -25,6 +25,8 @@ public interface IVideoCallContract
 
         boolean getIsSpeakerRoute();
 
+        boolean getIsMuteMic();
+
         int getCallType();
 
         String getOppositeName();
@@ -40,8 +42,6 @@ public interface IVideoCallContract
         void videoDestroy();
 
         void removeCallback();
-
-        void switchLocalView(boolean isClose);
 
         void switchCamera();
 

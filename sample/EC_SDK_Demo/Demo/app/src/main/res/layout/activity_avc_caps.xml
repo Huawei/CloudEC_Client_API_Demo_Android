@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <include layout="@layout/dial_title"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_encode_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dp47"
+        android:background="@drawable/bg_item_selector"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15" >
+
+        <TextView android:id="@+id/tv_encode_level_label"
+            android:layout_width="@dimen/dp100"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp10"
+            android:gravity="center_vertical"
+            android:text="@string/encode_level"
+            android:textColor="@color/textSecondary"
+            android:textSize="@dimen/sp15" />
+
+        <TextView
+            android:id="@+id/tv_encode_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/encode_level_arrow1"
+            android:layout_toRightOf="@id/tv_encode_level_label"
+            android:text="@string/hd"
+            android:textColor="#333333"
+            android:textSize="@dimen/sp17"
+            android:gravity="end|right|center_vertical" />
+
+        <ImageButton android:id="@+id/encode_level_arrow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_arrow_right_selector"
+            android:clickable="false" />
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_decode_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dp47"
+        android:background="@drawable/bg_item_selector"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15" >
+
+        <TextView android:id="@+id/tv_decode_level_label"
+            android:layout_width="@dimen/dp100"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp10"
+            android:gravity="center_vertical"
+            android:text="@string/decode_level"
+            android:textColor="@color/textSecondary"
+            android:textSize="@dimen/sp15" />
+
+        <TextView
+            android:id="@+id/tv_decode_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/decode_level_arrow1"
+            android:layout_toRightOf="@id/tv_decode_level_label"
+            android:text="@string/hd"
+            android:textColor="#333333"
+            android:textSize="@dimen/sp17"
+            android:gravity="end|right|center_vertical" />
+
+        <ImageButton android:id="@+id/decode_level_arrow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_arrow_right_selector"
+            android:clickable="false" />
+    </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dddddd"/>
+
+</LinearLayout>

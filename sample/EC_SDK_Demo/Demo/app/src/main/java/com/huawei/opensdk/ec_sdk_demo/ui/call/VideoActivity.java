@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallInfo;
-import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
@@ -151,6 +150,8 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         mLocalView.setVisibility(View.VISIBLE);
         mPlateControl = new SecondDialPlateControl(mPlateArea, this.mCallID);
         mVideoSpeakerArea.setActivated(mPresenter.getIsSpeakerRoute());
+
+        switchMuteBtn(mPresenter.getIsMuteMic());
     }
 
     @Override
@@ -387,7 +388,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     @Override
     public void switchMuteBtn(boolean currentMuteStatus)
     {
-        mVideoMuteArea.setActivated(!currentMuteStatus);
+        mVideoMuteArea.setActivated(currentMuteStatus);
     }
 
     @Override

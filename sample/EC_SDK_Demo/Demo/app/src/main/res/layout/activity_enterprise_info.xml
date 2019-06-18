@@ -13,11 +13,12 @@
         <RelativeLayout android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <include layout="@layout/blog_old"/>
+            <include android:id="@+id/blog_title"
+                layout="@layout/blog_old"/>
 
             <LinearLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/blog_area"
+                android:layout_below="@id/blog_title"
                 android:orientation="vertical">
 
                 <!--基本信息-->
@@ -25,7 +26,6 @@
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/blog_area"
                     android:orientation="vertical">
 
                     <!--上面的留白-->
@@ -483,7 +483,7 @@
             <!-- 进入个人聊天界面-->
             <ImageView android:id="@+id/enter_chat"
                 style="@style/chatBtnStyle"
-                android:layout_below="@id/blog_area"/>
+                android:layout_below="@id/blog_title"/>
         </RelativeLayout>
     </ScrollView>
 

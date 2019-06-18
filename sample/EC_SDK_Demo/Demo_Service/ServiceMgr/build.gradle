@@ -29,6 +29,5 @@ dependencies {
     compile project(path: ':Demo_Service:CallService')
     compile project(path: ':Demo_Service:LoginService')
     compile project(path: ':Demo_Service:ConferenceService')
-    compile project(path: ':Demo_Service:ImService')
     compile project(path: ':Demo_Service:ContactService')
 }

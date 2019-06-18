@@ -292,6 +292,14 @@
     <string name="input_in_process">The other is typing...</string>
     <string name="no_op_group">There are currently no groups that can be copied or moved</string>
 
+    <string name="encode_level">Encode Level</string>
+    <string name="decode_level">Decode Level</string>
+    <string name="ohd">OHD</string>
+    <string name="hd">HD</string>
+    <string name="sd">SD</string>
+    <string name="smooth">SMOOTH</string>
+    <string name="save_traffic">SAVE_TRAFFIC</string>
+
     <string name="set_presenter_failed">Set presenter failed</string>
     <string name="set_info_failed">Set own information failed</string>
     <string name="update_chat_group_failed">Update Chat Group Failed</string>
@@ -310,7 +318,7 @@
 
 
     <!-- ==================权限申请对话框（alertdialog）================== -->
-    <string name="permission_dialog_title">权限申请</string>
-    <string name="permission_dialog_message">为了您能正常使用，需要以下权限</string>
+    <string name="permission_dialog_title">Permission application</string>
+    <string name="permission_dialog_message">For your normal use, you need the following permissions</string>
 
 </resources>

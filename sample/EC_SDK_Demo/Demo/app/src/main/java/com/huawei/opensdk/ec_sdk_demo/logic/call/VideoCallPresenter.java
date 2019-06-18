@@ -65,10 +65,6 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
         mCallFunc = CallFunc.getInstance();
     }
 
-    public void switchLocalView(boolean visible) {
-//        CallMgr.getInstance().switchLocalView(mCallID, visible);
-    }
-
     /**
      * formatTimeFString
      * 格式化时间字符
@@ -121,6 +117,12 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
     }
 
     @Override
+    public boolean getIsMuteMic() {
+        boolean currentMuteStatus = mCallFunc.isMuteStatus();
+        return currentMuteStatus;
+    }
+
+    @Override
     public int getCallType() {
         return mCallType;
     }
@@ -143,10 +145,10 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
 
     @Override
     public void muteCall() {
-        boolean currentMuteStatus = mCallFunc.isMuteStatus();
+        boolean currentMuteStatus = getIsMuteMic();
         if (CallMgr.getInstance().muteMic(mCallID, !currentMuteStatus)) {
             mCallFunc.setMuteStatus(!currentMuteStatus);
-            getView().switchMuteBtn(currentMuteStatus);
+            getView().switchMuteBtn(!currentMuteStatus);
         }
     }
 

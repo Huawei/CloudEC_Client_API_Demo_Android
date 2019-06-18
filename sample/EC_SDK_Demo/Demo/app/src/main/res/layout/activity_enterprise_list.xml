@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="22sp"
-            android:id="@+id/user_account"
+            android:id="@+id/user_name"
             android:layout_marginTop="5sp"
             android:gravity="center_vertical"
             android:textSize="16dp"/>

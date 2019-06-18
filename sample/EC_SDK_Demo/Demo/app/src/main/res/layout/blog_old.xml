@@ -29,17 +29,6 @@
             android:scaleType="centerCrop"
             android:src="@drawable/default_head" />
 
-        <ImageView
-            android:id="@+id/blog_state_iv"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_alignBottom="@id/blog_head_iv"
-            android:layout_alignRight="@id/blog_head_iv"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="2dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/state_offline" />
-
         <LinearLayout
             android:id="@+id/name_sex_area"
             android:layout_width="wrap_content"

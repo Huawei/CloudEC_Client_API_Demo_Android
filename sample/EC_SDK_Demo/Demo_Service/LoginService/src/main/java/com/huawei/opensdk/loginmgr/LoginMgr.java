@@ -19,8 +19,6 @@ import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.imservice.ImConstant;
-import com.huawei.opensdk.imservice.ImMgr;
 
 import static com.huawei.ecterminalsdk.base.TsdkServerType.TSDK_E_SERVER_TYPE_PORTAL;
 import static com.huawei.ecterminalsdk.base.TsdkServiceAccountType.TSDK_E_IM_SERVICE_ACCOUNT;
@@ -62,12 +60,6 @@ public class LoginMgr {
     private String terminal;
 
     private String sipNumber;
-
-    /**
-     * Whether login is successful
-     * im是否登录成功
-     */
-    private boolean isImLogin = false;
 
     /**
      * Define a TupEaddrContactorInfo object
@@ -151,7 +143,6 @@ public class LoginMgr {
         if (ret != 0) {
             LogUtil.e(TAG, "login is failed, return " + ret);
         }
-        ImMgr.getInstance().imLogout();
     }
 
 
@@ -166,19 +157,6 @@ public class LoginMgr {
      */
     public void handleAuthSuccess(int userId, TsdkImLoginParam imLoginParam) {
         LogUtil.e(TAG, "authorize success.");
-        // 启动IM的登录
-//        if (TsdkManager.getInstance().getAppInfo().getSupportIm() == 1 && null != imLoginParam) {
-//            ImAccountInfo imAccountInfo = new ImAccountInfo();
-//            imAccountInfo.setAccount(imLoginParam.getAccount());
-//            imAccountInfo.setToken(imLoginParam.getToken());
-//            String[] MaaUri = imLoginParam.getMaaServerUri().split(":");
-//            imAccountInfo.setMaaServer(MaaUri[0]);
-//            imAccountInfo.setMaaServerPort(Integer.parseInt(MaaUri[1]));
-//            imAccountInfo.setPassword(imLoginParam.getPassword());
-//            imAccountInfo.setPushServer(imLoginParam.getPushServerUri());
-//
-//            sendHandlerMessage(LoginEvent.LOGIN_E_EVT_AUTH_SUCCESS.getIndex(), imAccountInfo);
-//        }
     }
 
     /**
@@ -229,12 +207,6 @@ public class LoginMgr {
         {
             this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.VOIP_LOGIN_SUCCESS, userId, "voip login success");
         }
-        else
-        {
-            this.isImLogin = true;
-            ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.ON_LINE);
-            this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.IM_LOGIN_SUCCESS, userId, "im login success");
-        }
     }
 
     /**
@@ -264,11 +236,6 @@ public class LoginMgr {
      */
     public void handleLogoutSuccess(int userId, TsdkServiceAccountType serviceAccountType) {
         LogUtil.e(TAG, "logout success " );
-        if (TSDK_E_IM_SERVICE_ACCOUNT == serviceAccountType)
-        {
-            this.isImLogin = false;
-            ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.AWAY);
-        }
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "logout success ");
     }
 
@@ -296,8 +263,6 @@ public class LoginMgr {
     public void handleForceLogout(int userId ) {
         LogUtil.i(TAG, "voip force logout");
         isForceLogout = true;
-        this.isImLogin = false;
-        ImMgr.getInstance().setImLoginStatus(ImConstant.ImStatus.AWAY);
         this.logout();
 
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "voip force logout");
@@ -394,10 +359,6 @@ public class LoginMgr {
 
     public String getSipNumber() {
         return sipNumber;
-    }
-
-    public boolean isImLogin() {
-        return isImLogin;
     }
 
     public TsdkContactsInfo getSelfInfo() {
