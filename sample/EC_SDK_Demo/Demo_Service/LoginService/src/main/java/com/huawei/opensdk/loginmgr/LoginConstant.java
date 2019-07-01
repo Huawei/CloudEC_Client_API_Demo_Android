@@ -21,7 +21,7 @@ public class LoginConstant {
     public static final String TUP_SIP_TRANSPORT = "tupSipTransport";
     public static final String BLANK_STRING = "";
 
-    public static final String UPORTAL_REGISTER_SERVER = "cloudec.huaweicloud.com";
+    public static final String UPORTAL_REGISTER_SERVER = "bmeeting.huaweicloud.com";
     public static final String UPORTAL_PORT = "8443";
 
     public static final String APPLY_CONFIG_PRIORITY = "applyConfigPriority";

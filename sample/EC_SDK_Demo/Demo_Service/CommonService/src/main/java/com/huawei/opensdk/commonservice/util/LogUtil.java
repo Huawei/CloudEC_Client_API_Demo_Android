@@ -45,6 +45,11 @@ public final class LogUtil
         logPath = path;
     }
 
+    public static void setLogSwitch(boolean isOpen)
+    {
+        isLog = isOpen;
+    }
+
     /**
      * This method is used to log debug.
      * debug日志级别

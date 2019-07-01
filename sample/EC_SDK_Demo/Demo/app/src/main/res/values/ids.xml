@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="title_layout" type="id"/>
+
+    <!-- 自动化测试使用，最近记录项统一ID -->
+    <item name="fitArea" type="id"/>
+
+    <item name="holderKey" type="id"/>
+    <item name="objKey" type="id"/>
+
+    <item name="uidKey" type="id"/>
+
+    <!--群空间动态tab标题栏控件id-->
+
+    <item name="fullUriKey" type="id"/>
+    <item name="loadingKey" type="id"/>
+    <item name="uriKey" type="id"/>
+    <item name="fab_label" type="id"/>
+</resources>

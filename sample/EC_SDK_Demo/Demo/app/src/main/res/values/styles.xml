@@ -192,4 +192,27 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <style name="screen_share_floatwin_img">
+        <item name="android:layout_width">@dimen/dp_24</item>
+        <item name="android:layout_height">@dimen/dp_24</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">@dimen/dp_6</item>
+    </style>
+
+    <style name="screen_share_floatwin_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/dp_1</item>
+        <item name="android:textSize">@dimen/sp_12</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="float_anno_btn">
+        <item name="android:layout_width">@dimen/dp_71</item>
+        <item name="android:layout_height">@dimen/dp_48</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/flow_window_layout"
+	android:layout_width="wrap_content"
+	android:layout_height="@dimen/dp_50"
+    >
+
+    <RelativeLayout
+        android:id="@+id/start_annot_layout"
+        android:layout_width="@dimen/dp_64p5"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_start_annot_bg">
+        <ImageView
+            android:id="@+id/annot_icon"
+            android:src="@drawable/screen_annotate"
+            style="@style/screen_share_floatwin_img"
+            />
+        <TextView
+            android:layout_below="@+id/annot_icon"
+            android:text="@string/screen_annotate"
+            style="@style/screen_share_floatwin_text"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/stop_share_layout"
+        android:layout_width="@dimen/dp_64p5"
+        android:layout_height="match_parent"
+        android:background="@drawable/screen_stop_share_bg"
+        android:layout_toRightOf="@+id/start_annot_layout">
+        <ImageView
+            android:id="@+id/share_icon"
+            android:src="@drawable/screen_share"
+            style="@style/screen_share_floatwin_img"
+            />
+        <TextView
+            android:layout_below="@+id/share_icon"
+            android:text="@string/screen_share"
+            style="@style/screen_share_floatwin_text"
+           />
+    </RelativeLayout>
+</RelativeLayout>

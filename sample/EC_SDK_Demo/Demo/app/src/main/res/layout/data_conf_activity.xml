@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include
         android:id="@+id/date_conf_rl"
@@ -21,7 +22,7 @@
     <include layout="@layout/chat_data_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_gravity="bottom"/>
 
     <FrameLayout
         android:id="@+id/local_video_view"
@@ -33,4 +34,29 @@
         android:layout_width="1dp"
         android:layout_height="1dp"
         android:visibility="visible"/>
-</RelativeLayout>
+
+    <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.DragFloatActionButton
+        android:id="@+id/anno_float_button"
+        android:layout_width="@dimen/anno_btn_height_or_width"
+        android:layout_height="@dimen/anno_btn_height_or_width"
+        android:layout_marginBottom="@dimen/anno_btn_margin_bottom"
+        android:layout_marginLeft="@dimen/anno_btn_margin_left"
+        android:layout_gravity="bottom|left"
+        android:src="@drawable/anno_btn"
+        android:visibility="gone"
+        app:fab_colorNormal="@color/transparent"
+        app:fab_colorPressed="@color/transparent"
+        app:fab_colorRipple="#99FFFFFF"
+        app:fab_shadowRadius="@dimen/fab_shadow_radius"
+        app:fab_shadowXOffset="0dp"
+        app:fab_shadowYOffset="1dp"
+        />
+
+    <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.AnnoToolBar
+        android:id="@+id/anno_toolbar"
+        android:layout_width="@dimen/dp_340"
+        android:layout_height="@dimen/dp_48"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:visibility="gone"/>
+</FrameLayout>

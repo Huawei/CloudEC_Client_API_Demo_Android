@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_340"
+    android:layout_height="@dimen/dp_48"
+    >
+    <LinearLayout
+        android:id="@+id/annot_toolbar_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_48"
+        android:background="@drawable/float_anno_toolbar_bg"
+        >
+
+        <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.ToolbarButton
+            android:id="@+id/float_anno_color"
+            style="@style/float_anno_btn"
+            />
+
+        <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.ToolbarButton
+            android:id="@+id/float_anno_pen"
+            style="@style/float_anno_btn"
+            android:background="@drawable/toolbar_button_selector"
+            />
+
+        <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.ToolbarButton
+            android:id="@+id/float_anno_erase"
+            style="@style/float_anno_btn"
+            android:background="@drawable/toolbar_button_selector"
+            />
+
+        <com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.ToolbarButton
+            android:id="@+id/float_anno_empty"
+            style="@style/float_anno_btn"
+            android:background="@drawable/float_anno_toolbar_bg_right_selector"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/anno_exit_layout"
+        android:layout_width="@dimen/dp_48"
+        android:layout_height="@dimen/dp_48"
+        android:layout_toRightOf="@+id/annot_toolbar_layout"
+        android:layout_marginLeft="@dimen/dp_6"
+        android:gravity="center"
+        android:background="@drawable/annot_toolbar_bg">
+            <ImageView
+                android:id="@+id/float_anno_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+            />
+    </RelativeLayout>
+</LinearLayout>

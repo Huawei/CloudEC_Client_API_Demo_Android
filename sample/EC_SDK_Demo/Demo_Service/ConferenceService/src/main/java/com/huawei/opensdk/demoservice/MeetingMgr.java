@@ -1,6 +1,7 @@
 package com.huawei.opensdk.demoservice;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -9,6 +10,7 @@ import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkAttendeeBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkBookConfInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfAnonymousJoinParam;
+import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfAttendeeUpdateType;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
@@ -1223,6 +1225,124 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
+     * [cn]开始桌面共享
+     * @param context
+     * @param data
+     * @return
+     */
+    public int startScreenShare(Context context, Intent data){
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "start screen share failed, currentConference is null ");
+            return -1;
+        }
+        int result =  currentConference.startScreenShare(context,data);
+        return result;
+    }
+
+    /**
+     * 停止桌面共享
+     */
+    public void stopScreenShare(){
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "stop screen share failed, currentConference is null ");
+            return ;
+        }
+        currentConference.stopScreenShare();
+    }
+
+    /**
+     * 开启标注
+     * @return
+     */
+    public int startAnnotation(){
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "start annotation failed, currentConference is null ");
+            return -1;
+        }
+        int result =  currentConference.startAnnotation();
+        return result;
+    }
+
+    /**
+     * 停止标注
+     * @return
+     */
+    public int stopAnnotation(){
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "stop annotation failed, currentConference is null ");
+            return -1;
+        }
+        int result =  currentConference.stopAnnotation();
+        return result;
+    }
+
+    /**
+     * [en]This method is used to set annotation pen.
+     * [cn]设置本地标注工具状态
+     * @param enable      [en]Indicates open or close local annotation tool
+     *                     [cn]打开或关闭本地标注工具
+     */
+    public void setAnnotationLocalStatus(boolean enable) {
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "set annotation local status failed, currentConference is null ");
+            return;
+        }
+        currentConference.setAnnotationLocalStatus(enable);
+    }
+
+    /**
+     * [en]This method is used to set annotation pen.
+     * [cn]设置标注画笔
+     * @param penColor    [en]Indicates color of pen
+     *                     [cn]画笔颜色
+     * @param penWidth    [en]Indicates width of pen
+     *                     [cn]画笔宽度
+     */
+    public void setAnnotationPen(int penColor, int penWidth) {
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "set annotation pen failed, currentConference is null ");
+            return;
+        }
+        currentConference.setAnnotationPen(penColor, penWidth);
+    }
+
+    /**
+     * [en]This method is used to erase annotation.
+     * [cn]擦除标注
+     * @param isAll      [en]Indicates whether to erase all
+     *                    [cn]是否擦除所有
+     */
+    public void eraseAnnotation(boolean isAll) {
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "erase annotation failed, currentConference is null ");
+            return;
+        }
+        currentConference.eraseAnnotation(isAll);
+    }
+
+    /**
+     * [en]This method is used to clear annotation.
+     * [cn]清除标注
+     * @param isAll      [en]Indicates whether to clear all
+     *                    [cn]是否清除所有
+     */
+    public void clearAnnotation(boolean isAll) {
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "clear annotation failed, currentConference is null ");
+            return;
+        }
+        currentConference.clearAnnotation(isAll);
+    }
+
+    /**
      * 升级为数据会议前检查
      */
     public void checkUpgradeDataConf()
@@ -1762,13 +1882,49 @@ public class MeetingMgr implements IMeetingMgr{
             // 结束共享
             case TSDK_E_CONF_AS_STATE_NULL:
                 isShareAs = false;
-                if (!isShareAs && (0 == documentId.size() || null == documentId))
+                if ((0 == documentId.size() || null == documentId))
                 {
                     mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.END_DATA_CONF_SHARE, asStateInfo);
                 }
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * This method is used to notice of owner change.
+     * 共享者变更通知
+     * @param actionType        [en]Indicates app share type
+     *                          [cn]共享操作
+     * @param owner             [en]Indicates app share type
+     *                          [cn]共享者
+     */
+    public void handleAsOwnerChange(TsdkConfAsActionType actionType, TsdkAttendee owner){
+        Log.i(TAG, "handleAsOwnerChange");
+        //数据会议与会者上报较慢时会导致self为null，这里再设置一次，解决悬浮框移除不掉的异常。
+        for (Member member : getCurrentConferenceMemberList())
+        {
+            if (self == null && member.isSelf())
+            {
+                setSelf(member);
+            }
+        }
+        if (owner==null||self==null){
+            return;
+        }
+        switch (actionType){
+            case TSDK_E_CONF_AS_ACTION_ADD:
+                if (owner.getBaseInfo().getNumber().equals(self.getNumber())){
+                    mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, actionType);
+                }else {
+                    mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY);
+                }
+                break;
+            case TSDK_E_CONF_AS_ACTION_DELETE:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, actionType);
+                break;
+
         }
     }
 

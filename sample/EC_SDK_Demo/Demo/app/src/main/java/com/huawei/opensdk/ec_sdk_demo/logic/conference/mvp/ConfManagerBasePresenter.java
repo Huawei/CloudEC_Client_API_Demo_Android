@@ -5,8 +5,13 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 
+import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
+import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
+import com.huawei.ecterminalsdk.base.TsdkConfShareSubState;
+import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
+import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
@@ -18,6 +23,7 @@ import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.floatView.util.DeviceUtil;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBasePresenter;
 
 import java.util.List;
@@ -96,11 +102,41 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     break;
 
                 case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
-                    getView().startAsShare(true);
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStartInfo = (TsdkConfAsStateInfo)obj;
+                        if (null != asStartInfo){
+                            boolean isAllowAnnot = asStartInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().confManagerActivityShare(true, isAllowAnnot);
+                        }else {
+                            getView().confManagerActivityShare(true, false);
+                        }
+                        return;
+                    }
+                    getView().confManagerActivityShare(true, false);
                     break;
 
                 case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
-                    getView().startAsShare(false);
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStopInfo = (TsdkConfAsStateInfo)obj;
+                        if (null != asStopInfo){
+                            boolean isAllowAnnot = asStopInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().confManagerActivityShare(false,isAllowAnnot);
+                        }else {
+                            getView().confManagerActivityShare(false,false);
+                        }
+                    }
+
+                    if (obj instanceof TsdkWbDelDocInfo)
+                    {
+                        getView().confManagerActivityShare(false,false);
+                    }
+
+                    if (obj instanceof TsdkDocShareDelDocInfo)
+                    {
+                        getView().confManagerActivityShare(false,false);
+                    }
                     getView().showCustomToast(R.string.share_end);
                     break;
 
@@ -291,6 +327,21 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     }
                     String[] speakerName = MeetingMgr.getInstance().getSpeakers();
                     getView().showMessage(speakerName[0] + " is speaking.");
+                    break;
+
+                case CustomBroadcastConstants.SCREEN_SHARE_STATE:
+                    TsdkConfAsActionType actionType = (TsdkConfAsActionType)obj;
+                    if(actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_ADD){
+                        getView().jumpToHomeScreen();
+                    }else if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_DELETE){
+                        getView().removeAllScreenShareFloatWindow();
+                        if (!DeviceUtil.isAppForeground()) {
+                            DeviceUtil.bringTaskBackToFront();
+                        }
+                    }if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY){
+                        getView().robShareRemoveAllScreenShareFloatWindow();
+                    }
+
                     break;
 
                 default:

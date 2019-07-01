@@ -89,6 +89,7 @@
     <string name="subscribe_fail">Subscribe conference failed</string>
     <string name="add_self_fail">Add self failed</string>
 
+    <string name="screen_share_fail">Screen share failed</string>
     <string name="add_attendee_fail">Add attendee failed</string>
     <string name="del_attendee_fail">Del attendee failed</string>
     <string name="hangup_attendee_fail">Hangup attendee failed</string>
@@ -2225,5 +2226,12 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <!-- ==================权限申请对话框（alertdialog）================== -->
     <string name="permission_dialog_title">Permission application</string>
     <string name="permission_dialog_message">For your normal use, you need the following permissions</string>
+    
+    <string name="screen_share">stop</string>
+    <string name="screen_annotate">annotate</string>
+    <string name="anno_color">color</string>
+    <string name="anno_pen">pen</string>
+    <string name="anno_erase">erase</string>
+    <string name="anno_empty">empty</string>
 
 </resources>

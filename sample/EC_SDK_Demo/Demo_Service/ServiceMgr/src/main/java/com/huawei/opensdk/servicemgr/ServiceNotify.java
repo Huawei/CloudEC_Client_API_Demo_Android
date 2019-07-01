@@ -3,6 +3,7 @@ package com.huawei.opensdk.servicemgr;
 
 import android.util.Log;
 
+import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkBatchChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkBeAddedFriendInfo;
 import com.huawei.ecterminalsdk.base.TsdkBeAddedToChatGroupInfo;
@@ -13,6 +14,7 @@ import com.huawei.ecterminalsdk.base.TsdkChatMsgUndeliverInfo;
 import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawInfo;
 import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawResult;
 import com.huawei.ecterminalsdk.base.TsdkConfAppShareType;
+import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
@@ -413,6 +415,12 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtAsStateChange(TsdkConference conference, TsdkConfAppShareType shareType, TsdkConfAsStateInfo asStateInfo) {
         Log.i(TAG, "onEvtAsStateChange notify.");
         MeetingMgr.getInstance().handleAsStateChange(asStateInfo);
+    }
+
+    @Override
+    public void onEvtAsOwnerChange(TsdkConference conference, TsdkConfAsActionType actionType, TsdkAttendee owner) {
+        Log.i(TAG, "OnEvtAsOwnerChange notify.");
+        MeetingMgr.getInstance().handleAsOwnerChange(actionType, owner);
     }
 
     @Override

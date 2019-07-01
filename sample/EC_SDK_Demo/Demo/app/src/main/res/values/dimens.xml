@@ -100,5 +100,46 @@
     <dimen name="permission_dialog_btn_padding">8dp</dimen>
     <!-- 对话框的按钮大小 -->
     <dimen name="permission_dialog_btn_text_size">16sp</dimen>
+    <dimen name="labels_text_size">14sp</dimen>
+    <dimen name="anno_btn_height_or_width">46dp</dimen>
+    <dimen name="anno_btn_margin_bottom">66dp</dimen>
+    <dimen name="anno_btn_margin_left">10dp</dimen>
+    <dimen name="anno_toolbar_height">50dp</dimen>
+    <dimen name="toolbar_button_height">50dp</dimen>
+    <dimen name="toolbar_button_width">60dp</dimen>
+    <dimen name="toolbar_button_image_size">26dp</dimen>
+    <dimen name="fab_size_normal_1">46dp</dimen>
+    <dimen name="fab_size_mini_1">40dp</dimen>
+    <dimen name="toolbar_button_img_margin_top">9dp</dimen>
+    <dimen name="toolbar_button_title_margin_top">2dp</dimen>
+    <dimen name="toolbar_button_title_size">8sp</dimen>
 
+
+    <dimen name="color_item_size">20dp</dimen>
+    <dimen name="color_item_margin_left">15dp</dimen>
+    <dimen name="color_item_text_size">14sp</dimen>
+    <dimen name="color_item_height">48dp</dimen>
+    <dimen name="color_item_width">150dp</dimen>
+    <dimen name="fab_shadow_radius">11dp</dimen>
+    <dimen name="array_down_width">12dp</dimen>
+    <dimen name="array_down_height">8dp</dimen>
+
+    <dimen name="sp_12">12sp</dimen>
+
+    <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_2">2dp</dimen>
+    <dimen name="dp_3">3dp</dimen>
+    <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_15">15dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_30">30dp</dimen>
+    <dimen name="dp_40">40dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_50">50dp</dimen>
+    <dimen name="dp_64p5">64.5dp</dimen>
+    <dimen name="dp_71">71dp</dimen>
+    <dimen name="dp_120">120dp</dimen>
+    <dimen name="dp_162">162dp</dimen>
+    <dimen name="dp_340">340dp</dimen>
 </resources>

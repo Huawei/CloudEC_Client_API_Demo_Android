@@ -316,9 +316,16 @@
     <string name="set_read_failed">Set message read failed</string>
     <string name="set_input_failed">Set input status failed</string>
 
+    <string name="anno_color">颜色</string>
+    <string name="anno_pen">画笔</string>
+    <string name="anno_erase">擦除</string>
+    <string name="anno_empty">清空</string>
 
     <!-- ==================权限申请对话框（alertdialog）================== -->
     <string name="permission_dialog_title">Permission application</string>
     <string name="permission_dialog_message">For your normal use, you need the following permissions</string>
+
+    <string name="screen_share">停止共享</string>
+    <string name="screen_annotate">标注</string>
 
 </resources>

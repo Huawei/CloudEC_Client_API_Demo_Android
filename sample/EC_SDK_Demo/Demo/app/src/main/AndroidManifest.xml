@@ -186,6 +186,7 @@
         <!--android:launchMode="singleTask"-->
         <activity android:name=".ui.conference.ConfManagerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
             android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.conf_manager_activity"/>

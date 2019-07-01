@@ -5,8 +5,12 @@ import android.content.Context;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
+import com.huawei.ecterminalsdk.base.TsdkConfShareSubState;
+import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
+import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.VideoMgr;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
@@ -37,11 +41,40 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
             switch (broadcastName)
             {
                 case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
-                    getView().startAsShare(true);
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStartInfo = (TsdkConfAsStateInfo)obj;
+                        if (null != asStartInfo){
+                            boolean isAllowAnnot = asStartInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().dataConfActivityShare(true, isAllowAnnot);
+                        }else {
+                            getView().dataConfActivityShare(true, false);
+                        }
+                        return;
+                    }
+                    getView().dataConfActivityShare(true, false);
                     break;
 
                 case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
-                    getView().startAsShare(false);
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStopInfo = (TsdkConfAsStateInfo)obj;
+                        if (null != asStopInfo){
+                            boolean isAllowAnnot = asStopInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().dataConfActivityShare(false,isAllowAnnot);
+                        }else {
+                            getView().dataConfActivityShare(false,false);
+                        }
+                    }
+
+                    if (obj instanceof TsdkWbDelDocInfo)
+                    {
+                        getView().dataConfActivityShare(false,false);
+                    }
+                    if (obj instanceof TsdkDocShareDelDocInfo)
+                    {
+                        getView().dataConfActivityShare(false,false);
+                    }
                     getView().showCustomToast(R.string.share_end);
                     break;
 
@@ -95,6 +128,16 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
     @Override
     public void sendChatMsg(String content) {
         MeetingMgr.getInstance().sendConfMessage(content);
+    }
+
+    @Override
+    public int startAnnotation( ) {
+        return MeetingMgr.getInstance().startAnnotation();
+    }
+
+    @Override
+    public void setAnnotationLocalStatus(boolean enable) {
+        MeetingMgr.getInstance().setAnnotationLocalStatus(enable);
     }
 
     @Override

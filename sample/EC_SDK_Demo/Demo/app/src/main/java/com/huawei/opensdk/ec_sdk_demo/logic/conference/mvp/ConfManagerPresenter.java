@@ -2,6 +2,7 @@ package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.view.SurfaceView;
@@ -75,7 +76,9 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.REQUEST_CHAIRMAN_RESULT,
                 CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT,
                 CustomBroadcastConstants.SPEAKER_LIST_IND,
-                CustomBroadcastConstants.GET_CONF_END};
+                CustomBroadcastConstants.GET_CONF_END,
+                CustomBroadcastConstants.SCREEN_SHARE_STATE
+        };
     }
 
     @Override
@@ -402,6 +405,15 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
         if (result != 0)
         {
             getView().showCustomToast(R.string.add_attendee_fail);
+        }
+    }
+
+    @Override
+    public void confShare(Context context, Intent data) {
+        int result = MeetingMgr.getInstance().startScreenShare(context,data);
+        if (result != 0)
+        {
+            getView().showCustomToast(R.string.screen_share_fail);
         }
     }
 

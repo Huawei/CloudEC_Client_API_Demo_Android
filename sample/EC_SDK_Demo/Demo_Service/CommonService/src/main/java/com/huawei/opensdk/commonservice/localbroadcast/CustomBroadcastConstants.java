@@ -82,6 +82,7 @@ public interface CustomBroadcastConstants
     String DATE_CONFERENCE_START_SHARE_STATUS = "com.huawei.opensdk.conf.dateconferencestartsharestatus";
     String DATE_CONFERENCE_END_SHARE_STATUS = "com.huawei.opensdk.conf.dateconferenceendsharestatus";
     String DATE_CONFERENCE_CHAT_MSG = "com.huawei.opensdk.conf.dateconferencechatmsg";
+    String SCREEN_SHARE_STATE = "com.huawei.opensdk.conf.screensharestate";
 
     //IM
     String ACTION_LOGIN_IM = "com.huawei.opensdk.im.imlogin";

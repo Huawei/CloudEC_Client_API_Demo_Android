@@ -19,6 +19,7 @@ import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelMode;
 import com.huawei.ecterminalsdk.base.TsdkServiceSecurityParam;
 import com.huawei.ecterminalsdk.base.TsdkSipTransportMode;
 import com.huawei.ecterminalsdk.models.TsdkManager;
+import com.huawei.ecterminalsdk.models.common.util.TsdkLogUtil;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.util.CrashUtil;
 import com.huawei.opensdk.commonservice.util.LogUtil;
@@ -119,12 +120,18 @@ public class ServiceMgr
         /*set demo log path */
         LogUtil.setLogPath("ECSDKDemo");
 
+        /*set demo log switch */
+        LogUtil.setLogSwitch(true);
+
         LocContext.init(context);
 
         LogUtil.i(TAG, "sdk init is begin.");
 
 
         tsdkManager = TsdkManager.getInstance(context, appPath, ServiceNotify.getInstance());
+
+        /*set tsdk android log switch */
+        TsdkLogUtil.setLogSwitch(true);
 
         /* Step 1, set log param */
         TsdkLogParam logParam = new TsdkLogParam();

@@ -1,11 +1,17 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.projection.MediaProjectionManager;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
@@ -28,9 +33,12 @@ import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
+import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.adapter.PopupConfListAdapter;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.floatView.screenShare.FloatWindowsManager;
+import com.huawei.opensdk.ec_sdk_demo.floatView.util.DeviceUtil;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfManagerBasePresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfManagerPresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IConfManagerContract;
@@ -76,6 +84,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private FrameLayout mConfMute;
     private FrameLayout mConfSpeaker;
     private FrameLayout mConfAddAttendee;
+    private FrameLayout mConfShare;
     private FrameLayout mConfAttendee;
     private PopupWindow mPopupWindow;
     private ListView mConfMemberListView;
@@ -100,6 +109,41 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isShowBar = false;
 
     private boolean isStartShare = false;
+    private boolean isAllowAnnot = false;
+
+    private int activeCameraTime = 0;
+    private boolean isActiveOpenCamera = true;
+    private boolean isActiveShare = false;
+
+    private static final int START_SCREEN_SHARE_HANDLE = 666;
+    private static final int STOP_SCREEN_SHARE_HANDLE = 888;
+    private static final int ROB_STOP_SCREEN_SHARE_HANDLE = 222;
+    private Handler mHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what)
+            {
+                case START_SCREEN_SHARE_HANDLE:
+                    isAllowAnnot = true;
+                    FloatWindowsManager.getInstance().createScreenShareFloatWindow(ECApplication.getApp());
+                    DeviceUtil.jumpToHomeScreen();
+                    break;
+                case STOP_SCREEN_SHARE_HANDLE:
+                    FloatWindowsManager.getInstance().removeAllScreenShareFloatWindow(ECApplication.getApp());
+                    break;
+                case ROB_STOP_SCREEN_SHARE_HANDLE:
+                    // 在后台先将app拉到前台
+                    if (!DeviceUtil.isAppForeground()) {
+                        DeviceUtil.bringTaskBackToFront();
+                    }
+                    FloatWindowsManager.getInstance().removeAllScreenShareFloatWindow(ECApplication.getApp());
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected IConfManagerContract.ConfManagerView createView()
@@ -136,10 +180,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mConfAddAttendee = (FrameLayout) findViewById(R.id.conf_add_attendee);
         mConfAttendee = (FrameLayout) findViewById(R.id.conf_attendee);
         mConfMore = (FrameLayout) findViewById(R.id.btn_conf_more);
+        mConfShare = (FrameLayout) findViewById(R.id.conf_share);
 
         // 在与会者列表上报之前会控按钮全部屏蔽
         mConfMute.setVisibility(View.GONE);
         mConfAddAttendee.setVisibility(View.GONE);
+        mConfShare.setVisibility(View.GONE);
         mConfAttendee.setVisibility(View.GONE);
         mConfMore.setVisibility(View.GONE);
 
@@ -179,6 +225,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mConfMute.setOnClickListener(this);
         mConfSpeaker.setOnClickListener(this);
         mConfAddAttendee.setOnClickListener(this);
+        mConfShare.setOnClickListener(this);
         mConfAttendee.setOnClickListener(this);
         mConfMore.setOnClickListener(this);
         mLeaveIV.setOnClickListener(this);
@@ -231,8 +278,21 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (isActiveOpenCamera){
+            mPresenter.closeOrOpenLocalVideo(false);
+        }else {
+            mPresenter.closeOrOpenLocalVideo(true);
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
+        if (!DeviceUtil.isAppForeground()) {
+            mPresenter.closeOrOpenLocalVideo(true);
+        }
         stopTimer();
         isFirstStart = true;
         isPressTouch = false;
@@ -278,6 +338,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void finishActivity()
     {
+        if (isAllowAnnot){
+            if (!DeviceUtil.isAppForeground()) {
+                DeviceUtil.bringTaskBackToFront();
+            }
+            mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
+        }
         stopTimer();
         finish();
     }
@@ -421,6 +487,13 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 intent.putExtra(UIConstants.IS_DATE_CONF, isDateConf);
                 ActivityUtil.startActivity(this, intent);
                 break;
+            case R.id.conf_share:
+                if (FloatWindowsManager.getInstance().checkPermission(this)) {
+                    requestScreenSharePermission();
+                } else {
+                    FloatWindowsManager.getInstance().applyPermission(this);
+                }
+                break;
             case R.id.btn_conf_more:
                 showMoreConfCtrl();
                 break;
@@ -436,9 +509,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 break;
             case R.id.share_iv:
                 Intent shareIntent = new Intent(IntentConstant.CONF_DATA_ACTIVITY_ACTION);
-                shareIntent.putExtra(UIConstants.CONF_ID, confID);
-                shareIntent.putExtra(UIConstants.IS_VIDEO_CONF, isVideo);
-                shareIntent.putExtra(UIConstants.IS_START_SHARE_CONF, isStartShare);
+                shareIntent.putExtra(UIConstants.CONF_ID, this.confID);
+                shareIntent.putExtra(UIConstants.IS_VIDEO_CONF, this.isVideo);
+                shareIntent.putExtra(UIConstants.IS_START_SHARE_CONF, this.isStartShare);
+                shareIntent.putExtra(UIConstants.IS_ALLOW_ANNOT, this.isAllowAnnot);
+                shareIntent.putExtra(UIConstants.IS_ACTIVE_SHARE, this.isActiveShare);
                 ActivityUtil.startActivity(this, shareIntent);
                 break;
             default:
@@ -460,6 +535,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                     mPresenter.switchCamera();
                     break;
                 case R.id.close_camera_ll:
+                    activeCameraTime++;
+                    if (activeCameraTime%2==0){
+                        isActiveOpenCamera = true;
+                    }else {
+                        isActiveOpenCamera = false;
+                    }
                     isCameraClose = !isCameraClose;
                     boolean result = mPresenter.closeOrOpenLocalVideo(isCameraClose);
                     if (!result)
@@ -619,6 +700,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             public void run() {
                 isDateConf = isInDataConf;
                 mShareIV.setVisibility(isInDataConf ? View.VISIBLE : View.GONE);
+                mConfShare.setVisibility(isInDataConf ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -650,8 +732,27 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     }
 
     @Override
-    public void startAsShare(boolean isShare) {
-        isStartShare = isShare;
+    public void confManagerActivityShare(boolean isShare,boolean isAllowAnnot) {
+        this.isStartShare = isShare;
+        this.isAllowAnnot = isAllowAnnot;
+    }
+
+    @Override
+    public void jumpToHomeScreen() {
+        isActiveShare = true;
+        mHandler.sendEmptyMessage(START_SCREEN_SHARE_HANDLE);
+    }
+
+    @Override
+    public void removeAllScreenShareFloatWindow() {
+        isActiveShare = false;
+        mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
+    }
+
+    @Override
+    public void robShareRemoveAllScreenShareFloatWindow() {
+        isActiveShare = false;
+        mHandler.sendEmptyMessage(ROB_STOP_SCREEN_SHARE_HANDLE);
     }
 
     private void showLeaveConfDialog()
@@ -662,6 +763,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             @Override
             public void onClick(View v)
             {
+                mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
                 stopTimer();
@@ -679,6 +781,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             @Override
             public void onClick(View v)
             {
+                mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
                 finish();
@@ -689,6 +792,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             @Override
             public void onClick(View v)
             {
+                mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.finishConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
                 stopTimer();
@@ -716,6 +820,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     protected void onDestroy()
     {
         super.onDestroy();
+        mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
         mPresenter.leaveVideo();
         mPresenter.unregisterBroadcast();
         mPresenter.setAutoRotation(this, false, mOrientation);
@@ -798,6 +903,37 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         editDialog.setHint2(R.string.input_name);
         editDialog.setHint3(R.string.input_account);
         editDialog.show();
+    }
+
+    /**
+     * 请求截图权限
+     */
+    @TargetApi(21)
+    private void requestScreenSharePermission(){
+        MediaProjectionManager localMediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        if (null != localMediaProjectionManager) {
+            startActivityForResult(localMediaProjectionManager.createScreenCaptureIntent(), UIConstants.REQUEST_MEDIA_PROJECTION);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //设置返回处理,只有require 的权限需要处理取消逻辑，其他的权限场景只处理成功逻辑
+        if (Activity.RESULT_OK != resultCode) {
+            Log.d("ConfManagerActivity", "resultCode is not ok requestCode: " + requestCode);
+            return;
+        }
+        switch (requestCode){
+            case UIConstants.REQUEST_MEDIA_PROJECTION:
+                if (data != null) {
+                    // 获取到截屏权限后，先判断是否悬浮窗权限
+                    mPresenter.confShare(this , data);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     private void showMoreConfCtrl()

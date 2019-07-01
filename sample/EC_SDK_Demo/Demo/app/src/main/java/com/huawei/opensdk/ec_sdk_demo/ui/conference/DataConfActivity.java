@@ -1,7 +1,10 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -12,8 +15,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.huawei.opensdk.commonservice.common.LocContext;
+import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.AnnoToolBar;
+import com.huawei.opensdk.ec_sdk_demo.floatView.annotation.widget.DragFloatActionButton;
+import com.huawei.opensdk.ec_sdk_demo.floatView.screenShare.FloatWindowsManager;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.DataConfPresenter;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IDataConfContract;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
@@ -45,6 +52,9 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     private EditText mChatMsg;
     private ImageView mChatSend;
     private RelativeLayout mBarrageLayout;
+    private DragFloatActionButton mAnnoFloatButton;
+    private AnnoToolBar mAnnoToolbar;
+    private Handler handler = null;
 
     private boolean isVideo;
     private MyTimerTask myTimerTask;
@@ -66,6 +76,38 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
      * 是否正在共享
      */
     private boolean isStartShare = false;
+
+    /**
+     *是否允许标注
+     */
+    private boolean isAllowAnnot = false;
+
+    /**
+     *是否主动共享，若主动共享则隐藏标注笔
+     */
+    private boolean isActiveShare = false;
+
+    private static final int STOP_SCREEN_SHARE = 222;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case STOP_SCREEN_SHARE:
+                    if (mHandler != null){
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                FloatWindowsManager.getInstance().removeAllScreenShareFloatWindow(ECApplication.getApp());
+                            }
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected IDataConfContract.DataConfView createView()
@@ -93,6 +135,41 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
 
         // Data sharing has not started
         mConfShareEmptyLayout = (FrameLayout) findViewById(R.id.conf_share_empty);
+
+        //标注笔，先隐藏，有标注能力再显示
+        mAnnoFloatButton = (DragFloatActionButton)findViewById(R.id.anno_float_button);
+        mAnnoToolbar = (AnnoToolBar)findViewById(R.id.anno_toolbar);
+        mAnnoFloatButton.setOnClickAnnon(new DragFloatActionButton.ICallBack() {
+            @Override
+            public void clickAnnon() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setAnnotbtnVisibility(View.GONE);
+                        if (mAnnoToolbar != null) {
+                            mAnnoToolbar.reset(true);
+                            resetToolbarPosition();
+                            mAnnoToolbar.setVisibility(View.VISIBLE);
+                        }
+
+                        mPresenter.startAnnotation();
+                        mPresenter.setAnnotationLocalStatus(true);
+
+                    }
+                });
+            }
+        });
+
+        mAnnoToolbar.setOnClickAnnon(new AnnoToolBar.ICallBack() {
+            @Override
+            public void clickAnnon() {
+                if (mAnnoToolbar != null) {
+                    resetToolbarPosition();
+                    mAnnoToolbar.setVisibility(View.GONE);
+                }
+                setAnnotbtnVisibility(View.VISIBLE);
+            }
+        });
 
         // 需要隐藏的标题栏
         mTitleBar = (RelativeLayout) findViewById(R.id.title_layout_transparent);
@@ -123,6 +200,38 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         mChatSend.setOnClickListener(this);
 
         mPresenter.attachSurfaceView(mConfShareLayout, this);
+        initHandler();
+
+    }
+
+    //回复标注原始位置
+    private void setAnnotbtnVisibility(int visibility) {
+        if (null == mAnnoFloatButton) {
+            return;
+        }
+        mAnnoFloatButton.setVisibility(visibility);
+        resetAnnotBtnPosition();
+    }
+
+    private void resetAnnotBtnPosition() {
+        if (mHandler == null) {
+            return;
+        }
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mAnnoFloatButton.resetAnnotBtnPosition();
+            }
+        }, 200);
+    }
+
+    private void initHandler() {
+        try {
+            if (handler == null) {
+                handler = new Handler();
+            }
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -132,6 +241,8 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         confID = intent.getStringExtra(UIConstants.CONF_ID);
         isVideo = intent.getBooleanExtra(UIConstants.IS_VIDEO_CONF, false);
         isStartShare = intent.getBooleanExtra(UIConstants.IS_START_SHARE_CONF, false);
+        isAllowAnnot = intent.getBooleanExtra(UIConstants.IS_ALLOW_ANNOT, false);
+        isActiveShare = intent.getBooleanExtra(UIConstants.IS_ACTIVE_SHARE, false);
         if (confID == null)
         {
             showToast(R.string.empty_conf_id);
@@ -148,7 +259,18 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     }
 
     @Override
+    protected void onBack() {
+        super.onBack();
+        if (isAllowAnnot){
+            mHandler.sendEmptyMessage(STOP_SCREEN_SHARE);
+        }
+    }
+
+    @Override
     public void finishActivity() {
+        if (isAllowAnnot){
+            mHandler.sendEmptyMessage(STOP_SCREEN_SHARE);
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -162,7 +284,8 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     }
 
     @Override
-    public void startAsShare(final boolean isShare) {
+    public void dataConfActivityShare(final boolean isShare,final boolean isAllowAnnot) {
+        this.isAllowAnnot = isAllowAnnot;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -175,6 +298,15 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
                 {
                     mConfShareLayout.setVisibility(View.GONE);
                     mConfShareEmptyLayout.setVisibility(View.VISIBLE);
+                }
+                if(!isActiveShare){
+                    if (isAllowAnnot){
+                        setAnnotbtnVisibility(View.VISIBLE);
+                        mAnnoToolbar.setVisibility(View.GONE);
+                    }else {
+                        setAnnotbtnVisibility(View.GONE);
+                        mAnnoToolbar.setVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -225,6 +357,12 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
         if (isVideo)
         {
             mPresenter.setVideoContainer(this, mLocalVideoView, mHideVideoView);
+        }
+        if (!isActiveShare){
+            if (isAllowAnnot){
+                setAnnotbtnVisibility(View.VISIBLE);
+
+            }
         }
 
         // 第一次启动界面让所有按钮显示5s
@@ -313,6 +451,23 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
 
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        resetToolbarPosition();
+    }
+
+    private void resetToolbarPosition() {
+        if (mAnnoToolbar != null) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAnnoToolbar.resetToolbarPosition();
+                }
+            }, 200);
         }
     }
 

@@ -193,6 +193,17 @@
     <!-- 对话框的按钮文字颜色 -->
     <color name="permission_dialog_btn_text_color">#FFFFFF</color>
 
+
+    <color name="screen_share_fla_bg">#F34B4B</color>
+    <!-- 黑色 50%透明度 -->
+    <color name="black_50">#7F000000</color>
+
+    <drawable name="toolbar_button_normal">#80000000</drawable>
+    <drawable name="toolbar_button_clicked">#1AFFFFFF</drawable>
+    <drawable name="toolbar_button_selected">#26FFFFFF</drawable>
+    <color name="divider_color">#616161</color>
+    <color name="color_item_text_write">#B3FFFFFF</color>
+
     <!--权限申请颜色-->
 
 </resources>

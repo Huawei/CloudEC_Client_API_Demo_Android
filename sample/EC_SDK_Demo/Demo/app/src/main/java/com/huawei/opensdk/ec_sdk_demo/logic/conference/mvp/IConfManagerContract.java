@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
@@ -35,7 +36,13 @@ public interface IConfManagerContract
 
         void showMessage(String message);
 
-        void startAsShare(boolean isShare);
+        void confManagerActivityShare(boolean isShare,boolean isAllowAnnot);
+
+        void jumpToHomeScreen();
+
+        void removeAllScreenShareFloatWindow();
+
+        void robShareRemoveAllScreenShareFloatWindow();
     }
 
     interface ConfManagerPresenter
@@ -120,6 +127,8 @@ public interface IConfManagerContract
         void updateConf();
 
         void addMember(String name, String number, String account);
+
+        void confShare(Context context, Intent data);
 
         void setSelfPresenter();
 

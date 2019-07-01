@@ -108,6 +108,7 @@ public class ConfConstant {
         JOIN_DATA_CONF_TERMINATE(),
         START_DATA_CONF_SHARE(),
         END_DATA_CONF_SHARE(),
+        SCREEN_SHARE_STATE(),
 
         CAMERA_STATUS_UPDATE(),
 

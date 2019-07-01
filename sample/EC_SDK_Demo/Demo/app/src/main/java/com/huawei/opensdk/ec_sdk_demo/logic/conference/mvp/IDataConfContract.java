@@ -13,7 +13,7 @@ public interface IDataConfContract
     interface DataConfView extends BaseView
     {
         void finishActivity();
-        void startAsShare(boolean isShare);
+        void dataConfActivityShare(boolean isShare,boolean isAllowAnnot);
         void displayConfChatMag(boolean isSelf, String msg);
     }
 
@@ -46,5 +46,9 @@ public interface IDataConfContract
         SurfaceView getLocalVideoView();
 
         void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup hideLayout);
+
+        int startAnnotation();
+
+        void setAnnotationLocalStatus(boolean enable);
     }
 }
