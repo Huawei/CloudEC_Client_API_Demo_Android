@@ -36,7 +36,7 @@ public class CallFragment extends AbsFragment implements View.OnClickListener
     private ImageView mCtdButton;
     private Boolean isChecked = false;
     private static String number;
-    private int mCallID = 0;
+    private long mCallID = 0;
 
     public static String getNumber() {
         return number;

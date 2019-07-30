@@ -71,7 +71,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected String mCallNumber;
     protected String mDisplayName;
     protected boolean mIsVideoCall;
-    protected int mCallID;
+    protected long mCallID;
     protected String mConfID;
     protected boolean mIsConfCall;
 
@@ -238,9 +238,9 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
     private static class DismissDialogTimerTask extends TimerTask {
         private final AlertDialog dialog;
-        private int callID;
+        private long callID;
 
-        public DismissDialogTimerTask(AlertDialog dialog, int callID) {
+        public DismissDialogTimerTask(AlertDialog dialog, long callID) {
             this.dialog = dialog;
             this.callID = callID;
         }

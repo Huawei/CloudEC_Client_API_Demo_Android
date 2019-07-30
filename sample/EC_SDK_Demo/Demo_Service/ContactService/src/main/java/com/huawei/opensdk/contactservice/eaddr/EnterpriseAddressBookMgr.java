@@ -299,14 +299,14 @@ public class EnterpriseAddressBookMgr {
     public void handleSearchContactResult(int querySeqNo, TsdkCommonResult result, TsdkSearchContactsResult searchContactResult) {
         //获取序列号-->和调用查询方法返回的序列号相一致
         int seqNo = querySeqNo;
-        int ret = result.getResult();
+        int ret = (int)result.getResult();
 
         //获取联系人成功返回0
         if (ret == 0)
         {
             //获取查询到的联系人列表以及查询到的联系人总数
             List<TsdkContactsInfo> contactsInfos = searchContactResult.getContactInfo();
-            int totalNum = searchContactResult.getTotalNum();
+            int totalNum = (int)searchContactResult.getTotalNum();
             //查询到0个联系人
             if (0 == totalNum)
             {
@@ -371,7 +371,7 @@ public class EnterpriseAddressBookMgr {
      *                               查询到的头像信息
      */
     public void handleGetIconResult(int querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
-        int ret = result.getResult();
+        int ret = (int)result.getResult();
         int seqNo = querySeqNo;
 
         //获取到某个用户的头像
@@ -380,7 +380,7 @@ public class EnterpriseAddressBookMgr {
         //获取头像成功返回0
         if (ret == 0)
         {
-            int sysId = getIconResult.getIconId();
+            int sysId = (int)getIconResult.getIconId();
             String avatarFile = getIconResult.getIconPath();
 
             //查询的是登陆用户的头像
@@ -436,14 +436,14 @@ public class EnterpriseAddressBookMgr {
      */
     public void handleSearchDepartmentResult(int querySeqNo, TsdkCommonResult result, TsdkSearchDepartmentResult searchDeptResult)
     {
-        int ret = result.getResult();
+        int ret = (int)result.getResult();
         int seqNo = querySeqNo;
 
         if (ret == 0)
         {
             //获取查询到的部门列表以及查询到的部门总数
             List<TsdkDepartmentInfo> departmentInfoList = searchDeptResult.getDepartmentInfo();
-            int totalNum = searchDeptResult.getItemNum();
+            int totalNum = (int)searchDeptResult.getItemNum();
             //查询到0个部门
             if (0 == totalNum)
             {

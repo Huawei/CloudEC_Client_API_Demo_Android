@@ -140,7 +140,7 @@ public class MeetingMgr implements IMeetingMgr{
     /**
      * 共享文档和白板的id
      */
-    private List<Integer> documentId = new ArrayList<>();
+    private List<Long> documentId = new ArrayList<>();
 
     private MeetingMgr()
     {
@@ -176,7 +176,7 @@ public class MeetingMgr implements IMeetingMgr{
 //        return true;
 //    }
 
-    public int getCurrentConferenceCallID() {
+    public long getCurrentConferenceCallID() {
         if (null == currentConference)
         {
             return 0;
@@ -212,6 +212,15 @@ public class MeetingMgr implements IMeetingMgr{
         if (null == currentConference)
         {
             return null;
+        }
+        if(self == null && getCurrentConferenceMemberList().size()>0){
+            for (Member member : getCurrentConferenceMemberList())
+            {
+                if ( member.isSelf())
+                {
+                    setSelf(member);
+                }
+            }
         }
         return getSelf();
     }
@@ -335,7 +344,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void updateConfInfo(TsdkConference conference)
     {
         this.confEnvType = conference.getConfEnvType();
-        confBaseInfo.setSize(conference.getSize());
+        confBaseInfo.setSize((int)conference.getSize());
         confBaseInfo.setConfID(conference.getConfId());
         confBaseInfo.setSubject(conference.getSubject());
         confBaseInfo.setSchedulerName(conference.getScheduserName());
@@ -411,13 +420,13 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public String[] updateSpeaker(TsdkConfSpeakerInfo speakerInfo)
     {
-        this.speakers = new String[speakerInfo.getSpeakerNum()];
+        this.speakers = new String[(int)speakerInfo.getSpeakerNum()];
         List<TsdkConfSpeaker> confSpeakers = speakerInfo.getSpeakers();
 
         Collections.sort(confSpeakers, new Comparator<TsdkConfSpeaker>() {
             @Override
             public int compare(TsdkConfSpeaker o1, TsdkConfSpeaker o2) {
-                int result = o2.getSpeakingVolume() - o1.getSpeakingVolume();
+                int result = (int)(o2.getSpeakingVolume() - o1.getSpeakingVolume());
                 return result;
             }
         });
@@ -1036,7 +1045,7 @@ public class MeetingMgr implements IMeetingMgr{
      * @return                      [en]If success return TSDK_SUCCESS,otherwise return corresponding error code
      *                              [cn]成功返回TSDK_SUCCESS，失败返回相应错误码
      */
-    public int callTransferToConference(int call_id){
+    public int callTransferToConference(long call_id){
 
         Log.i(TAG, "callTransferToConference.");
 
@@ -1072,10 +1081,10 @@ public class MeetingMgr implements IMeetingMgr{
         bookConfInfo.setSize(2);
 
         List<TsdkAttendeeBaseInfo> attendeeList = new ArrayList<>();
-        TsdkAttendeeBaseInfo confctrlAttendee = new TsdkAttendeeBaseInfo();
+//        TsdkAttendeeBaseInfo confctrlAttendee = new TsdkAttendeeBaseInfo();
         //confctrlAttendee.setNumber(callInfo.getPeerNumber());
-        confctrlAttendee.setRole(TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
-        attendeeList.add(confctrlAttendee);
+//        confctrlAttendee.setRole(TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
+//        attendeeList.add(confctrlAttendee);
 
         bookConfInfo.setAttendeeList(attendeeList);
         bookConfInfo.setAttendeeNum(attendeeList.size());
@@ -1343,6 +1352,26 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
+     * [en]This method is used to set conference sharer.
+     * [cn]设置共享权限
+     *
+     * @param attendee          [en]Indicates attendee number.
+     *                          [cn]与会者号码
+     * @param actionType        [en]Indicates action type.
+     *                          [cn]共享行为类型
+     * @return int              [en]If success return TSDK_SUCCESS, otherwise return corresponding error code
+     *                          [cn]成功返回TSDK_SUCCESS，失败返回相应错误码
+     */
+    public int setAsOwner(String attendee, TsdkConfAsActionType actionType){
+        if (null == currentConference)
+        {
+            Log.e(TAG,  "clear annotation failed, currentConference is null ");
+            return -1;
+        }
+        return currentConference.setAsOwner(attendee, actionType);
+    }
+
+    /**
      * 升级为数据会议前检查
      */
     public void checkUpgradeDataConf()
@@ -1497,7 +1526,7 @@ public class MeetingMgr implements IMeetingMgr{
         if (null != tsdkConfBaseInfos) {
             for (TsdkConfBaseInfo confInfo : tsdkConfBaseInfos) {
                 ConfBaseInfo confBaseInfo = new ConfBaseInfo();
-                confBaseInfo.setSize(confInfo.getSize());
+                confBaseInfo.setSize((int)confInfo.getSize());
 
                 confBaseInfo.setConfID(confInfo.getConfId());
                 confBaseInfo.setSubject(confInfo.getSubject());
@@ -1543,7 +1572,7 @@ public class MeetingMgr implements IMeetingMgr{
         }
 
         ConfDetailInfo confDetailInfo = new ConfDetailInfo();
-        confDetailInfo.setSize(tsdkConfDetailInfo.getConfInfo().getSize());
+        confDetailInfo.setSize((int)tsdkConfDetailInfo.getConfInfo().getSize());
 
         confDetailInfo.setConfID(tsdkConfDetailInfo.getConfInfo().getConfId());
         confDetailInfo.setSubject(tsdkConfDetailInfo.getConfInfo().getSubject());
@@ -1580,7 +1609,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         CallMgr.getInstance().setResumeHold(false);
 
-        int result = commonResult.getResult();
+        int result = (int)commonResult.getResult();
         if (result == 0)
         {
             this.currentConference = tsdkConference;
@@ -1641,7 +1670,7 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
-        int result = commonResult.getResult();
+        int result = (int)commonResult.getResult();
 
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.GET_DATA_CONF_PARAM_RESULT, result);
     }
@@ -1659,7 +1688,7 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
-        int result = commonResult.getResult();
+        int result = (int)commonResult.getResult();
 
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_DATA_CONF_RESULT, result);
     }
@@ -1830,7 +1859,7 @@ public class MeetingMgr implements IMeetingMgr{
             this.updateSpeaker(speakerList);
         }
 
-        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SPEAKER_LIST_IND, speakerList.getSpeakerNum());
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SPEAKER_LIST_IND, (int)speakerList.getSpeakerNum());
     }
 
 
@@ -1903,28 +1932,28 @@ public class MeetingMgr implements IMeetingMgr{
     public void handleAsOwnerChange(TsdkConfAsActionType actionType, TsdkAttendee owner){
         Log.i(TAG, "handleAsOwnerChange");
         //数据会议与会者上报较慢时会导致self为null，这里再设置一次，解决悬浮框移除不掉的异常。
-        for (Member member : getCurrentConferenceMemberList())
-        {
-            if (self == null && member.isSelf())
-            {
-                setSelf(member);
-            }
-        }
-        if (owner==null||self==null){
+//        for (Member member : getCurrentConferenceMemberList())
+//        {
+//            if (self == null && member.isSelf())
+//            {
+//                setSelf(member);
+//            }
+//        }
+        if (owner==null||getCurrentConferenceSelf()==null){
             return;
         }
         switch (actionType){
             case TSDK_E_CONF_AS_ACTION_ADD:
-                if (owner.getBaseInfo().getNumber().equals(self.getNumber())){
+                if (owner.getBaseInfo().getNumber().equals(getCurrentConferenceSelf().getNumber())){
                     mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, actionType);
                 }else {
                     mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY);
                 }
                 break;
             case TSDK_E_CONF_AS_ACTION_DELETE:
+            case TSDK_E_CONF_AS_ACTION_REQUEST:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SCREEN_SHARE_STATE, actionType);
                 break;
-
         }
     }
 
@@ -1962,7 +1991,7 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
-        Iterator<Integer> iterator = documentId.iterator();
+        Iterator<Long> iterator = documentId.iterator();
         while (iterator.hasNext())
         {
             if (iterator.next() == docShareDelDocInfo.getDocBaseInfo().getDocumentId())
@@ -2015,7 +2044,7 @@ public class MeetingMgr implements IMeetingMgr{
         if (0 == wbDelDocInfo.getWbBaseInfo().getDocumentId()){
             documentId.clear();
         }
-        Iterator<Integer> iterator = documentId.iterator();
+        Iterator<Long> iterator = documentId.iterator();
         while (iterator.hasNext())
         {
             if (iterator.next() == wbDelDocInfo.getWbBaseInfo().getDocumentId())

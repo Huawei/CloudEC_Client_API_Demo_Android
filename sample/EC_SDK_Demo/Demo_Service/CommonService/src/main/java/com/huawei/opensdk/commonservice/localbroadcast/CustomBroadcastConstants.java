@@ -30,6 +30,7 @@ public interface CustomBroadcastConstants
     String LOGIN_SUCCESS = "com.huawei.opensdk.login.success";
     String LOGIN_FAILED = "com.huawei.opensdk.login.failed";
     String LOGOUT = "com.huawei.opensdk.login.logout";
+    String MODIFY_PWD_SUCCESS = "com.huawei.opensdk.modifypwd.success";
     String MUTE_ATTENDEE_RESULT = "com.huawei.opensdk.conf.muteattendeeresult";
     String UN_MUTE_ATTENDEE_RESULT = "com.huawei.opensdk.conf.unmuteattendeeresult";
     String MUTE_CONF_RESULT = "com.huawei.opensdk.conf.muteconfresult";

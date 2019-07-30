@@ -15,6 +15,8 @@ public class DeviceUtil {
      */
     public static void bringTaskBackToFront() {
         //后台拉起临时界面
+        LogUtil.i(UIConstants.DEMO_TAG, "bringTaskBackToFront.");
+
         Intent intent = new Intent(ECApplication.getApp(), ConfManagerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent =
@@ -33,7 +35,7 @@ public class DeviceUtil {
     }
 
     public static void jumpToHomeScreen() {
-        LogUtil.e(UIConstants.DEMO_TAG, "jump to home screen.");
+        LogUtil.i(UIConstants.DEMO_TAG, "jump to home screen.");
         Intent localIntent = new Intent("android.intent.action.MAIN");
         localIntent.addCategory("android.intent.category.HOME");
         localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -102,6 +102,11 @@ public class Member {
     private boolean isBroadcastSelf;
 
     /**
+     * 是否正在共享
+     */
+    private boolean isShareOwner;
+
+    /**
      * 摄像头列表
      */
     private List<CameraEntity> cameraEntityList = new ArrayList<>();
@@ -219,6 +224,13 @@ public class Member {
         isSelf = self;
     }
 
+    public boolean isShareOwner() {
+        return isShareOwner;
+    }
+
+    public void setShareOwner(boolean shareOwner) {
+        isShareOwner = shareOwner;
+    }
 
     public List<CameraEntity> getCameraEntityList() {
         return cameraEntityList;
@@ -323,6 +335,7 @@ public class Member {
         TsdkConfRole role = (TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN.enumOf(attendeeBaseInfo.getRole()));
         setRole(role);
         setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
+        setShareOwner(attendeeStatusInfo.getIsShareOwner()== 1 ? true : false);
 
         TsdkConfParticipantStatus participantStatus = ConfConvertUtil.convertAttendStatus(attendeeStatusInfo.getState());
         if (participantStatus != null) {

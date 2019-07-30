@@ -82,83 +82,89 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtAuthSuccess(int userId, TsdkImLoginParam imAccountLoginParam) {
+    public void onEvtAuthSuccess(long userId, TsdkImLoginParam imAccountLoginParam) {
         Log.i(TAG, "onEvtAuthSuccess notify.");
-        LoginMgr.getInstance().handleAuthSuccess(userId, imAccountLoginParam);
+        LoginMgr.getInstance().handleAuthSuccess((int)userId, imAccountLoginParam);
     }
 
     @Override
-    public void onEvtAuthFailed(int userId, TsdkCommonResult result) {
+    public void onEvtAuthFailed(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtAuthFailed notify.");
-        LoginMgr.getInstance().handleAuthFailed(userId, result);
+        LoginMgr.getInstance().handleAuthFailed((int)userId, result);
     }
 
     @Override
-    public void onEvtAuthRefreshFailed(int userId, TsdkCommonResult result) {
+    public void onEvtAuthRefreshFailed(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtAuthRefreshFailed notify.");
-        LoginMgr.getInstance().handleAuthRefreshFailed(userId, result);
+        LoginMgr.getInstance().handleAuthRefreshFailed((int)userId, result);
 
     }
 
     @Override
-    public void onEvtLoginSuccess(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
+    public void onEvtLoginSuccess(long userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
         Log.i(TAG, "onEvtLoginSuccess notify.");
-        LoginMgr.getInstance().handleLoginSuccess(userId, serviceAccountType, loginSuccessInfo);
+        LoginMgr.getInstance().handleLoginSuccess((int)userId, serviceAccountType, loginSuccessInfo);
     }
 
     @Override
-    public void onEvtLoginFailed(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
+    public void onEvtLoginFailed(long userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
         Log.i(TAG, "onEvtLoginFailed notify.");
-        LoginMgr.getInstance().handleLoginFailed(userId, serviceAccountType, loginFailedInfo);
+        LoginMgr.getInstance().handleLoginFailed((int)userId, serviceAccountType, loginFailedInfo);
     }
 
     @Override
-    public void onEvtLogoutSuccess(int userId, TsdkServiceAccountType serviceAccountType) {
+    public void onEvtLogoutSuccess(long userId, TsdkServiceAccountType serviceAccountType) {
         Log.i(TAG, "onEvtLogoutSuccess notify.");
-        LoginMgr.getInstance().handleLogoutSuccess(userId, serviceAccountType);
+        LoginMgr.getInstance().handleLogoutSuccess((int)userId, serviceAccountType);
     }
 
 
     @Override
-    public void onEvtLogoutFailed(int userId, TsdkCommonResult result) {
+    public void onEvtLogoutFailed(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtLogoutFailed notify.");
-        LoginMgr.getInstance().handleLogoutFailed(userId, result);
+        LoginMgr.getInstance().handleLogoutFailed((int)userId, result);
 
     }
 
     @Override
-    public void onEvtForceLogout(int userId, TsdkServiceAccountType serviceAccountType, TsdkForceLogoutInfo forceLogoutInfo) {
+    public void onEvtForceLogout(long userId, TsdkServiceAccountType serviceAccountType, TsdkForceLogoutInfo forceLogoutInfo) {
         Log.i(TAG, "onEvtForceLogout notify.");
-        LoginMgr.getInstance().handleForceLogout(userId);
+        LoginMgr.getInstance().handleForceLogout((int)userId);
     }
 
     @Override
-    public void onEvtVoipAccountStatus(int userId, TsdkVoipAccountInfo voipAccountInfo) {
+    public void onEvtVoipAccountStatus(long userId, TsdkVoipAccountInfo voipAccountInfo) {
         Log.i(TAG, "onEvtVoipAccountStatus notify.");
-        LoginMgr.getInstance().handleVoipAccountStatus(userId, voipAccountInfo);
+        LoginMgr.getInstance().handleVoipAccountStatus((int)userId, voipAccountInfo);
     }
 
     @Override
-    public void onEvtImAccountStatus(int userId) {
+    public void onEvtImAccountStatus(long userId) {
         Log.i(TAG, "onEvtImAccountStatus notify.");
     }
 
     @Override
-    public void onEvtFirewallDetectFailed(int userId, TsdkCommonResult result) {
+    public void onEvtFirewallDetectFailed(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtFirewallDetectFailed notify.");
-        LoginMgr.getInstance().handleFirewallDetectFailed(userId, result);
+        LoginMgr.getInstance().handleFirewallDetectFailed((int)userId, result);
     }
 
     @Override
-    public void onEvtBuildStgTunnelFailed(int userId, TsdkCommonResult result) {
+    public void onEvtBuildStgTunnelFailed(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtBuildStgTunnelFailed notify.");
-        LoginMgr.getInstance().handleBuildStgTunnelFailed(userId, result);
+        LoginMgr.getInstance().handleBuildStgTunnelFailed((int)userId, result);
     }
 
     @Override
-    public void onEvtSecurityTunnelInfoInd(int userId, int firewallMode, TsdkSecurityTunnelInfo securityTunnelInfo) {
+    public void onEvtSecurityTunnelInfoInd(long userId, long firewallMode, TsdkSecurityTunnelInfo securityTunnelInfo) {
         Log.i(TAG, "onEvtSecurityTunnelInfoInd notify.");
-        LoginMgr.getInstance().handleSecurityTunnelInfoInd(userId, firewallMode, securityTunnelInfo);
+        LoginMgr.getInstance().handleSecurityTunnelInfoInd((int)userId, (int)firewallMode, securityTunnelInfo);
+    }
+
+    @Override
+    public void onEvtModifyPasswordResult(long userId, final TsdkCommonResult result) {
+        Log.i(TAG, "onEvtModifyPasswordResult notify.");
+        LoginMgr.getInstance().handModifyPasswordResult(result);
     }
 
     @Override
@@ -251,13 +257,13 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtCallRouteChange(TsdkCall call, int route) {
+    public void onEvtCallRouteChange(TsdkCall call, long route) {
         Log.i(TAG, "onEvtCallRouteChange notify.");
 
     }
 
     @Override
-    public void onEvtPlayMediaEnd(int handle) {
+    public void onEvtPlayMediaEnd(long handle) {
         Log.i(TAG, "onEvtPlayMediaEnd notify.");
 
     }
@@ -321,9 +327,9 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtSetIptServiceResult(int type, TsdkSetIptServiceResult result) {
+    public void onEvtSetIptServiceResult(long type, TsdkSetIptServiceResult result) {
         Log.i(TAG, "onEvtSetIptServiceResult notify.");
-        IptMgr.getInstance().handleSetIptServiceResult(type, result);
+        IptMgr.getInstance().handleSetIptServiceResult((int)type, result);
     }
 
     @Override
@@ -333,9 +339,9 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtGetTempUserResult(int userId, TsdkCommonResult result) {
+    public void onEvtGetTempUserResult(long userId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtGetTempUserResult notify.");
-        MeetingMgr.getInstance().handleGetTempUserResult(userId, result);
+        MeetingMgr.getInstance().handleGetTempUserResult((int)userId, result);
     }
 
     @Override
@@ -454,37 +460,37 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtCtdStartCallResult(int callId, TsdkCommonResult result) {
+    public void onEvtCtdStartCallResult(long callId, TsdkCommonResult result) {
 	    Log.i(TAG, "onEvtCtdStartCallResult notify.");
-        CtdMgr.getInstance().handleStartCallResult(callId, result);
+        CtdMgr.getInstance().handleStartCallResult((int)callId, result);
     }
 
     @Override
-    public void onEvtCtdEndCallResult(int callId, TsdkCommonResult result) {
+    public void onEvtCtdEndCallResult(long callId, TsdkCommonResult result) {
         Log.i(TAG, "onEvtCtdEndCallResult notify.");
     }
 
     @Override
-    public void onEvtCtdCallStatusNotify(int callId, TsdkCtdCallStatus status) {
+    public void onEvtCtdCallStatusNotify(long callId, TsdkCtdCallStatus status) {
         Log.i(TAG, "onEvtCtdCallStatusNotify notify.");
     }
 
     @Override
-    public void onEvtSearchContactsResult(int querySeqNo, TsdkCommonResult result, TsdkSearchContactsResult searchContactResult) {
+    public void onEvtSearchContactsResult(long querySeqNo, TsdkCommonResult result, TsdkSearchContactsResult searchContactResult) {
         Log.i(TAG, "onEvtSearchContactsResult notify.");
-        EnterpriseAddressBookMgr.getInstance().handleSearchContactResult(querySeqNo, result, searchContactResult);
+        EnterpriseAddressBookMgr.getInstance().handleSearchContactResult((int)querySeqNo, result, searchContactResult);
     }
 
     @Override
-    public void onEvtSearchDeptResult(int querySeqNo, TsdkCommonResult result, TsdkSearchDepartmentResult searchDeptResult) {
+    public void onEvtSearchDeptResult(long querySeqNo, TsdkCommonResult result, TsdkSearchDepartmentResult searchDeptResult) {
         Log.i(TAG, "onEvtSearchDeptResult notify.");
-        EnterpriseAddressBookMgr.getInstance().handleSearchDepartmentResult(querySeqNo, result, searchDeptResult);
+        EnterpriseAddressBookMgr.getInstance().handleSearchDepartmentResult((int)querySeqNo, result, searchDeptResult);
     }
 
     @Override
-    public void onEvtGetIconResult(int querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
+    public void onEvtGetIconResult(long querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
         Log.i(TAG, "onEvtGetIconResult notify.");
-        EnterpriseAddressBookMgr.getInstance().handleGetIconResult(querySeqNo, result, getIconResult);
+        EnterpriseAddressBookMgr.getInstance().handleGetIconResult((int)querySeqNo, result, getIconResult);
     }
 
     @Override

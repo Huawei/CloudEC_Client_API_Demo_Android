@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <include layout="@layout/dial_title"/>
+
+    <LinearLayout android:id="@+id/original_pwd_view"
+        android:layout_marginTop="@dimen/dp20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="@dimen/dp47"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15">
+
+        <TextView android:id="@+id/original_pwd_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/original_password"
+            android:textColor="@color/textThirdly"
+            android:textSize="15sp" />
+
+        <EditText android:id="@+id/original_pwd_et"
+            android:layout_marginTop="@dimen/dp8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp5"
+            android:background="@null"
+            android:textColor="#333333"
+            android:textColorHint="@color/listview_devider"
+            android:textSize="17sp"
+            android:inputType="textPassword"
+            android:hint="@string/enter_original_password"
+            android:singleLine="true" />
+
+        <View
+            android:layout_marginTop="@dimen/dp4"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/new_pwd_view"
+        android:layout_marginTop="@dimen/dp15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="@dimen/dp47"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15">
+
+        <TextView android:id="@+id/new_pwd_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_password"
+            android:textColor="@color/textThirdly"
+            android:textSize="15sp" />
+
+        <EditText android:id="@+id/new_pwd_et"
+            android:layout_marginTop="@dimen/dp8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp5"
+            android:background="@null"
+            android:textColor="#333333"
+            android:textColorHint="@color/listview_devider"
+            android:textSize="17sp"
+            android:inputType="textPassword"
+            android:hint="@string/enter_new_password"
+            android:singleLine="true" />
+
+        <View
+            android:layout_marginTop="@dimen/dp4"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/determine_pwd_view"
+        android:layout_marginTop="@dimen/dp15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="@dimen/dp47"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15">
+
+        <TextView android:id="@+id/determine_pwd_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/determine_password"
+            android:textColor="@color/textThirdly"
+            android:textSize="15sp" />
+
+        <EditText android:id="@+id/determine_pwd_et"
+            android:layout_marginTop="@dimen/dp8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp5"
+            android:background="@null"
+            android:textColor="#333333"
+            android:textColorHint="@color/listview_devider"
+            android:textSize="17sp"
+            android:inputType="textPassword"
+            android:hint="@string/enter_new_password_again"
+            android:singleLine="true" />
+
+        <View
+            android:layout_marginTop="@dimen/dp4"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/pwd_rule_view"
+        android:layout_marginTop="@dimen/dp15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:minHeight="@dimen/dp47"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/dp15"
+        android:paddingRight="@dimen/dp15">
+
+        <TextView android:id="@+id/pwd_rule_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password_rule"
+            android:textColor="@color/textSecondary"
+            android:textSize="13sp" />
+
+        <TextView android:id="@+id/rule_one_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password_rule_one"
+            android:textColor="@color/textSecondary"
+            android:textSize="13sp" />
+
+        <TextView android:id="@+id/rule_two_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/password_rule_two"
+            android:textColor="@color/textSecondary"
+            android:textSize="13sp" />
+
+        <Button android:layout_width="match_parent"
+            android:layout_height="@dimen/dp45"
+            android:id="@+id/modify_pwd_btn"
+            android:text="@string/sure"
+            android:textColor="@color/permission_dialog_btn_text_color"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/title_color"
+            android:layout_marginTop="@dimen/dp30" />
+    </LinearLayout>
+
+</LinearLayout>

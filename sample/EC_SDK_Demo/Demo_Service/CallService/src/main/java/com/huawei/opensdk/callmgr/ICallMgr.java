@@ -39,7 +39,7 @@ public interface ICallMgr
      * @param callID            call id
      * @return
      */
-    CallConstant.CallStatus getCallStatus(int callID);
+    CallConstant.CallStatus getCallStatus(long callID);
 
 
     /**
@@ -49,7 +49,7 @@ public interface ICallMgr
      * @param isVideoCall
      * @return int 0 success
      */
-    int startCall(String toNumber, boolean isVideoCall);
+    long startCall(String toNumber, boolean isVideoCall);
 
     /**
      * This method is used to answer incoming call
@@ -57,14 +57,14 @@ public interface ICallMgr
      * @param isVideo
      * @return true:success, false:failed
      */
-    boolean answerCall(int callID, boolean isVideo);
+    boolean answerCall(long callID, boolean isVideo);
 
     /**
      * This method is used to reject or hangup call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean endCall(int callID);
+    boolean endCall(long callID);
 
     /**
      * This method is used to divert incoming call
@@ -72,7 +72,7 @@ public interface ICallMgr
      * @param divertNumber
      * @return true:success, false:failed
      */
-    boolean divertCall(int callID, String divertNumber);
+    boolean divertCall(long callID, String divertNumber);
 
     /**
      * This method is used to blind transfer call
@@ -80,14 +80,14 @@ public interface ICallMgr
      * @param transferNumber
      * @return true:success, false:failed
      */
-    boolean blindTransfer(int callID, String transferNumber);
+    boolean blindTransfer(long callID, String transferNumber);
 
     /**
      * This method is used to hold call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean holdCall(int callID);
+    boolean holdCall(long callID);
 
     /**
      * This method is used to hold the video Call
@@ -95,7 +95,7 @@ public interface ICallMgr
      * @param callID
      * @return
      */
-    boolean holdVideoCall(int callID);
+    boolean holdVideoCall(long callID);
 
     /**
      * This method is used to unhold call
@@ -103,7 +103,7 @@ public interface ICallMgr
      * @param callID
      * @return
      */
-    boolean unHoldCall(int callID);
+    boolean unHoldCall(long callID);
 
     /**
      * This method is used to send DTMF tone
@@ -111,35 +111,35 @@ public interface ICallMgr
      * @param code
      * @return true:success, false:failed
      */
-    boolean reDial(int callID, int code);
+    boolean reDial(long callID, int code);
 
     /**
      * This method is used to request change from an audio call to a video call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean addVideo(int callID);
+    boolean addVideo(long callID);
 
     /**
      * This method is used to request a change from a video call to an audio call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean delVideo(int callID);
+    boolean delVideo(long callID);
 
     /**
      * This method is used to reject change from an audio call to a video call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean rejectAddVideo(int callID);
+    boolean rejectAddVideo(long callID);
 
     /**
      * This method is used to accept change from an audio call to a video call
      * @param callID
      * @return true:success, false:failed
      */
-    boolean acceptAddVideo(int callID);
+    boolean acceptAddVideo(long callID);
 
     /**
      * This method is used to set whether mute the microphone
@@ -147,7 +147,7 @@ public interface ICallMgr
      * @param mute
      * @return true:success, false:failed
      */
-    boolean muteMic(int callID, boolean mute);
+    boolean muteMic(long callID, boolean mute);
 
     /**
      * This method is used to set media speaker mute
@@ -156,7 +156,7 @@ public interface ICallMgr
      * @param mute
      * @return
      */
-    boolean muteSpeak(int callID, boolean mute);
+    boolean muteSpeak(long callID, boolean mute);
 
     /**
      * This method is used to switch Local View
@@ -164,7 +164,7 @@ public interface ICallMgr
      * @param callID
      * @param isClose
      */
-    void switchLocalView(int callID, boolean isClose);
+    void switchLocalView(long callID, boolean isClose);
 
     /**
      * This method is used to switch Camera
@@ -172,7 +172,7 @@ public interface ICallMgr
      * @param callID
      * @param cameraIndex
      */
-    void switchCamera(int callID, int cameraIndex);
+    void switchCamera(long callID, int cameraIndex);
 
     /**
      * This method is used to play ringing tone

@@ -43,6 +43,8 @@ public interface IConfManagerContract
         void removeAllScreenShareFloatWindow();
 
         void robShareRemoveAllScreenShareFloatWindow();
+
+        void requestScreen();
     }
 
     interface ConfManagerPresenter

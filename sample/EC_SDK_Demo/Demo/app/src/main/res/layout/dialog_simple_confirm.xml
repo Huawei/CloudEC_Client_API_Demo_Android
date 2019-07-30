@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/eDialogStyle">
+
+    <TextView android:id="@+id/dialog_message"
+        style="@style/center_content_title"
+        android:text="@string/info"/>
+
+    <View
+        android:layout_marginTop="@dimen/dp4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <TextView android:id="@+id/dialog_rightbutton"
+        style="@style/center_confirm"
+        android:text="@string/sure" />
+
+</LinearLayout>

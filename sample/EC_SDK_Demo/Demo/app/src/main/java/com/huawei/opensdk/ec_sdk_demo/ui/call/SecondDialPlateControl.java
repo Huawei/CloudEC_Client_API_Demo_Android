@@ -10,8 +10,8 @@ import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseDialPlateControl;
  */
 public class SecondDialPlateControl extends BaseDialPlateControl
 {
-    private int callID;
-    public SecondDialPlateControl(View plate, int callID)
+    private long callID;
+    public SecondDialPlateControl(View plate, long callID)
     {
         super(plate);
         this.callID = callID;

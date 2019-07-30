@@ -14,6 +14,7 @@ public class ServiceSettingActivity extends BaseActivity implements View.OnClick
         setContentView(R.layout.activity_service_setting);
         findViewById(R.id.ipt_service_setting).setOnClickListener(this);
         findViewById(R.id.other_setting).setOnClickListener(this);
+        findViewById(R.id.modify_psd_setting).setOnClickListener(this);
     }
 
     @Override
@@ -31,6 +32,9 @@ public class ServiceSettingActivity extends BaseActivity implements View.OnClick
                 break;
             case R.id.other_setting:
                 ActivityUtil.startActivity(ServiceSettingActivity.this, IntentConstant.AVC_CAPS_ACTIVITY_ACTION);
+                break;
+            case R.id.modify_psd_setting:
+                ActivityUtil.startActivity(ServiceSettingActivity.this, IntentConstant.MODIFY_PSD_ACTIVITY_ACTION);
                 break;
             default:
                 break;

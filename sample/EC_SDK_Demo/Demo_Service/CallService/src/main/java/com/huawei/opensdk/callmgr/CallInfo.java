@@ -12,7 +12,7 @@ public class CallInfo implements Serializable
      * call ID
      * 呼叫id
      */
-    private int callID;
+    private long callID;
 
     /**
      * conference ID
@@ -78,11 +78,11 @@ public class CallInfo implements Serializable
     }
 
 
-    public int getCallID() {
+    public long getCallID() {
         return callID;
     }
 
-    public void setCallID(int callID) {
+    public void setCallID(long callID) {
         this.callID = callID;
     }
 
@@ -154,7 +154,7 @@ public class CallInfo implements Serializable
     public static class Builder
     {
         //呼叫ID
-        private int callID;
+        private long callID;
         //会议ID
         private String confID;
         //对端号码
@@ -171,7 +171,7 @@ public class CallInfo implements Serializable
 
         private int reasonCode;
 
-        public Builder setCallID(int callID) {
+        public Builder setCallID(long callID) {
             this.callID = callID;
             return this;
         }

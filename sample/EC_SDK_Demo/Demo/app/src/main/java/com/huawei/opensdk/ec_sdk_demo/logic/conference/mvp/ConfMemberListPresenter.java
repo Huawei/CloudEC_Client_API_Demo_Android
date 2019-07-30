@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.opensdk.callmgr.CallMgr;
@@ -538,6 +539,13 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
         {
             broadcastAttendee(memberEntity, false);
         }
+        else if (LocContext.getString(R.string.set_screen_share).equals(clickedItem))
+        {
+            setScreenShare(memberEntity);
+        }
+        else if (LocContext.getString(R.string.cancel_screen_share).equals(clickedItem)){
+            cancelScreenShare(memberEntity);
+        }
     }
 
     @Override
@@ -662,6 +670,24 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
     }
 
     @Override
+    public void setScreenShare(Member member) {
+        int result = MeetingMgr.getInstance().setAsOwner(member.getNumber(), TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_ADD);
+        if (0 != result)
+        {
+            getView().showCustomToast(R.string.set_screen_share_fail);
+        }
+    }
+
+    @Override
+    public void cancelScreenShare(Member member) {
+        int result = MeetingMgr.getInstance().setAsOwner(member.getNumber(), TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_DELETE);
+        if (0 != result)
+        {
+            getView().showCustomToast(R.string.cancel_screen_share_fail);
+        }
+    }
+
+    @Override
     public boolean isChairMan()
     {
         Member self = getSelf();
@@ -767,6 +793,12 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
 
                 items.add(LocContext.getString(R.string.hangup));
 
+                if(!member.isShareOwner()){
+                    items.add(LocContext.getString(R.string.set_screen_share));
+                }else {
+                    items.add(LocContext.getString(R.string.cancel_screen_share));
+                }
+
                 if (!isVideoConf())
                 {
                     return;
@@ -779,6 +811,7 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                 {
                     items.add(LocContext.getString(R.string.broadcast_contact));
                 }
+
                 break;
 
             case LEAVED:

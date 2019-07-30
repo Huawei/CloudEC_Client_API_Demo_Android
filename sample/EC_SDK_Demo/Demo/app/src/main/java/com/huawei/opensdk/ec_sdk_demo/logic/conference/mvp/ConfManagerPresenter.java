@@ -108,7 +108,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     @Override
     public void switchCamera()
     {
-        int callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
+        long callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
         if (callID == 0) {
             return;
         }
@@ -193,7 +193,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     @Override
     public boolean closeOrOpenLocalVideo(boolean close)
     {
-        int callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
+        long callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
         if (callID == 0) {
             return false;
         }

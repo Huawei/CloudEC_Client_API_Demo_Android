@@ -27,5 +27,5 @@ public interface ICtdMgr {
      * @return result If success return 0, otherwise return corresponding error code.
      *                成功返回0，失败返回相应的错误码
      */
-    int makeCtdCall(String calleeNumber, String callerNumber);
+    long makeCtdCall(String calleeNumber, String callerNumber);
 }

@@ -36,7 +36,7 @@ public class CtdMgr implements ICtdMgr {
 
     }
 
-    private int callId;
+    private long callId;
 
     /**
      * This method is used to get CTD Object Management instances.
@@ -73,7 +73,7 @@ public class CtdMgr implements ICtdMgr {
      * @return result If success return call id, otherwise return -1.
      *                成功返回0，失败返回-1
      */
-    public int makeCtdCall(String calleeNumber, String callerNumber)
+    public long makeCtdCall(String calleeNumber, String callerNumber)
     {
         LogUtil.e(TAG, "make a ctd call.");
 
@@ -82,7 +82,7 @@ public class CtdMgr implements ICtdMgr {
         ctdCallParam.setCallerNumber(callerNumber);
         ctdCallParam.setSubscribeNumber(LoginMgr.getInstance().getSipNumber());
 
-        int result = TsdkManager.getInstance().getCtdManager().startCall(ctdCallParam);
+        long result = TsdkManager.getInstance().getCtdManager().startCall(ctdCallParam);
         if (result == -1)
         {
             LogUtil.e(TAG, "start ctd call failed, return -->" + result);
@@ -99,7 +99,7 @@ public class CtdMgr implements ICtdMgr {
      * @return result If success return call id, otherwise return corresponding error code.
      *                成功返回0，失败返回相应的错误码
      */
-    public int endCtdCall(int callId)
+    public int endCtdCall(long callId)
     {
         int result = TsdkManager.getInstance().getCtdManager().endCall(callId);
 
@@ -119,7 +119,7 @@ public class CtdMgr implements ICtdMgr {
      *                        发起呼叫结果
      */
 
-    public void handleStartCallResult(int callId, TsdkCommonResult result) {
+    public void handleStartCallResult(long callId, TsdkCommonResult result) {
         this.callId = callId;
         if (result.getResult() == 0)
         {
@@ -129,6 +129,6 @@ public class CtdMgr implements ICtdMgr {
         {
             Log.e(TAG, "Start ctd call failed, result-->" + result.getResult());
         }
-        this.ctdNotification.onStartCtdCallResult(result.getResult(), result.getReasonDescription());
+        this.ctdNotification.onStartCtdCallResult((int)result.getResult(), result.getReasonDescription());
     }
 }

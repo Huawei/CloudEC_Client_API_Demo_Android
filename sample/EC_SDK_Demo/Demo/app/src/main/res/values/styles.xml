@@ -215,4 +215,24 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="center_content_title">
+        <item name="android:padding">@dimen/dp10</item>
+        <item name="android:layout_height">@dimen/dp80</item>
+        <item name="android:layout_width">match_parent</item>
+
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/sp17</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingExtra">@dimen/dp2</item>
+    </style>
+
+    <style name="center_confirm">
+        <item name="android:layout_height">@dimen/dp50</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/sp18</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:lineSpacingExtra">@dimen/dp2</item>
+    </style>
+
 </resources>

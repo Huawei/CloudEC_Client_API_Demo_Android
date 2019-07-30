@@ -260,6 +260,16 @@
                 <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.servicesetting.ModifyPsdActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.modify_psd_activity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.sdkdemo" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

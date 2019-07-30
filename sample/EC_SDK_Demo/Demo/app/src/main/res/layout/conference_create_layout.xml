@@ -209,7 +209,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/dp10"
                     android:gravity="center_vertical"
-                    android:text="@string/recode_conference"
+                    android:text="@string/record_conference"
                     android:textColor="@color/textSecondary"
                     android:textSize="@dimen/sp15" />
 
@@ -220,7 +220,7 @@
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/tv_recode_mode_arrow1"
                     android:layout_toRightOf="@id/record_mode_label"
-                    android:text="@string/recode_conference_disable"
+                    android:text="@string/record_conference_disable"
                     android:textColor="#333333"
                     android:textSize="@dimen/sp17"
                     android:gravity="end|right|center_vertical" />

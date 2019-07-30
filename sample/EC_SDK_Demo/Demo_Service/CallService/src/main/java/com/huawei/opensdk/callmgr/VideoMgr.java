@@ -43,7 +43,7 @@ public class VideoMgr {
     List<TsdkDeviceInfo> cameraList;
 
     private int currentCameraIndex = CallConstant.FRONT_CAMERA;
-    private int currentCallId;
+    private long currentCallId;
 
     private boolean isInitializedVideoWindows;
 
@@ -232,7 +232,7 @@ public class VideoMgr {
      * @param cameraIndex       摄像头index
      * @return int result       视频角度
      */
-    public int setVideoOrient(int callId, int cameraIndex)
+    public int setVideoOrient(long callId, int cameraIndex)
     {
         int result = 0;
         int orient;
@@ -295,7 +295,7 @@ public class VideoMgr {
      *
      * @param callId            呼叫id
      */
-    public void initVideoWindow(final int callId)
+    public void initVideoWindow(final long callId)
     {
         LogUtil.i(TAG, "initVideoWindow() enter" + callId);
 
@@ -412,11 +412,11 @@ public class VideoMgr {
         this.currentCameraIndex = currentCameraIndex;
     }
 
-    public int getCurrentCallId() {
+    public long getCurrentCallId() {
         return currentCallId;
     }
 
-    public void setCurrentCallId(int currentCallId) {
+    public void setCurrentCallId(long currentCallId) {
         this.currentCallId = currentCallId;
     }
 
@@ -608,6 +608,10 @@ public class VideoMgr {
                 @Override
                 public void onOrientationChanged(int orientation) {
                     curOriginalOrientation = orientation;
+
+                    if (curOriginalOrientation > 360 || curOriginalOrientation < 0) {
+                        return;
+                    }
 
                     // 旋转处理，更新摄相头采集角度和视频窗口显示角度
                     if (!orientationEventListenerList.isEmpty()) {

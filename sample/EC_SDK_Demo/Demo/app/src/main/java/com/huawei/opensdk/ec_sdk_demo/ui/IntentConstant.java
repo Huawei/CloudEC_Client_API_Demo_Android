@@ -18,6 +18,7 @@ public class IntentConstant
     public static final String EADDR_INFO_ACTIVITY_ACTION = "android.intent.action.eaddr_info_activity";
     public static final String IPT_REGISTER_ACTIVITY_ACTION = "android.intent.action.ipt_register_activity";
     public static final String AVC_CAPS_ACTIVITY_ACTION = "android.intent.action.avc_caps_activity";
+    public static final String MODIFY_PSD_ACTIVITY_ACTION = "android.intent.action.modify_psd_activity";
     public static final String CONF_DATA_ACTIVITY_ACTION = "android.intent.action.conf_data_activity";
     public static final String CONF_MANAGER_ACTIVITY_ACTION = "android.intent.action.conf_manager_activity";
     public static final String ANONYMOUS_CONF_ACTIVITY_ACTION = "android.intent.action.anonymous_activity";

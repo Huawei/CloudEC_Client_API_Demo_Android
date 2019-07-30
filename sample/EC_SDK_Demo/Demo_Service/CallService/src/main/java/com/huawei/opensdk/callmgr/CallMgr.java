@@ -31,7 +31,7 @@ public class CallMgr implements ICallMgr
      * Call Session map collection  include call ID and call session
      * 呼叫会话集合  呼叫id和呼叫会话的集合
      */
-    private Map<Integer, Session> callSessionMap = new HashMap<Integer, Session>();
+    private Map<Long, Session> callSessionMap = new HashMap<Long, Session>();
 
 
     /**
@@ -60,7 +60,7 @@ public class CallMgr implements ICallMgr
     /**
      * 普通通话呼叫ID，用于通话转会议失败之后，恢复原通话
      */
-    private int originalCallId = 0;
+    private long originalCallId = 0;
 
     private CallMgr()
     {
@@ -79,11 +79,11 @@ public class CallMgr implements ICallMgr
         this.resumeHold = resumeHold;
     }
 
-    public int getOriginal_CallId() {
+    public long getOriginal_CallId() {
         return originalCallId;
     }
 
-    public void setOriginal_CallId(int original_CallId) {
+    public void setOriginal_CallId(long original_CallId) {
         this.originalCallId = original_CallId;
     }
 
@@ -112,7 +112,7 @@ public class CallMgr implements ICallMgr
      * @param callID            呼叫id
      * @return Session          会话信息
      */
-    public Session getCallSessionByCallID(int callID)
+    public Session getCallSessionByCallID(long callID)
     {
         return callSessionMap.get(callID);
     }
@@ -237,7 +237,7 @@ public class CallMgr implements ICallMgr
      */
     private int getMediaSpeakVolume()
     {
-        int ret = TsdkManager.getInstance().getCallManager().getSpeakVolume();
+        int ret = (int)TsdkManager.getInstance().getCallManager().getSpeakVolume();
         return ret;
     }
 
@@ -249,7 +249,7 @@ public class CallMgr implements ICallMgr
      * @return
      */
     @Override
-    public CallConstant.CallStatus getCallStatus(int callID)
+    public CallConstant.CallStatus getCallStatus(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -270,7 +270,7 @@ public class CallMgr implements ICallMgr
      * @return int 0 success
      */
     @Override
-    public synchronized int startCall(String toNumber, boolean isVideoCall)
+    public synchronized long startCall(String toNumber, boolean isVideoCall)
     {
         if (TextUtils.isEmpty(toNumber))
         {
@@ -310,7 +310,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean answerCall(int callID, boolean isVideo)
+    public boolean answerCall(long callID, boolean isVideo)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -329,7 +329,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean endCall(int callID)
+    public boolean endCall(long callID)
     {
 
         TsdkCall tsdkCall = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
@@ -358,7 +358,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean divertCall(int callID, String divertNumber)
+    public boolean divertCall(long callID, String divertNumber)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -378,7 +378,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean blindTransfer(int callID, String transferNumber)
+    public boolean blindTransfer(long callID, String transferNumber)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -397,7 +397,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean holdCall(int callID)
+    public boolean holdCall(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -416,7 +416,7 @@ public class CallMgr implements ICallMgr
      * @return
      */
     @Override
-    public boolean holdVideoCall(int callID)
+    public boolean holdVideoCall(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -442,7 +442,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean unHoldCall(int callID)
+    public boolean unHoldCall(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -464,7 +464,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean reDial(int callID, int code)
+    public boolean reDial(long callID, int code)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -483,7 +483,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean addVideo(int callID)
+    public boolean addVideo(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -502,7 +502,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean delVideo(int callID)
+    public boolean delVideo(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -521,7 +521,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean rejectAddVideo(int callID)
+    public boolean rejectAddVideo(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -540,7 +540,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean acceptAddVideo(int callID)
+    public boolean acceptAddVideo(long callID)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -571,7 +571,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean muteMic(int callID, boolean mute)
+    public boolean muteMic(long callID, boolean mute)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -591,7 +591,7 @@ public class CallMgr implements ICallMgr
      * @return true:success, false:failed
      */
     @Override
-    public boolean muteSpeak(int callID, boolean mute)
+    public boolean muteSpeak(long callID, boolean mute)
     {
         Session callSession = getCallSessionByCallID(callID);
         if (callSession == null)
@@ -610,7 +610,7 @@ public class CallMgr implements ICallMgr
      * @param visible
      */
     @Override
-    public void switchLocalView(int callID, boolean visible)
+    public void switchLocalView(long callID, boolean visible)
     {
 
     }
@@ -623,7 +623,7 @@ public class CallMgr implements ICallMgr
      * @param cameraIndex       摄像头下标
      */
     @Override
-    public void switchCamera(int callID, int cameraIndex)
+    public void switchCamera(long callID, int cameraIndex)
     {
         TsdkCall call = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
         VideoMgr.getInstance().switchCamera(call, cameraIndex);
@@ -637,7 +637,7 @@ public class CallMgr implements ICallMgr
      *
      * @param callID            呼叫id
      */
-    public void openCamera(int callID) {
+    public void openCamera(long callID) {
         TsdkCall call = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
 
         VideoMgr.getInstance().openCamera(call);
@@ -649,7 +649,7 @@ public class CallMgr implements ICallMgr
      *
      * @param callID            呼叫id
      */
-    public void closeCamera(int callID) {
+    public void closeCamera(long callID) {
         TsdkCall call = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
 
         VideoMgr.getInstance().closeCamera(call);
@@ -1017,7 +1017,7 @@ public class CallMgr implements ICallMgr
      */
     public void handleOpenVideoInd(TsdkCall call){
         int isVideo = call.getCallInfo().getIsVideoCall(); // 1:video, 0: audio
-        int callId  = call.getCallInfo().getCallId();
+        long callId  = call.getCallInfo().getCallId();
         Log.i(TAG,  "isVideo: " + isVideo + "callId: " + callId);
 
         Session callSession = getCallSessionByCallID(callId);
@@ -1084,7 +1084,7 @@ public class CallMgr implements ICallMgr
         Log.i(TAG, "refreshLocalView");
         TsdkVideoViewType mediaType = TsdkVideoViewType.enumOf(refreshInfo.getViewType());
         TsdkVideoViewRefreshEvent eventType = TsdkVideoViewRefreshEvent.enumOf(refreshInfo.getEvent());
-        int callId = call.getCallInfo().getCallId();
+        long callId = call.getCallInfo().getCallId();
 
         switch (mediaType)
         {
@@ -1164,7 +1164,7 @@ public class CallMgr implements ICallMgr
      */
     public void handleUnholdSuccess(TsdkCall call){
         Log.i(TAG, "handleUnholdSuccess");
-        int callId = call.getCallInfo().getCallId();
+        long callId = call.getCallInfo().getCallId();
         Session callSession = getCallSessionByCallID(callId);
         if (callSession == null)
         {

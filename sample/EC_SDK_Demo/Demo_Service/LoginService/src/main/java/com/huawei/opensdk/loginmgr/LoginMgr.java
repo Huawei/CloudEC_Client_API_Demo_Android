@@ -12,6 +12,7 @@ import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginParam;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
+import com.huawei.ecterminalsdk.base.TsdkModifyPasswordParam;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
 import com.huawei.ecterminalsdk.base.TsdkServiceAccountType;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
@@ -21,7 +22,6 @@ import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 
 import static com.huawei.ecterminalsdk.base.TsdkServerType.TSDK_E_SERVER_TYPE_PORTAL;
-import static com.huawei.ecterminalsdk.base.TsdkServiceAccountType.TSDK_E_IM_SERVICE_ACCOUNT;
 import static com.huawei.ecterminalsdk.base.TsdkServiceAccountType.TSDK_E_VOIP_SERVICE_ACCOUNT;
 
 /**
@@ -147,6 +147,24 @@ public class LoginMgr {
 
 
     /**
+     * This method is used to modify password
+     * 修改密码
+     * @param newPwd  新密码
+     * @param oldPwd  原密码
+     * @return
+     */
+    public int modifyPwd(String newPwd, String oldPwd) {
+        TsdkModifyPasswordParam modifyPasswordParam = new TsdkModifyPasswordParam(newPwd, oldPwd);
+        int ret = TsdkManager.getInstance().getLoginManager().modifyPassword(modifyPasswordParam);
+        if (ret != 0) {
+            LogUtil.e(TAG, "modifyPwd is failed, return " + ret);
+        }
+
+        return ret;
+    }
+
+
+    /**
      * [en]This method is used to handle the successful authentication.
      * [cn]处理鉴权成功事件
      *
@@ -170,7 +188,7 @@ public class LoginMgr {
      */
     public void handleAuthFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "authorize failed: " + result.getReasonDescription());
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, result.getResult(), result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, (int)result.getResult(), result.getReasonDescription());
     }
 
     /**
@@ -202,10 +220,13 @@ public class LoginMgr {
      *                                 [cn]登陆成功的相关信息
      */
     public void handleLoginSuccess(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
-        LogUtil.i(TAG, "login success");
+        LogUtil.i(TAG, "login success," + "  is first login-->"
+                + loginSuccessInfo.getIsFirstLogin() + "  Number of days remaining-->" + loginSuccessInfo.getLeftDaysOfPassword());
+
         if (TSDK_E_VOIP_SERVICE_ACCOUNT == serviceAccountType)
         {
             this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.VOIP_LOGIN_SUCCESS, userId, "voip login success");
+            this.loginEventNotifyUI.onPwdInfoEventNotify(LoginConstant.LoginUIEvent.PASSWORD_INFO, loginSuccessInfo);
         }
     }
 
@@ -302,7 +323,7 @@ public class LoginMgr {
      */
     public void handleFirewallDetectFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "firewall detect failed: " + result.getReasonDescription());
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.FIREWALL_DETECT_FAILED, result.getResult(), result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.FIREWALL_DETECT_FAILED, (int)result.getResult(), result.getReasonDescription());
     }
 
     /**
@@ -316,7 +337,7 @@ public class LoginMgr {
      */
     public void handleBuildStgTunnelFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "build stg failed: " + result.getReasonDescription());
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.BUILD_STG_FAILED, result.getResult(), result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.BUILD_STG_FAILED, (int)result.getResult(), result.getReasonDescription());
     }
 
     /**
@@ -336,6 +357,18 @@ public class LoginMgr {
         {
             LogUtil.i(TAG, "security tunnel info is null.");
         }
+    }
+
+    /**
+     * [en]This method is used to password change result.
+     * [cn]处理密码修改结果
+     * @param result            [en]Indicates response results
+     *                          [cn]响应结果
+     */
+    public void handModifyPasswordResult(TsdkCommonResult result) {
+        LogUtil.i(TAG, "modify password result: " + result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.MODIFY_PASSWORD,
+                (int)result.getResult(), result.getReasonDescription());
     }
 
     public void setTerminal(String terminal) {

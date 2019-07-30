@@ -130,5 +130,9 @@ public interface IAttendeeListContract
 
         void broadcastAttendee(Member member, boolean isBroad);
 
+        void setScreenShare(Member member);
+
+        void cancelScreenShare(Member member);
+
     }
 }

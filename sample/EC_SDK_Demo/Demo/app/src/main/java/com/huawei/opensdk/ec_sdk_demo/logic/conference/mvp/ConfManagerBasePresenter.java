@@ -338,7 +338,9 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         if (!DeviceUtil.isAppForeground()) {
                             DeviceUtil.bringTaskBackToFront();
                         }
-                    }if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY){
+                    }else if(actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_REQUEST){
+                        getView().requestScreen();
+                    } if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY){
                         getView().robShareRemoveAllScreenShareFloatWindow();
                     }
 

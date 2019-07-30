@@ -53,6 +53,9 @@ public class LoginConstant {
     public enum LoginUIEvent {
 
         VOIP_LOGIN_SUCCESS(),
+
+        PASSWORD_INFO(),
+
         IM_LOGIN_SUCCESS(),
 
         LOGIN_FAILED(),
@@ -60,6 +63,8 @@ public class LoginConstant {
         FIREWALL_DETECT_FAILED(),
 
         BUILD_STG_FAILED(),
+
+        MODIFY_PASSWORD(),
 
         LOGOUT(),
     }

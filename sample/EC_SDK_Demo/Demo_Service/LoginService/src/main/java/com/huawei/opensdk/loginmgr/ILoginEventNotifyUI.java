@@ -7,4 +7,6 @@ package com.huawei.opensdk.loginmgr;
  */
 public interface ILoginEventNotifyUI {
     void onLoginEventNotify(LoginConstant.LoginUIEvent evt, int reason, String description);
+
+    void onPwdInfoEventNotify(LoginConstant.LoginUIEvent evt, Object object);
 }

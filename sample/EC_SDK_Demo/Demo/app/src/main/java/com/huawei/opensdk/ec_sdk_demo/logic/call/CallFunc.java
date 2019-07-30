@@ -67,7 +67,13 @@ public class CallFunc implements ICallNotification, ICtdNotification
                         callInfo.setFocus(true);
                         callInfo.setCaller(false);
                         callInfo.setPeerNumber(tsdkcallInfo.getPeerNumber());
-                        callInfo.setPeerDisplayName(tsdkcallInfo.getPeerDisplayName());
+                        // 会议来电目前显示为会议主题
+                        String displayName = tsdkConference.getSubject();
+                        if (null == displayName || "".equals(displayName))
+                        {
+                            displayName = tsdkcallInfo.getPeerDisplayName();
+                        }
+                        callInfo.setPeerDisplayName(displayName);
                         callInfo.setVideoCall(tsdkcallInfo.getIsVideoCall() == 0 ? false : true);
                         callInfo.setConfID(tsdkConference.getHandle()+"");
 

@@ -74,7 +74,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private static final int HALF_ALPHA = 127;
 
     private CallInfo mCallInfo;
-    private int mCallID;
+    private long mCallID;
     private Object thisVideoActivity = this;
 
     private Handler mHandler = new Handler()

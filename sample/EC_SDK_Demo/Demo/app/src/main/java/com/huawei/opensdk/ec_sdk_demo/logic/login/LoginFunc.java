@@ -3,9 +3,11 @@ package com.huawei.opensdk.ec_sdk_demo.logic.login;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.huawei.ecterminalsdk.base.TsdkContactsInfo;
+import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
@@ -20,6 +22,7 @@ import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.ILoginEventNotifyUI;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
+import com.huawei.opensdk.servicemgr.ServiceMgr;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -32,6 +35,10 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     private static final int LOGOUT = 103;
     private static final int FIREWALL_DETECT_FAILED = 104;
     private static final int BUILD_STG_FAILED = 105;
+    private static final int MODIFY_PWD_SUCCESS = 106;
+    private static final int MODIFY_PWD_FAILED = 107;
+    private static final int FIRST_LOGIN = 108;
+    private static final int PWD_REMAIN_DAYS = 109;
 
     private static LoginFunc INSTANCE = new LoginFunc();
 
@@ -74,6 +81,7 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
         {
             case VOIP_LOGIN_SUCCESS:
                 LogUtil.i(UIConstants.DEMO_TAG, "voip login success");
+                ServiceMgr.getServiceMgr().setDisplayLocalInfo(LoginMgr.getInstance().getTerminal());
                 sendHandlerMessage(VOIP_LOGIN_SUCCESS, description);
                 break;
             case LOGIN_FAILED:
@@ -88,6 +96,15 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 LogUtil.i(UIConstants.DEMO_TAG, "build stg fail");
                 sendHandlerMessage(BUILD_STG_FAILED, description);
                 break;
+            case MODIFY_PASSWORD:
+                LogUtil.i(UIConstants.DEMO_TAG, "modify password result");
+                if (0 == reason)
+                {
+                    sendHandlerMessage(MODIFY_PWD_SUCCESS, description);
+                    return;
+                }
+                sendHandlerMessage(MODIFY_PWD_FAILED, description);
+                break;
 
             case LOGOUT:
                 LogUtil.i(UIConstants.DEMO_TAG, "logout");
@@ -95,6 +112,34 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onPwdInfoEventNotify(LoginConstant.LoginUIEvent evt, final Object object) {
+        if (LoginConstant.LoginUIEvent.PASSWORD_INFO == evt)
+        {
+            if (!(object instanceof TsdkLoginSuccessInfo))
+            {
+                return;
+            }
+            final TsdkLoginSuccessInfo loginSuccessInfo = (TsdkLoginSuccessInfo) object;
+
+            mMainHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (1 == loginSuccessInfo.getIsFirstLogin())
+                    {
+                        sendHandlerMessage(FIRST_LOGIN, "First login, it is recommended to change the password.");
+                    }
+                    else if (loginSuccessInfo.getLeftDaysOfPassword() <= 3)
+                    {
+                        sendHandlerMessage(PWD_REMAIN_DAYS, "Password is less than " + loginSuccessInfo.getLeftDaysOfPassword()
+                                +  " days, please change it in time");
+                    }
+                }
+            }, 1000);
         }
     }
 
@@ -139,6 +184,26 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
             case BUILD_STG_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "build stg failed,notify UI!");
                 Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                break;
+            case MODIFY_PWD_SUCCESS:
+                LogUtil.i(UIConstants.DEMO_TAG, "modify password success,notify UI!");
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.MODIFY_PWD_SUCCESS, null);
+                break;
+            case MODIFY_PWD_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "modify password failed,notify UI!");
+                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                break;
+            case FIRST_LOGIN:
+                LogUtil.i(UIConstants.DEMO_TAG, "first login,notify UI!");
+                Toast toast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+                break;
+            case PWD_REMAIN_DAYS:
+                LogUtil.i(UIConstants.DEMO_TAG, "password remain days,notify UI!");
+                Toast pwdToast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
+                pwdToast.setGravity(Gravity.CENTER, 0, 0);
+                pwdToast.show();
                 break;
             default:
                 break;

@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
@@ -118,6 +119,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private static final int START_SCREEN_SHARE_HANDLE = 666;
     private static final int STOP_SCREEN_SHARE_HANDLE = 888;
     private static final int ROB_STOP_SCREEN_SHARE_HANDLE = 222;
+    private static final int REQUEST_SCREEN_SHARE_HANDLE = 444;
     private Handler mHandler = new Handler()
     {
         @Override
@@ -139,6 +141,13 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         DeviceUtil.bringTaskBackToFront();
                     }
                     FloatWindowsManager.getInstance().removeAllScreenShareFloatWindow(ECApplication.getApp());
+                    break;
+                case REQUEST_SCREEN_SHARE_HANDLE:
+                    if (!FloatWindowsManager.getInstance().checkPermission(ConfManagerActivity.this)) {
+                        FloatWindowsManager.getInstance().applyPermission(ConfManagerActivity.this);
+                    }
+                    showRequestScreenDialog();
+                    break;
                 default:
                     break;
             }
@@ -755,6 +764,37 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mHandler.sendEmptyMessage(ROB_STOP_SCREEN_SHARE_HANDLE);
     }
 
+    @Override
+    public void requestScreen() {
+        isActiveShare = false;
+        mHandler.sendEmptyMessage(REQUEST_SCREEN_SHARE_HANDLE);
+    }
+
+    private void showRequestScreenDialog()
+    {
+        TripleDialog dialog = new TripleDialog(this);
+        dialog.setTitle("Do you want to share ?");
+        dialog.setRightText(R.string.reject_resquest_screen);
+        dialog.setRightButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                MeetingMgr.getInstance().setAsOwner(MeetingMgr.getInstance().getSelf().getNumber(), TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_DELETE);
+            }
+        });
+        dialog.setLeftText(R.string.agree_resquest_screen);
+        dialog.setLeftButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                requestScreenSharePermission();
+            }
+        });
+        dialog.show();
+    }
+
     private void showLeaveConfDialog()
     {
         ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
@@ -1067,12 +1107,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             seConfModeLayout.setOnClickListener(moreButtonListener);
         }
 
-        // ido 不显示举手、静音(取消静音)会场
+        // ido 不显示举手
         if (ConfConstant.ConfProtocol.IDO_PROTOCOL == MeetingMgr.getInstance().getConfProtocol())
         {
             handUpLayout.setVisibility(View.GONE);
-            cancelMuteAllLayout.setVisibility(View.GONE);
-            muteAllLayout.setVisibility(View.GONE);
         }
 
         handUpLayout.setOnClickListener(moreButtonListener);

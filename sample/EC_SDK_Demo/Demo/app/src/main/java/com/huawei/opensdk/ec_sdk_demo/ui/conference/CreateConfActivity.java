@@ -184,8 +184,8 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
     private void showModePicker()
     {
         TripleDialog typePickerDialog = new TripleDialog(this);
-        typePickerDialog.setLeftText(R.string.recode_conference_disable);
-        typePickerDialog.setRightText(R.string.recode_conference_enable);
+        typePickerDialog.setLeftText(R.string.record_conference_disable);
+        typePickerDialog.setRightText(R.string.record_conference_enable);
 
         typePickerDialog.setLeftButtonListener(new View.OnClickListener()
         {
@@ -272,10 +272,10 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         switch (type)
         {
             case TSDK_E_CONF_RECORD_DISABLE:
-                recordTypeText.setText(R.string.recode_conference_disable);
+                recordTypeText.setText(R.string.record_conference_disable);
                 break;
             case TSDK_E_CONF_RECORD_RECORD_BROADCAST:
-                recordTypeText.setText(R.string.recode_conference_enable);
+                recordTypeText.setText(R.string.record_conference_enable);
                 break;
 
             default:

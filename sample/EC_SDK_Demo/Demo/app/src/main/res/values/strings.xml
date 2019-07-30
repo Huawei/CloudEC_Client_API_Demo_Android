@@ -110,6 +110,8 @@
     <string name="watch_conf_fail">Watch attendee failed</string>
     <string name="broadcast_conf_fail">Broadcast attendee failed</string>
     <string name="cancel_broadcast_fail">Cancel broadcast attendee failed</string>
+    <string name="set_screen_share_fail">Set screen share failed</string>
+    <string name="cancel_screen_share_fail">Cancel screen share failed</string>
 
     <string name="add_attendee_success">Add attendee success</string>
     <string name="del_attendee_success">Del attendee success</string>
@@ -159,6 +161,8 @@
     <string name="broadcast_contact">Broadcast Attendee</string>
     <string name="cancel_broadcast_contact">Cancel Broadcast</string>
     <string name="watch_contact">Watch Attendee</string>
+    <string name="set_screen_share">Set Screen Owner</string>
+    <string name="cancel_screen_share">Cancel Screen Owner</string>
 
 
     <string name="btn_sure">OK</string>
@@ -182,9 +186,9 @@
     <string name="conference_video">Video meeting</string>
     <string name="conference_voice_data">Voice + Data meeting</string>
     <string name="conference_video_data">Video + Data meeting</string>
-    <string name="recode_conference">Recode Conference</string>
-    <string name="recode_conference_disable">Disable</string>
-    <string name="recode_conference_enable">Enable</string>
+    <string name="record_conference">Record Conference</string>
+    <string name="record_conference_disable">Disable</string>
+    <string name="record_conference_enable">Enable</string>
     <string name="members_number">Member No.</string>
     <string name="conference_members">Participants</string>
     <string name="add">Add member</string>
@@ -2199,6 +2203,22 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="delete_all_record">Delete all records</string>
     <string name="input_in_process">The other is typing...</string>
     <string name="no_op_group">There are currently no groups that can be copied or moved</string>
+    <string name="modify_password">Change password</string>
+    <string name="original_password">Original password</string>
+    <string name="new_password">New password</string>
+    <string name="determine_password">Determine a new password</string>
+    <string name="enter_original_password">Please enter the original password</string>
+    <string name="enter_new_password">Please enter a new 8-32 digit password</string>
+    <string name="enter_new_password_again">Please enter the new password again</string>
+    <string name="password_rule">Password rule:</string>
+    <string name="password_rule_one">1.Password length is 8~32 characters</string>
+    <string name="password_rule_two">2.Must contain upper and lower case letters and numbers, do not
+        use more than 3 repeat characters</string>
+    <string name="no_input_ori_pwd">Original password entry cannot be empty</string>
+    <string name="no_input_new_pwd">New password entry cannot be empty</string>
+    <string name="no_input_pwd_again">Please enter the password again</string>
+    <string name="inconsistent_password">Confirm that the password does not match the new password</string>
+    <string name="modify_pwd_success">The password change was successful, please login again</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>
@@ -2222,11 +2242,15 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="delete_message_failed">Delete message failed</string>
     <string name="set_read_failed">Set message read failed</string>
     <string name="set_input_failed">Set input status failed</string>
+    <string name="modify_pwd_failed">Password modification failed</string>
+
+    <string name="agree_resquest_screen">Agree sharing</string>
+    <string name="reject_resquest_screen">Reject sharing</string>
 
     <!-- ==================权限申请对话框（alertdialog）================== -->
     <string name="permission_dialog_title">Permission application</string>
     <string name="permission_dialog_message">For your normal use, you need the following permissions</string>
-    
+
     <string name="screen_share">stop</string>
     <string name="screen_annotate">annotate</string>
     <string name="anno_color">color</string>

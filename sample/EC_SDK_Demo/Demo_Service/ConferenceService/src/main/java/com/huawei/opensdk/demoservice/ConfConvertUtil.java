@@ -228,6 +228,7 @@ public class ConfConvertUtil {
                 TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN : TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
         member.setRole(role);
         member.setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
+        member.setShareOwner(attendeeStatusInfo.getIsShareOwner()== 1 ? true : false);
 
         TsdkConfParticipantStatus participantStatus = convertAttendStatus(attendeeStatusInfo.getState());
         if (participantStatus != null) {

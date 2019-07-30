@@ -36,7 +36,7 @@ public class Session {
     private boolean isBlindTransfer;
 
 
-    private int callId;
+    private long callId;
 
     public Session(TsdkCall tsdkCall){
         this.tsdkCall = tsdkCall;
@@ -47,7 +47,7 @@ public class Session {
         return tsdkCall;
     }
 
-    public int getCallID() {
+    public long getCallID() {
         return this.callId;
     }
 

@@ -27,7 +27,7 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
     private final Context mContext;
     private final CallFunc mCallFunc;
 
-    private int mCallID;
+    private long mCallID;
 
     private int mAudioRoute;
     private int mCallType;

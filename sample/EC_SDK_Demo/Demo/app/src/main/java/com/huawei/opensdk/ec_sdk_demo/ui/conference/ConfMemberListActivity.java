@@ -326,12 +326,10 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
             }
         }
 
-        // ido 不显示举手、静音(取消静音)会场
+        // ido 不显示举手
         if (ConfConstant.ConfProtocol.IDO_PROTOCOL == MeetingMgr.getInstance().getConfProtocol())
         {
             handUpLayout.setVisibility(View.GONE);
-            cancelMuteAllLayout.setVisibility(View.GONE);
-            muteAllLayout.setVisibility(View.GONE);
         }
 
         handUpLayout.setOnClickListener(moreButtonListener);
