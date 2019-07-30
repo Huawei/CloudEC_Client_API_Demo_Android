@@ -476,6 +476,9 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
      */
     private void showBar()
     {
+        if(isAllowAnnot){
+            return;
+        }
         if (mTitleBar.getVisibility() == View.GONE || mChatBottom.getVisibility() == View.GONE)
         {
             mTitleBar.setVisibility(View.VISIBLE);
