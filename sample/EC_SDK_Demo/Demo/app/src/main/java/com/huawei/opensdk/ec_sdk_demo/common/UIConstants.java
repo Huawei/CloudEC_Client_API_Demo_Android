@@ -29,6 +29,7 @@ public final class UIConstants
     public static final String CONTACT_INFO = "contact_info";
 
     public static final String IS_VIDEO_CONF = "is_video_conf";
+    public static final String IS_SVC_VIDEO_CONF = "is_svc_video_conf";
     public static final String IS_DATE_CONF = "is_date_conf";
     public static final String IS_START_SHARE_CONF = "is_start_share_conf";
     public static final String IS_ALLOW_ANNOT = "is_allow_annot";

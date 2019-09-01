@@ -235,4 +235,22 @@
         <item name="android:lineSpacingExtra">@dimen/dp2</item>
     </style>
 
+    <style name="Theme.FloatActivity" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!--activity无黑边-->
+        <item name="android:windowIsFloating">true</item><!--activity可滑动-->
+        <item name="android:windowIsTranslucent">false</item><!--activity透明-->
+        <item name="android:windowNoTitle">true</item><!--activity无标题-->
+        <item name="android:background">@android:color/black</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:backgroundDimEnabled">false</item><!--activity不变暗-->
+        <item name="android:windowCloseOnTouchOutside">false</item><!-- activity点击空白部分不消失 -->
+    </style>
+
+    <style name="full_screen">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
 </resources>

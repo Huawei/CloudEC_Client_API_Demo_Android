@@ -81,6 +81,8 @@ public class CallConstant {
 
         DEL_LOCAL_VIEW(),
 
+        STATISTIC_LOCAL_QOS(),
+
         UNKNOWN()
 
     }

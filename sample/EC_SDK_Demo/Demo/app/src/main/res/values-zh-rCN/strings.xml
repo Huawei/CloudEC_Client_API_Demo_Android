@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">EC_SDK_Demo</string>
     <string name="proxy_server_address">ProxyServer</string>
-    <string name="register_server_address">RegServer</string>
+    <string name="register_server_address">Server address</string>
     <string name="service_port">Server port</string>
     <string name="account">Account</string>
     <string name="iphonepassword">Password</string>
@@ -307,6 +307,10 @@
     <string name="no_input_pwd_again">Please enter the password again</string>
     <string name="inconsistent_password">Confirm that the password does not match the new password</string>
     <string name="modify_pwd_success">The password change was successful, please login again</string>
+    <string name="last_page">There are currently no more pages.</string>
+    <string name="first_page">Already the first page.</string>
+    <string name="show_video">Show video window</string>
+    <string name="hide_video">Hide video window</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -19,6 +20,9 @@ import com.huawei.opensdk.servicemgr.ServiceMgr;
 
 public class LoginSettingActivity extends BaseActivity implements View.OnClickListener
 {
+    private LinearLayout securityMode;
+    private LinearLayout netWork;
+
     private EditText mRegServerEditText;
     private EditText mServerPortEditText;
     private CheckBox mVpnCheckBox;
@@ -79,6 +83,11 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mProtocolGroup.check(getProtocolCheckedId(mSharedPreferences.getInt(LoginConstant.CONF_CTRL_PROTOCOL, 0)));
         mUdpPortEditText.setText(mSharedPreferences.getString(LoginConstant.UDP_PORT, LoginConstant.UDP_DEFAULT));
         mTlsPortEditText.setText(mSharedPreferences.getString(LoginConstant.TLS_PORT, LoginConstant.TLS_DEFAULT));
+
+        securityMode = (LinearLayout) findViewById(R.id.l2TextContainer);
+        netWork = (LinearLayout) findViewById(R.id.l3TextContainer);
+        securityMode.setVisibility(View.GONE);
+        netWork.setVisibility(View.GONE);
     }
 
     @Override

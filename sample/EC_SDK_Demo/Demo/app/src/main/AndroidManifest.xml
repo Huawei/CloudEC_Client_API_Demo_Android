@@ -185,6 +185,7 @@
         <!--android:screenOrientation="landscape-->
         <!--android:launchMode="singleTask"-->
         <activity android:name=".ui.conference.ConfManagerActivity"
+            android:theme="@style/full_screen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="sensor">
@@ -269,6 +270,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.sdkdemo" />
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.base.SignalInfomationActivity"
+            android:theme="@style/Theme.FloatActivity">
+
         </activity>
     </application>
 

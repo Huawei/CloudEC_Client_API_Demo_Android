@@ -1,12 +1,11 @@
 package com.huawei.opensdk.servicemgr;
 
 
-import android.util.Log;
-
 import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkBatchChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkBeAddedFriendInfo;
 import com.huawei.ecterminalsdk.base.TsdkBeAddedToChatGroupInfo;
+import com.huawei.ecterminalsdk.base.TsdkCallStatisticInfo;
 import com.huawei.ecterminalsdk.base.TsdkChatGroupInfoUpdateType;
 import com.huawei.ecterminalsdk.base.TsdkChatGroupUpdateInfo;
 import com.huawei.ecterminalsdk.base.TsdkChatMsgInfo;
@@ -22,6 +21,7 @@ import com.huawei.ecterminalsdk.base.TsdkConfDetailInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchInfo;
 import com.huawei.ecterminalsdk.base.TsdkCtdCallStatus;
 import com.huawei.ecterminalsdk.base.TsdkDelChatGroupMemberResult;
 import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
@@ -48,6 +48,7 @@ import com.huawei.ecterminalsdk.base.TsdkServiceAccountType;
 import com.huawei.ecterminalsdk.base.TsdkSessionCodec;
 import com.huawei.ecterminalsdk.base.TsdkSessionModified;
 import com.huawei.ecterminalsdk.base.TsdkSetIptServiceResult;
+import com.huawei.ecterminalsdk.base.TsdkShareStatisticInfo;
 import com.huawei.ecterminalsdk.base.TsdkSmsInfo;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
@@ -61,6 +62,7 @@ import com.huawei.ecterminalsdk.models.im.TsdkChatGroup;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.ctdservice.CtdMgr;
 import com.huawei.opensdk.callmgr.iptService.IptMgr;
+import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
@@ -83,413 +85,413 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtAuthSuccess(long userId, TsdkImLoginParam imAccountLoginParam) {
-        Log.i(TAG, "onEvtAuthSuccess notify.");
+        LogUtil.i(TAG, "onEvtAuthSuccess notify.");
         LoginMgr.getInstance().handleAuthSuccess((int)userId, imAccountLoginParam);
     }
 
     @Override
     public void onEvtAuthFailed(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtAuthFailed notify.");
+        LogUtil.i(TAG, "onEvtAuthFailed notify.");
         LoginMgr.getInstance().handleAuthFailed((int)userId, result);
     }
 
     @Override
     public void onEvtAuthRefreshFailed(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtAuthRefreshFailed notify.");
+        LogUtil.i(TAG, "onEvtAuthRefreshFailed notify.");
         LoginMgr.getInstance().handleAuthRefreshFailed((int)userId, result);
 
     }
 
     @Override
     public void onEvtLoginSuccess(long userId, TsdkServiceAccountType serviceAccountType, TsdkLoginSuccessInfo loginSuccessInfo) {
-        Log.i(TAG, "onEvtLoginSuccess notify.");
+        LogUtil.i(TAG, "onEvtLoginSuccess notify.");
         LoginMgr.getInstance().handleLoginSuccess((int)userId, serviceAccountType, loginSuccessInfo);
     }
 
     @Override
     public void onEvtLoginFailed(long userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
-        Log.i(TAG, "onEvtLoginFailed notify.");
+        LogUtil.i(TAG, "onEvtLoginFailed notify.");
         LoginMgr.getInstance().handleLoginFailed((int)userId, serviceAccountType, loginFailedInfo);
     }
 
     @Override
     public void onEvtLogoutSuccess(long userId, TsdkServiceAccountType serviceAccountType) {
-        Log.i(TAG, "onEvtLogoutSuccess notify.");
+        LogUtil.i(TAG, "onEvtLogoutSuccess notify.");
         LoginMgr.getInstance().handleLogoutSuccess((int)userId, serviceAccountType);
     }
 
 
     @Override
     public void onEvtLogoutFailed(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtLogoutFailed notify.");
+        LogUtil.i(TAG, "onEvtLogoutFailed notify.");
         LoginMgr.getInstance().handleLogoutFailed((int)userId, result);
 
     }
 
     @Override
     public void onEvtForceLogout(long userId, TsdkServiceAccountType serviceAccountType, TsdkForceLogoutInfo forceLogoutInfo) {
-        Log.i(TAG, "onEvtForceLogout notify.");
+        LogUtil.i(TAG, "onEvtForceLogout notify.");
         LoginMgr.getInstance().handleForceLogout((int)userId);
     }
 
     @Override
     public void onEvtVoipAccountStatus(long userId, TsdkVoipAccountInfo voipAccountInfo) {
-        Log.i(TAG, "onEvtVoipAccountStatus notify.");
+        LogUtil.i(TAG, "onEvtVoipAccountStatus notify.");
         LoginMgr.getInstance().handleVoipAccountStatus((int)userId, voipAccountInfo);
     }
 
     @Override
     public void onEvtImAccountStatus(long userId) {
-        Log.i(TAG, "onEvtImAccountStatus notify.");
+        LogUtil.i(TAG, "onEvtImAccountStatus notify.");
     }
 
     @Override
     public void onEvtFirewallDetectFailed(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtFirewallDetectFailed notify.");
+        LogUtil.i(TAG, "onEvtFirewallDetectFailed notify.");
         LoginMgr.getInstance().handleFirewallDetectFailed((int)userId, result);
     }
 
     @Override
     public void onEvtBuildStgTunnelFailed(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtBuildStgTunnelFailed notify.");
+        LogUtil.i(TAG, "onEvtBuildStgTunnelFailed notify.");
         LoginMgr.getInstance().handleBuildStgTunnelFailed((int)userId, result);
     }
 
     @Override
     public void onEvtSecurityTunnelInfoInd(long userId, long firewallMode, TsdkSecurityTunnelInfo securityTunnelInfo) {
-        Log.i(TAG, "onEvtSecurityTunnelInfoInd notify.");
+        LogUtil.i(TAG, "onEvtSecurityTunnelInfoInd notify.");
         LoginMgr.getInstance().handleSecurityTunnelInfoInd((int)userId, (int)firewallMode, securityTunnelInfo);
     }
 
     @Override
     public void onEvtModifyPasswordResult(long userId, final TsdkCommonResult result) {
-        Log.i(TAG, "onEvtModifyPasswordResult notify.");
+        LogUtil.i(TAG, "onEvtModifyPasswordResult notify.");
         LoginMgr.getInstance().handModifyPasswordResult(result);
     }
 
     @Override
     public void onEvtCallStartResult(TsdkCall call, TsdkCommonResult result) {
-        Log.e(TAG, "onEvtCallStartResult notify.");
+        LogUtil.e(TAG, "onEvtCallStartResult notify.");
 
     }
 
     @Override
     public void onEvtCallIncoming(TsdkCall call, Boolean maybeVideoCall) {
-        Log.i(TAG, "onEvtCallIncoming notify.");
+        LogUtil.i(TAG, "onEvtCallIncoming notify.");
         CallMgr.getInstance().handleCallComing(call, maybeVideoCall);
 
     }
 
     @Override
     public void onEvtCallOutgoing(TsdkCall call) {
-        Log.i(TAG, "onEvtCallOutgoing notify.");
+        LogUtil.i(TAG, "onEvtCallOutgoing notify.");
         CallMgr.getInstance().handleCallGoing(call);
 
     }
 
     @Override
     public void onEvtCallRingback(TsdkCall call) {
-        Log.i(TAG, "onEvtCallRingback notify.");
+        LogUtil.i(TAG, "onEvtCallRingback notify.");
         CallMgr.getInstance().handleCallRingback(call);
 
     }
 
     @Override
     public void onEvtCallRtpCreated(TsdkCall call) {
-        Log.i(TAG, "onEvtCallRtpCreated notify.");
+        LogUtil.i(TAG, "onEvtCallRtpCreated notify.");
         CallMgr.getInstance().handleCallRtpCreated(call);
 
     }
 
     @Override
     public void onEvtCallConnected(TsdkCall call) {
-        Log.i(TAG, "onEvtCallConnected notify.");
+        LogUtil.i(TAG, "onEvtCallConnected notify.");
         CallMgr.getInstance().handleCallConnected(call);
 
     }
 
     @Override
     public void onEvtCallEnded(TsdkCall call) {
-        Log.i(TAG, "onEvtCallEnded notify.");
+        LogUtil.i(TAG, "onEvtCallEnded notify.");
         CallMgr.getInstance().handleCallEnded(call);
 
     }
 
     @Override
     public void onEvtCallDestroy(TsdkCall call) {
-        Log.i(TAG, "onEvtCallDestroy notify.");
+        LogUtil.i(TAG, "onEvtCallDestroy notify.");
         CallMgr.getInstance().handleCallDestroy(call);
 
     }
 
     @Override
     public void onEvtOpenVideoReq(TsdkCall call, TsdkVideoOrientation orientType) {
-        Log.i(TAG, "onEvtOpenVideoReq notify.");
+        LogUtil.i(TAG, "onEvtOpenVideoReq notify.");
         CallMgr.getInstance().handleOpenVideoReq(call,orientType);
 
     }
 
     @Override
     public void onEvtRefuseOpenVideoInd(TsdkCall call) {
-        Log.i(TAG, "onEvtRefuseOpenVideoInd notify.");
+        LogUtil.i(TAG, "onEvtRefuseOpenVideoInd notify.");
         CallMgr.getInstance().handleRefuseOpenVideoInd(call);
     }
 
     @Override
     public void onEvtCloseVideoInd(TsdkCall call) {
         CallMgr.getInstance().handleCloseVideoInd(call);
-        Log.i(TAG, "onEvtCloseVideoInd notify.");
+        LogUtil.i(TAG, "onEvtCloseVideoInd notify.");
 
     }
 
     @Override
     public void onEvtOpenVideoInd(TsdkCall call) {
-        Log.i(TAG, "onEvtOpenVideoInd notify.");
+        LogUtil.i(TAG, "onEvtOpenVideoInd notify.");
         CallMgr.getInstance().handleOpenVideoInd(call);
 
     }
 
     @Override
     public void onEvtRefreshViewInd(TsdkCall call, TsdkVideoViewRefresh refreshInfo) {
-        Log.i(TAG, "onEvtRefreshViewInd notify.");
+        LogUtil.i(TAG, "onEvtRefreshViewInd notify.");
         CallMgr.getInstance().handleRefreshViewInd(call, refreshInfo);
 
     }
 
     @Override
     public void onEvtCallRouteChange(TsdkCall call, long route) {
-        Log.i(TAG, "onEvtCallRouteChange notify.");
+        LogUtil.i(TAG, "onEvtCallRouteChange notify.");
 
     }
 
     @Override
     public void onEvtPlayMediaEnd(long handle) {
-        Log.i(TAG, "onEvtPlayMediaEnd notify.");
+        LogUtil.i(TAG, "onEvtPlayMediaEnd notify.");
 
     }
 
     @Override
     public void onEvtSessionModified(TsdkCall call, TsdkSessionModified sessionInfo) {
-        Log.i(TAG, "onEvtSessionModified notify.");
+        LogUtil.i(TAG, "onEvtSessionModified notify.");
     }
 
     @Override
     public void onEvtSessionCodec(TsdkCall call, TsdkSessionCodec codecInfo) {
-        Log.i(TAG, "onEvtSessionCodec notify.");
+        LogUtil.i(TAG, "onEvtSessionCodec notify.");
     }
 
     @Override
     public void onEvtHoldSuccess(TsdkCall call) {
-        Log.i(TAG, "onEvtHoldSuccess notify.");
+        LogUtil.i(TAG, "onEvtHoldSuccess notify.");
         CallMgr.getInstance().handleHoldSuccess(call);
     }
 
     @Override
     public void onEvtHoldFailed(TsdkCall call) {
-        Log.i(TAG, "onEvtHoldFailed notify.");
+        LogUtil.i(TAG, "onEvtHoldFailed notify.");
         CallMgr.getInstance().handleHoldFailed(call);
     }
 
     @Override
     public void onEvtUnholdSuccess(TsdkCall call) {
-        Log.i(TAG, "onEvtUnholdSuccess notify.");
+        LogUtil.i(TAG, "onEvtUnholdSuccess notify.");
         CallMgr.getInstance().handleUnholdSuccess(call);
     }
 
     @Override
     public void onEvtUnholdFailed(TsdkCall call) {
-        Log.i(TAG, "onEvtUnholdFailed notify.");
+        LogUtil.i(TAG, "onEvtUnholdFailed notify.");
         CallMgr.getInstance().handleUnholdFailed(call);
     }
 
     @Override
     public void onEvtEndcallFailed(TsdkCall call, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtEndcallFailed notify.");
+        LogUtil.i(TAG, "onEvtEndcallFailed notify.");
 
     }
 
     @Override
     public void onEvtDivertFailed(TsdkCall call) {
-        Log.i(TAG, "onEvtDivertFailed notify.");
+        LogUtil.i(TAG, "onEvtDivertFailed notify.");
         CallMgr.getInstance().handleDivertFailed(call);
     }
 
     @Override
     public void onEvtBldTransferSuccess(TsdkCall call) {
-        Log.i(TAG, "onEvtBldTransferSuccess notify.");
+        LogUtil.i(TAG, "onEvtBldTransferSuccess notify.");
         CallMgr.getInstance().handleBldTransferSuccess(call);
     }
 
     @Override
     public void onEvtBldTransferFailed(TsdkCall call) {
-        Log.i(TAG, "onEvtBldTransferFailed notify.");
+        LogUtil.i(TAG, "onEvtBldTransferFailed notify.");
         CallMgr.getInstance().handleBldTransferFailed(call);
     }
 
     @Override
     public void onEvtSetIptServiceResult(long type, TsdkSetIptServiceResult result) {
-        Log.i(TAG, "onEvtSetIptServiceResult notify.");
+        LogUtil.i(TAG, "onEvtSetIptServiceResult notify.");
         IptMgr.getInstance().handleSetIptServiceResult((int)type, result);
     }
 
     @Override
     public void onEvtIptServiceInfo(TsdkIptServiceInfoSet serviceInfo) {
-        Log.i(TAG, "onEvtIptServiceInfo notify.");
+        LogUtil.i(TAG, "onEvtIptServiceInfo notify.");
         IptMgr.getInstance().handleIptServiceInfo(serviceInfo);
     }
 
     @Override
     public void onEvtGetTempUserResult(long userId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtGetTempUserResult notify.");
+        LogUtil.i(TAG, "onEvtGetTempUserResult notify.");
         MeetingMgr.getInstance().handleGetTempUserResult((int)userId, result);
     }
 
     @Override
     public void onEvtBookConfResult(TsdkCommonResult result, TsdkConfBaseInfo confBaseInfo) {
-        Log.i(TAG, "onEvtBookConfResult notify.");
+        LogUtil.i(TAG, "onEvtBookConfResult notify.");
         MeetingMgr.getInstance().handleBookConfResult(result, confBaseInfo);
     }
 
     @Override
     public void onEvtQueryConfListResult(TsdkCommonResult result, TsdkConfListInfo confList) {
-        Log.i(TAG, "onEvtQueryConfListResult notify.");
+        LogUtil.i(TAG, "onEvtQueryConfListResult notify.");
         MeetingMgr.getInstance().handleQueryConfListResult(result, confList);
     }
 
     @Override
     public void onEvtQueryConfDetailResult(TsdkCommonResult result, TsdkConfDetailInfo confDetailInfo) {
-        Log.i(TAG, "onEvtQueryConfDetailResult notify.");
+        LogUtil.i(TAG, "onEvtQueryConfDetailResult notify.");
         MeetingMgr.getInstance().handleQueryConfDetailResult(result, confDetailInfo);
     }
 
     @Override
     public void onEvtJoinConfResult(TsdkConference conference, TsdkCommonResult result, TsdkJoinConfIndInfo info) {
-        Log.i(TAG, "onEvtJoinConfResult notify.");
+        LogUtil.i(TAG, "onEvtJoinConfResult notify.");
         MeetingMgr.getInstance().handleJoinConfResult(conference, result, info);
     }
 
     @Override
     public void onEvtGetDataconfParamResult(TsdkConference conference, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtGetDataconfParamResult notify.");
+        LogUtil.i(TAG, "onEvtGetDataconfParamResult notify.");
         MeetingMgr.getInstance().handleGetDataConfParamsResult(conference, result);
     }
 
     @Override
     public void onEvtConfctrlOperationResult(TsdkConference conference, TsdkConfOperationResult result) {
-        Log.i(TAG, "onEvtConfctrlOperationResult notify.");
+        LogUtil.i(TAG, "onEvtConfctrlOperationResult notify.");
         MeetingMgr.getInstance().handleConfctrlOperationResult(conference, result);
     }
 
 
     @Override
     public void onEvtInfoAndStatusUpdate(TsdkConference conference) {
-        Log.i(TAG, "onEvtInfoAndStatusUpdate notify.");
+        LogUtil.i(TAG, "onEvtInfoAndStatusUpdate notify.");
         MeetingMgr.getInstance().handleInfoAndStatusUpdate(conference);
     }
 
     @Override
     public void onEvtSpeakerInd(TsdkConference conference, TsdkConfSpeakerInfo speakerList) {
-        Log.i(TAG, "onEvtSpeakerInd notify.");
+        LogUtil.i(TAG, "onEvtSpeakerInd notify.");
         MeetingMgr.getInstance().handleSpeakerInd(speakerList);
     }
 
     @Override
     public void onEvtRequestConfRightFailed(TsdkConference conference, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtRequestConfRightFailed notify.");
+        LogUtil.i(TAG, "onEvtRequestConfRightFailed notify.");
     }
 
     @Override
     public void onEvtConfIncomingInd(TsdkConference conference) {
-        Log.i(TAG, "onEvtConfIncomingInd notify.");
+        LogUtil.i(TAG, "onEvtConfIncomingInd notify.");
         MeetingMgr.getInstance().handleConfIncomingInd(conference);
 
     }
 
     @Override
     public void onEvtConfEndInd(TsdkConference conference) {
-        Log.i(TAG, "onEvtConfEndInd notify.");
+        LogUtil.i(TAG, "onEvtConfEndInd notify.");
         MeetingMgr.getInstance().handleConfEndInd(conference);
     }
 
     @Override
     public void onEvtJoinDataConfResult(TsdkConference conference, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtJoinDataConfResult notify.");
+        LogUtil.i(TAG, "onEvtJoinDataConfResult notify.");
         MeetingMgr.getInstance().handleJoinDataConfResult(conference, result);
     }
 
     @Override
     public void onEvtAsStateChange(TsdkConference conference, TsdkConfAppShareType shareType, TsdkConfAsStateInfo asStateInfo) {
-        Log.i(TAG, "onEvtAsStateChange notify.");
+        LogUtil.i(TAG, "onEvtAsStateChange notify.");
         MeetingMgr.getInstance().handleAsStateChange(asStateInfo);
     }
 
     @Override
     public void onEvtAsOwnerChange(TsdkConference conference, TsdkConfAsActionType actionType, TsdkAttendee owner) {
-        Log.i(TAG, "OnEvtAsOwnerChange notify.");
+        LogUtil.i(TAG, "OnEvtAsOwnerChange notify.");
         MeetingMgr.getInstance().handleAsOwnerChange(actionType, owner);
     }
 
     @Override
     public void onEvtDsDocNew(TsdkConference conference, TsdkDocBaseInfo docBaseInfo) {
-        Log.i(TAG, "onEvtDsDocNew notify.");
+        LogUtil.i(TAG, "onEvtDsDocNew notify.");
         MeetingMgr.getInstance().handleDsDocNew(docBaseInfo);
     }
 
     @Override
     public void onEvtDsDocDel(TsdkConference conference, TsdkDocShareDelDocInfo docShareDelDocInfo) {
-        Log.i(TAG, "onEvtDsDocDel notify.");
+        LogUtil.i(TAG, "onEvtDsDocDel notify.");
         MeetingMgr.getInstance().handleDsDocDel(docShareDelDocInfo);
     }
 
     @Override
     public void onEvtWbDocNew(TsdkConference conference, TsdkDocBaseInfo docBaseInfo) {
-        Log.i(TAG, "onEvtWbDocNew notify.");
+        LogUtil.i(TAG, "onEvtWbDocNew notify.");
         MeetingMgr.getInstance().handleWbDocNew(docBaseInfo);
     }
 
     @Override
     public void onEvtWbDocDel(TsdkConference conference, TsdkWbDelDocInfo wbDelDocInfo) {
-        Log.i(TAG, "onEvtWbDocDel notify.");
+        LogUtil.i(TAG, "onEvtWbDocDel notify.");
         MeetingMgr.getInstance().handleWbDocDel(wbDelDocInfo);
     }
 
     @Override
     public void onEvtRecvChatMsg(TsdkConference tsdkConference, TsdkConfChatMsgInfo tsdkConfChatMsgInfo) {
-        Log.i(TAG, "onEvtRecvChatMsg notify.");
+        LogUtil.i(TAG, "onEvtRecvChatMsg notify.");
         MeetingMgr.getInstance().handleRecvChatMsg(tsdkConfChatMsgInfo);
     }
 
     @Override
     public void onEvtCtdStartCallResult(long callId, TsdkCommonResult result) {
-	    Log.i(TAG, "onEvtCtdStartCallResult notify.");
+	    LogUtil.i(TAG, "onEvtCtdStartCallResult notify.");
         CtdMgr.getInstance().handleStartCallResult((int)callId, result);
     }
 
     @Override
     public void onEvtCtdEndCallResult(long callId, TsdkCommonResult result) {
-        Log.i(TAG, "onEvtCtdEndCallResult notify.");
+        LogUtil.i(TAG, "onEvtCtdEndCallResult notify.");
     }
 
     @Override
     public void onEvtCtdCallStatusNotify(long callId, TsdkCtdCallStatus status) {
-        Log.i(TAG, "onEvtCtdCallStatusNotify notify.");
+        LogUtil.i(TAG, "onEvtCtdCallStatusNotify notify.");
     }
 
     @Override
     public void onEvtSearchContactsResult(long querySeqNo, TsdkCommonResult result, TsdkSearchContactsResult searchContactResult) {
-        Log.i(TAG, "onEvtSearchContactsResult notify.");
+        LogUtil.i(TAG, "onEvtSearchContactsResult notify.");
         EnterpriseAddressBookMgr.getInstance().handleSearchContactResult((int)querySeqNo, result, searchContactResult);
     }
 
     @Override
     public void onEvtSearchDeptResult(long querySeqNo, TsdkCommonResult result, TsdkSearchDepartmentResult searchDeptResult) {
-        Log.i(TAG, "onEvtSearchDeptResult notify.");
+        LogUtil.i(TAG, "onEvtSearchDeptResult notify.");
         EnterpriseAddressBookMgr.getInstance().handleSearchDepartmentResult((int)querySeqNo, result, searchDeptResult);
     }
 
     @Override
     public void onEvtGetIconResult(long querySeqNo, TsdkCommonResult result, TsdkGetIconResult getIconResult) {
-        Log.i(TAG, "onEvtGetIconResult notify.");
+        LogUtil.i(TAG, "onEvtGetIconResult notify.");
         EnterpriseAddressBookMgr.getInstance().handleGetIconResult((int)querySeqNo, result, getIconResult);
     }
 
@@ -500,58 +502,58 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtUserStatusUpdate(List<TsdkImUserStatusUpdateInfo> userStatusInfoList) {
-        Log.i(TAG, "onEvtUserStatusUpdate notify.");
+        LogUtil.i(TAG, "onEvtUserStatusUpdate notify.");
     }
 
     @Override
     public void onEvtUserInfoUpdate(List<TsdkImUserInfo> userInfoList) {
-        Log.i(TAG, "onEvtUserInfoUpdate notify.");
+        LogUtil.i(TAG, "onEvtUserInfoUpdate notify.");
     }
 
     @Override
     public void onEvtJoinChatGroupReq(TsdkChatGroup chatGroup, TsdkReqJoinChatGroupMsg reqJoinChatGroupMsg) {
-        Log.i(TAG, "onEvtJoinChatGroupReq notify.");
+        LogUtil.i(TAG, "onEvtJoinChatGroupReq notify.");
     }
 
     @Override
     public void onEvtJoinChatGroupRsp(TsdkChatGroup chatGroup, TsdkRspJoinChatGroupMsg rspJoinChatGroupMsg) {
-        Log.i(TAG, "onEvtJoinChatGroupRsp notify.");
+        LogUtil.i(TAG, "onEvtJoinChatGroupRsp notify.");
     }
 
     @Override
     public void onEvtJoinChatGroupInd(TsdkChatGroup chatGroup, TsdkBeAddedToChatGroupInfo beAddedToChatGroupInfo) {
-        Log.i(TAG, "onEvtJoinChatGroupInd notify.");
+        LogUtil.i(TAG, "onEvtJoinChatGroupInd notify.");
     }
 
     @Override
     public void onEvtDelChatGroupMemberResult(TsdkChatGroup chatGroup, TsdkDelChatGroupMemberResult delChatGroupMemberResult) {
-        Log.i(TAG, "onEvtDelChatGroupMemberResult notify.");
+        LogUtil.i(TAG, "onEvtDelChatGroupMemberResult notify.");
     }
 
     @Override
     public void onEvtLeaveChatGroupResult(TsdkChatGroup chatGroup, TsdkLeaveChatGroupResult leaveChatGroupResult) {
-        Log.i(TAG, "onEvtLeaveChatGroupResult notify.");
+        LogUtil.i(TAG, "onEvtLeaveChatGroupResult notify.");
     }
 
     @Override
     public void onEvtChatGroupInfoUpdate(TsdkChatGroup chatGroup, TsdkChatGroupUpdateInfo chatGroupUpdateInfo, TsdkChatGroupInfoUpdateType updateType) {
-        Log.i(TAG, "onEvtChatGroupInfoUpdate notify.");
+        LogUtil.i(TAG, "onEvtChatGroupInfoUpdate notify.");
     }
 
 
     @Override
     public void onEvtInputtingStatusInd(TsdkInputtingStatusInfo inputtingStatusInfo) {
-        Log.i(TAG, "onEvtInputtingStatusInd notify.");
+        LogUtil.i(TAG, "onEvtInputtingStatusInd notify.");
     }
 
     @Override
     public void onEvtChatMsg(TsdkChatMsgInfo chatMsgInfo) {
-        Log.i(TAG, "onEvtChatMsg notify.");
+        LogUtil.i(TAG, "onEvtChatMsg notify.");
     }
 
     @Override
     public void onEvtBatchChatMsg(TsdkBatchChatMsgInfo batchChatMsgInfo) {
-        Log.i(TAG, "onEvtBatchChatMsg notify.");
+        LogUtil.i(TAG, "onEvtBatchChatMsg notify.");
     }
 
     @Override
@@ -576,21 +578,38 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtMsgSendResult(TsdkSendChatMsgResult sendChatMsgResult) {
-        Log.i(TAG, "onEvtMsgSendResult notify.");
+        LogUtil.i(TAG, "onEvtMsgSendResult notify.");
     }
 
     @Override
     public void onEvtMsgWithdrawResult(TsdkChatMsgWithdrawResult chatMsgWithdrawResult) {
-        Log.i(TAG, "onEvtMsgWithdrawResult notify.");
+        LogUtil.i(TAG, "onEvtMsgWithdrawResult notify.");
     }
 
     @Override
     public void onEvtMsgWithdrawInd(TsdkChatMsgWithdrawInfo chatMsgWithdrawInfo) {
-        Log.i(TAG, "onEvtMsgWithdrawInd notify.");
+        LogUtil.i(TAG, "onEvtMsgWithdrawInd notify.");
     }
 
     @Override
     public void onEvtTransToConfResult(TsdkCall call, TsdkCommonResult result) {
 
+    }
+
+    @Override
+    public void onEvtStatisticInfo(TsdkCall call, long signalStrength, TsdkCallStatisticInfo statisticInfo) {
+        CallMgr.getInstance().handleUpDateCallStatisticInfo(signalStrength, statisticInfo);
+    }
+
+    @Override
+    public void onEvtSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svWatchInfo) {
+        LogUtil.i(TAG, "onEvtSvcWatchInfoInd notify.");
+        MeetingMgr.getInstance().handleSvcWatchInfoInd(conference, svWatchInfo);
+    }
+
+    @Override
+    public void onEvtShareStatisticInfo(TsdkConference conference, TsdkShareStatisticInfo statisticInfo) {
+        LogUtil.i(TAG, "onEvtShareStatisticInfo notify.");
+        MeetingMgr.getInstance().handleShareStatisticInfo(conference, statisticInfo);
     }
 }

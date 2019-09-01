@@ -2,7 +2,6 @@ package com.huawei.opensdk.demoservice;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.huawei.ecterminalsdk.base.TsdkAddAttendeesInfo;
@@ -29,6 +28,7 @@ import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkConfShareState;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeaker;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfType;
 import com.huawei.ecterminalsdk.base.TsdkConfVideoMode;
 import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
@@ -37,6 +37,7 @@ import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfDetailReq;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfListReq;
+import com.huawei.ecterminalsdk.base.TsdkShareStatisticInfo;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendees;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendeesInfo;
 import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
@@ -142,9 +143,20 @@ public class MeetingMgr implements IMeetingMgr{
      */
     private List<Long> documentId = new ArrayList<>();
 
+
+    /**
+     * SVC 会议信息
+     */
+    private SvcMemberInfo svcConfInfo;
+
+
+    private TsdkShareStatisticInfo currentShareStatisticInfo;
+
+
     private MeetingMgr()
     {
         this.confBaseInfo = new ConfBaseInfo();
+        this.svcConfInfo = new SvcMemberInfo();
     }
 
     public static MeetingMgr getInstance()
@@ -160,21 +172,6 @@ public class MeetingMgr implements IMeetingMgr{
     {
         this.mConfNotification = confNotification;
     }
-
-
-
-//    public void setJoinConfNumber(String joinConfNumber) {
-//        this.joinConfNumber = joinConfNumber;
-//    }
-
-
-//    public boolean isInConference() {
-//        if (null == currentConference)
-//        {
-//            return false;
-//        }
-//        return true;
-//    }
 
     public long getCurrentConferenceCallID() {
         if (null == currentConference)
@@ -276,6 +273,22 @@ public class MeetingMgr implements IMeetingMgr{
         this.memberList = memberList;
     }
 
+    public int getWatchSum() {
+        return svcConfInfo.getWatchableMemberList().size();
+    }
+
+    public int getCurrentWatchPage() {
+        return svcConfInfo.getCurrentWatchPage();
+    }
+
+    public int getTotalWatchablePage() {
+        return svcConfInfo.getTotalWatchablePage();
+    }
+
+
+    public int getCurrentWatchSamllCount() {
+        return svcConfInfo.getCurrentWatchSamllCount();
+    }
 
     public ConfBaseInfo getConfBaseInfo() {
         return confBaseInfo;
@@ -327,6 +340,10 @@ public class MeetingMgr implements IMeetingMgr{
         this.getTempUserSuccess = getTempUserSuccess;
     }
 
+    public TsdkShareStatisticInfo getCurrentShareStatisticInfo() {
+        return currentShareStatisticInfo;
+    }
+
     public String[] getSpeakers() {
         if (null != speakers)
         {
@@ -359,8 +376,6 @@ public class MeetingMgr implements IMeetingMgr{
         }else {
             confBaseInfo.setMuteAll(this.isMuteConf);
         }
-
-
 
         LogUtil.i(TAG, "ConfState." + confBaseInfo.getConfState());
 
@@ -406,12 +421,32 @@ public class MeetingMgr implements IMeetingMgr{
             }
         }
 
+        // 如果不是SVC会议，不执行下面的流程
+        if (!this.currentConference.isSvcConf())
+        {
+            return;
+        }
+
+        boolean reWatch = svcConfInfo.svcMemberListUpdateHandle(memberList);
+        if (reWatch) {
+
+            TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
+            watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
+            watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
+
+            int ret = watchAttendee(watchAttendeesInfo);
+            if (ret != 0){
+                LogUtil.e(TAG, "watchAttendee is return failed.");
+            }
+        }
+
 //        if ((self.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE) && (self.getStatus() == ConfConstant.ParticipantStatus.LEAVED)) {
 //            confBaseInfo.setConfState(ConfConstant.ConfConveneStatus.DESTROYED);
 //        }
 
         return;
     }
+
 
     /**
      * This method is used to get a speaker by volume.
@@ -451,11 +486,11 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int bookConference(BookConferenceInfo bookConferenceInfo)
     {
-        Log.i(TAG, "bookConference.");
+        LogUtil.i(TAG, "bookConference.");
 
         if (bookConferenceInfo == null)
         {
-            Log.e(TAG, "booKConferenceInfo obj is null");
+            LogUtil.e(TAG, "booKConferenceInfo obj is null");
             return -1;
         }
 
@@ -489,7 +524,7 @@ public class MeetingMgr implements IMeetingMgr{
         int result = TsdkManager.getInstance().getConferenceManager().bookConference(bookConfInfo);
         if (result != 0)
         {
-            Log.e(TAG, "bookReservedConf result ->" + result);
+            LogUtil.e(TAG, "bookReservedConf result ->" + result);
             return  result;
         }
 
@@ -504,7 +539,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int queryMyConfList(ConfConstant.ConfRight myRight)
     {
-        Log.i(TAG, "query my conf list.");
+        LogUtil.i(TAG, "query my conf list.");
 
         TsdkConfRight tupConfRight;
         switch (myRight)
@@ -534,7 +569,7 @@ public class MeetingMgr implements IMeetingMgr{
         int result = TsdkManager.getInstance().getConferenceManager().queryConferenceList(queryReq);
         if (result != 0)
         {
-            Log.e(TAG, "getConfList result ->" + result);
+            LogUtil.e(TAG, "getConfList result ->" + result);
             return  result;
         }
         return 0;
@@ -548,7 +583,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int queryConfDetail(String confID)
     {
-        Log.i(TAG,  "query conf detail");
+        LogUtil.i(TAG,  "query conf detail");
 
         TsdkQueryConfDetailReq queryReq = new TsdkQueryConfDetailReq();
         queryReq.setConfId(confID);
@@ -558,7 +593,7 @@ public class MeetingMgr implements IMeetingMgr{
         int result = TsdkManager.getInstance().getConferenceManager().queryConferenceDetail(queryReq);
         if (result != 0)
         {
-            Log.e(TAG, "getConfInfo result ->" + result);
+            LogUtil.e(TAG, "getConfInfo result ->" + result);
             return  result;
         }
         return result;
@@ -576,12 +611,12 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int joinConf(TsdkConfJoinParam confJoinParam, boolean isVideo, String joinNumber)
     {
-        Log.i(TAG,  "join conf.");
+        LogUtil.i(TAG,  "join conf.");
 
         int result = TsdkManager.getInstance().getConferenceManager().joinConference(confJoinParam, isVideo, joinNumber);
         if (result != 0)
         {
-            Log.e(TAG, "joinConf result ->" + result);
+            LogUtil.e(TAG, "joinConf result ->" + result);
             currentConference = null;
             return result;
         }
@@ -599,17 +634,17 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int acceptConf(boolean isVideo)
     {
-        Log.i(TAG,  "accept conf.");
+        LogUtil.i(TAG,  "accept conf.");
 
         if (null == currentConference)
         {
-            Log.i(TAG,  "accept conf, currentConference is null ");
+            LogUtil.i(TAG,  "accept conf, currentConference is null ");
             return 0;
         }
 
         int result = currentConference.acceptConference(isVideo);
         if (result == 0) {
-            Log.i(TAG,  "accept conf");
+            LogUtil.i(TAG,  "accept conf");
         }
 
         return result;
@@ -624,11 +659,11 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int rejectConf()
     {
-        Log.i(TAG,  "reject conf.");
+        LogUtil.i(TAG,  "reject conf.");
 
         if (null == currentConference)
         {
-            Log.i(TAG,  "reject conf, currentConference is null ");
+            LogUtil.i(TAG,  "reject conf, currentConference is null ");
             return 0;
         }
 
@@ -651,7 +686,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.i(TAG,  "leave conf, currentConference is null ");
+            LogUtil.i(TAG,  "leave conf, currentConference is null ");
             return 0;
         }
 
@@ -680,7 +715,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.i(TAG,  "end conf, currentConference is null ");
+            LogUtil.i(TAG,  "end conf, currentConference is null ");
             return 0;
         }
 
@@ -710,7 +745,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "add attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "add attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -743,7 +778,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "remove attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "remove attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -762,7 +797,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "hangup attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "hangup attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -781,7 +816,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "redial attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "redial attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -800,7 +835,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "mute conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "mute conf failed, currentConference is null ");
             return -1;
         }
 
@@ -820,7 +855,7 @@ public class MeetingMgr implements IMeetingMgr{
         int result;
 
         if (null == currentConference) {
-            Log.e(TAG, "record  conf failed, currentConference is null ");
+            LogUtil.e(TAG, "record  conf failed, currentConference is null ");
             return -1;
         }
 
@@ -845,7 +880,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "mute attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "mute attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -865,7 +900,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "mute conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "mute conf failed, currentConference is null ");
             return -1;
         }
 
@@ -883,7 +918,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "release chairman failed, currentConference is null ");
+            LogUtil.e(TAG,  "release chairman failed, currentConference is null ");
             return -1;
         }
 
@@ -902,7 +937,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "request chairman failed, currentConference is null ");
+            LogUtil.e(TAG,  "request chairman failed, currentConference is null ");
             return -1;
         }
 
@@ -922,7 +957,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "set presenter failed, currentConference is null ");
+            LogUtil.e(TAG,  "set presenter failed, currentConference is null ");
             return -1;
         }
 
@@ -941,7 +976,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "set presenter failed, currentConference is null ");
+            LogUtil.e(TAG,  "set presenter failed, currentConference is null ");
             return -1;
         }
 
@@ -963,7 +998,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "request chairman failed, currentConference is null ");
+            LogUtil.e(TAG,  "request chairman failed, currentConference is null ");
             return -1;
         }
 
@@ -983,7 +1018,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "postpone conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "postpone conf failed, currentConference is null ");
             return -1;
         }
 
@@ -1009,7 +1044,7 @@ public class MeetingMgr implements IMeetingMgr{
                                          String confPassword, String serviceAddress,
                                          String servicePort,boolean isVPN)
     {
-        Log.i(TAG,  "joinConferenceByAnonymous");
+        LogUtil.i(TAG,  "joinConferenceByAnonymous");
 
         //设置本端IP
         String localIpAddress = DeviceManager.getLocalIpAddress(isVPN);
@@ -1028,7 +1063,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         if (result != 0)
         {
-            Log.e(TAG, "join anonymous conference result ->" + result);
+            LogUtil.e(TAG, "join anonymous conference result ->" + result);
             return result;
         }
 
@@ -1047,12 +1082,12 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int callTransferToConference(long call_id){
 
-        Log.i(TAG, "callTransferToConference.");
+        LogUtil.i(TAG, "callTransferToConference.");
 
         Session callSession = CallMgr.getInstance().getCallSessionByCallID(call_id);
         if (callSession == null)
         {
-            Log.e(TAG, "call Session is null.");
+            LogUtil.e(TAG, "call Session is null.");
             return -1;
         }
         //用于转会议失败之后，恢复原通话。
@@ -1062,7 +1097,7 @@ public class MeetingMgr implements IMeetingMgr{
         TsdkCall tsdkCall =  callSession.getTsdkCall();
         if (tsdkCall == null)
         {
-            Log.e(TAG, "call is invalid.");
+            LogUtil.e(TAG, "call is invalid.");
             return -1;
         }
 
@@ -1095,7 +1130,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         int result = TsdkManager.getInstance().getConferenceManager().p2pTransferToConference(tsdkCall, bookConfInfo);
         if (result != 0) {
-            Log.e(TAG, "call transfer to conference is return failed, result = " + result);
+            LogUtil.e(TAG, "call transfer to conference is return failed, result = " + result);
         }
         return result;
     }
@@ -1110,7 +1145,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "set conf mode failed, currentConference is null ");
+            LogUtil.e(TAG,  "set conf mode failed, currentConference is null ");
             return -1;
         }
 
@@ -1147,7 +1182,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "broadcast attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -1155,12 +1190,12 @@ public class MeetingMgr implements IMeetingMgr{
 
         if (isBroadcast)
         {
-            result = currentConference.broadcastAttendee(attendee.getNumber(), isBroadcast);
+            result = currentConference.broadcastAttendee(attendee.getNumber(), true);
         }
         else
         {
             //取消广播在mediaX环境下必须填空 SMC下才需要写与会者号码
-            result = currentConference.broadcastAttendee("", isBroadcast);
+            result = currentConference.broadcastAttendee("", false);
         }
 
         return result;
@@ -1174,26 +1209,82 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public int watchAttendee(Member attendee)
     {
+        int result;
+        TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
+
         if (null == currentConference)
         {
-            Log.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
             return -1;
         }
 
-        TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
+        // 如果是多流会议，选看与会者参数有区别
+        if (this.currentConference.isSvcConf())
+        {
+            List<TsdkWatchAttendees> watchAttendeeList = this.svcConfInfo.getBeWatchMemberList();
 
-        TsdkWatchAttendees attendees = new TsdkWatchAttendees();
-        attendees.setNumber(attendee.getNumber());
+            TsdkWatchAttendees bigWatchAttendee = watchAttendeeList.get(0);
+            if (bigWatchAttendee != null) {
+                bigWatchAttendee.setNumber(attendee.getNumber());
+            } else {
+                //有与会者列表后，这个不可能为空
+                LogUtil.e(TAG,  "watch big wnd attendee is failed.");
+                return -1;
+            }
 
-        List<TsdkWatchAttendees> list = new ArrayList<>();
-        list.add(attendees);
+            watchAttendeesInfo.setWatchAttendeeList(watchAttendeeList);
+            watchAttendeesInfo.setWatchAttendeeNum(watchAttendeeList.size());
+            result = currentConference.watchAttendee(watchAttendeesInfo);
+        }
+        else
+        {
 
-        watchAttendeesInfo.setWatchAttendeeList(list);
-        watchAttendeesInfo.setWatchAttendeeNum(list.size());
+            TsdkWatchAttendees attendees = new TsdkWatchAttendees();
+            attendees.setNumber(attendee.getNumber());
+            List<TsdkWatchAttendees> list = new ArrayList<>();
+            list.add(attendees);
+
+            result = currentConference.watchAttendee(watchAttendeesInfo);
+        }
+
+        return result;
+    }
+
+    public int watchAttendee(TsdkWatchAttendeesInfo watchAttendeesInfo) {
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            return -1;
+        }
 
         int result = currentConference.watchAttendee(watchAttendeesInfo);
 
         return result;
+    }
+
+
+    public int watchAttendee(int watchPage) {
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            return -1;
+        }
+
+
+        boolean rewatch = svcConfInfo.setBeWatchMemberList(watchPage);
+        if (rewatch) {
+            TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
+            watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
+            watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
+
+            int ret = watchAttendee(watchAttendeesInfo);
+            if (ret != 0){
+                LogUtil.e(TAG, "watchAttendee is return failed.");
+                return ret;
+            }
+        }
+
+        return 0;
     }
 
     /**
@@ -1205,7 +1296,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "upgrade conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "upgrade conf failed, currentConference is null ");
             return -1;
         }
 
@@ -1224,7 +1315,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "join data conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "join data conf failed, currentConference is null ");
             return -1;
         }
 
@@ -1242,7 +1333,7 @@ public class MeetingMgr implements IMeetingMgr{
     public int startScreenShare(Context context, Intent data){
         if (null == currentConference)
         {
-            Log.e(TAG,  "start screen share failed, currentConference is null ");
+            LogUtil.e(TAG,  "start screen share failed, currentConference is null ");
             return -1;
         }
         int result =  currentConference.startScreenShare(context,data);
@@ -1255,7 +1346,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void stopScreenShare(){
         if (null == currentConference)
         {
-            Log.e(TAG,  "stop screen share failed, currentConference is null ");
+            LogUtil.e(TAG,  "stop screen share failed, currentConference is null ");
             return ;
         }
         currentConference.stopScreenShare();
@@ -1268,7 +1359,7 @@ public class MeetingMgr implements IMeetingMgr{
     public int startAnnotation(){
         if (null == currentConference)
         {
-            Log.e(TAG,  "start annotation failed, currentConference is null ");
+            LogUtil.e(TAG,  "start annotation failed, currentConference is null ");
             return -1;
         }
         int result =  currentConference.startAnnotation();
@@ -1282,7 +1373,7 @@ public class MeetingMgr implements IMeetingMgr{
     public int stopAnnotation(){
         if (null == currentConference)
         {
-            Log.e(TAG,  "stop annotation failed, currentConference is null ");
+            LogUtil.e(TAG,  "stop annotation failed, currentConference is null ");
             return -1;
         }
         int result =  currentConference.stopAnnotation();
@@ -1298,7 +1389,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void setAnnotationLocalStatus(boolean enable) {
         if (null == currentConference)
         {
-            Log.e(TAG,  "set annotation local status failed, currentConference is null ");
+            LogUtil.e(TAG,  "set annotation local status failed, currentConference is null ");
             return;
         }
         currentConference.setAnnotationLocalStatus(enable);
@@ -1315,7 +1406,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void setAnnotationPen(int penColor, int penWidth) {
         if (null == currentConference)
         {
-            Log.e(TAG,  "set annotation pen failed, currentConference is null ");
+            LogUtil.e(TAG,  "set annotation pen failed, currentConference is null ");
             return;
         }
         currentConference.setAnnotationPen(penColor, penWidth);
@@ -1330,7 +1421,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void eraseAnnotation(boolean isAll) {
         if (null == currentConference)
         {
-            Log.e(TAG,  "erase annotation failed, currentConference is null ");
+            LogUtil.e(TAG,  "erase annotation failed, currentConference is null ");
             return;
         }
         currentConference.eraseAnnotation(isAll);
@@ -1345,7 +1436,7 @@ public class MeetingMgr implements IMeetingMgr{
     public void clearAnnotation(boolean isAll) {
         if (null == currentConference)
         {
-            Log.e(TAG,  "clear annotation failed, currentConference is null ");
+            LogUtil.e(TAG,  "clear annotation failed, currentConference is null ");
             return;
         }
         currentConference.clearAnnotation(isAll);
@@ -1365,10 +1456,23 @@ public class MeetingMgr implements IMeetingMgr{
     public int setAsOwner(String attendee, TsdkConfAsActionType actionType){
         if (null == currentConference)
         {
-            Log.e(TAG,  "clear annotation failed, currentConference is null ");
+            LogUtil.e(TAG,  "clear annotation failed, currentConference is null ");
             return -1;
         }
         return currentConference.setAsOwner(attendee, actionType);
+    }
+
+    /**
+     * [en] This interface is used to get share statistic infomation
+     * [cn] 获取共享统计信息
+     */
+    public void getShareStatisticInfo(){
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "get Share Statistic Info failed, currentConference is null ");
+            return ;
+        }
+        currentConference.getShareCodecInfo();
     }
 
     /**
@@ -1404,7 +1508,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "upgrade conf failed, currentConference is null ");
+            LogUtil.e(TAG,  "upgrade conf failed, currentConference is null ");
             return null;
         }
 
@@ -1421,7 +1525,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "attach surface view failed, currentConference is null ");
+            LogUtil.e(TAG,  "attach surface view failed, currentConference is null ");
             return;
         }
         currentConference.attachSurfaceView(container, context);
@@ -1431,7 +1535,7 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            Log.e(TAG,  "send chat failed, currentConference is null ");
+            LogUtil.e(TAG,  "send chat failed, currentConference is null ");
             return;
         }
         TsdkConfChatMsgInfo chatMsgInfo = new TsdkConfChatMsgInfo();
@@ -1459,10 +1563,10 @@ public class MeetingMgr implements IMeetingMgr{
      * @param confBaseInfo
      */
     public void handleBookConfResult(TsdkCommonResult result, TsdkConfBaseInfo confBaseInfo){
-        Log.i(TAG, "onBookReservedConfResult");
+        LogUtil.i(TAG, "onBookReservedConfResult");
         if ((result == null) || (confBaseInfo == null))
         {
-            Log.e(TAG, "book conference is failed, unknown error.");
+            LogUtil.e(TAG, "book conference is failed, unknown error.");
             if (callTransferToConference){
                 Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
                 if (callSession != null)
@@ -1476,7 +1580,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         if (result.getResult() != 0)
         {
-            Log.e(TAG, "book conference is failed, return ->" + result.getResult());
+            LogUtil.e(TAG, "book conference is failed, return ->" + result.getResult());
             if (callTransferToConference){
                 Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
                 if (callSession != null)
@@ -1488,7 +1592,7 @@ public class MeetingMgr implements IMeetingMgr{
             return;
         }
 
-        Log.i(TAG, "book conference is success.");
+        LogUtil.i(TAG, "book conference is success.");
         if (callTransferToConference){
             CallMgr.getInstance().setResumeHold(true);
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CALL_TRANSFER_TO_CONFERENCE, result.getResult());
@@ -1506,16 +1610,16 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleQueryConfListResult(TsdkCommonResult result, TsdkConfListInfo confList){
 
-        Log.i(TAG, "onGetConfListResult");
+        LogUtil.i(TAG, "onGetConfListResult");
         if (result == null)
         {
-            Log.e(TAG, "get conference list is failed, unknown error.");
+            LogUtil.e(TAG, "get conference list is failed, unknown error.");
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.QUERY_CONF_LIST_FAILED, -1);
             return;
         }
         else if (result.getResult() != 0)
         {
-            Log.e(TAG, "get conference list is failed, return ->" + result.getReasonDescription());
+            LogUtil.e(TAG, "get conference list is failed, return ->" + result.getReasonDescription());
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.QUERY_CONF_LIST_FAILED, result.getResult());
             return;
         }
@@ -1556,17 +1660,17 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleQueryConfDetailResult(TsdkCommonResult result, TsdkConfDetailInfo tsdkConfDetailInfo){
 
-        Log.i(TAG, "onGetConfInfoResult");
+        LogUtil.i(TAG, "onGetConfInfoResult");
         if ((result == null) || (tsdkConfDetailInfo == null))
         {
-            Log.e(TAG, "get conference detail is failed, unknown error.");
+            LogUtil.e(TAG, "get conference detail is failed, unknown error.");
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.QUERY_CONF_DETAIL_FAILED, -1);
             return;
         }
 
         if (result.getResult() != 0)
         {
-            Log.e(TAG, "get conference detail is failed, return ->" + result.getResult());
+            LogUtil.e(TAG, "get conference detail is failed, return ->" + result.getResult());
             mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.QUERY_CONF_DETAIL_FAILED, result.getResult());
             return;
         }
@@ -1602,7 +1706,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void  handleJoinConfResult(TsdkConference tsdkConference, TsdkCommonResult commonResult, TsdkJoinConfIndInfo tsdkJoinConfIndInfo){
 
-        Log.i(TAG, "handleJoinConfResult");
+        LogUtil.i(TAG, "handleJoinConfResult");
         if ((tsdkConference == null) || (commonResult == null)) {
             return;
         }
@@ -1629,18 +1733,25 @@ public class MeetingMgr implements IMeetingMgr{
                 }
 
                 if (tsdkCall.getCallInfo().getIsVideoCall() == 1) {
-                    VideoMgr.getInstance().initVideoWindow(tsdkCall.getCallInfo().getCallId());
+                    if (tsdkJoinConfIndInfo.getIsSvcConf() == 0) {
+                        /* AVC Conf */
+                        VideoMgr.getInstance().initVideoWindow(tsdkCall.getCallInfo().getCallId());
+                    } else {
+                        /* SVC Conf */
+                        VideoMgr.getInstance().initSvcVideoWindow(tsdkCall.getCallInfo().getCallId(), tsdkJoinConfIndInfo.getSvcLabel());
+                        this.svcConfInfo.setSvcLabel(tsdkJoinConfIndInfo.getSvcLabel());
+                    }
                 }
             }
 
             if (ConfConvertUtil.convertConfMediaType(tsdkJoinConfIndInfo.getConfMediaType()) == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE
                     || ConfConvertUtil.convertConfMediaType(tsdkJoinConfIndInfo.getConfMediaType()) == TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA)
             {
-                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VOICE_CONF_SUCCESS, tsdkConference.getHandle() + "");
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VOICE_CONF_SUCCESS, tsdkConference);
             }
             else
             {
-                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VIDEO_CONF_SUCCESS, tsdkConference.getHandle() + "");
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.JOIN_VIDEO_CONF_SUCCESS, tsdkConference);
             }
         }
         else
@@ -1665,8 +1776,12 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void  handleGetDataConfParamsResult(TsdkConference tsdkConference, TsdkCommonResult commonResult){
 
-        Log.i(TAG, "handleJoinConfResult");
-        if ((tsdkConference == null) || (commonResult == null)) {
+        LogUtil.i(TAG, "handleJoinConfResult");
+        if (tsdkConference == null) {
+            LogUtil.e(TAG, "handleJoinConfResult tsdkConference is null");
+            return;
+        }else if(commonResult == null){
+            LogUtil.e(TAG, "handleJoinConfResult commonResult is null");
             return;
         }
 
@@ -1683,7 +1798,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void  handleJoinDataConfResult(TsdkConference tsdkConference, TsdkCommonResult commonResult){
 
-        Log.i(TAG, "handleJoinDataConfResult");
+        LogUtil.i(TAG, "handleJoinDataConfResult");
         if ((tsdkConference == null) || (commonResult == null)) {
             return;
         }
@@ -1705,7 +1820,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleConfctrlOperationResult(TsdkConference conference, TsdkConfOperationResult result)
     {
-        Log.i(TAG, "handleConfctrlOperationResult");
+        LogUtil.i(TAG, "handleConfctrlOperationResult");
 
         if (null == conference || null == result)
         {
@@ -1716,7 +1831,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         if (ret != 0)
         {
-            Log.e(TAG, "conf ctrl operation failed: " + result.getDescription());
+            LogUtil.e(TAG, "conf ctrl operation failed: " + result.getDescription());
         }
         switch (TsdkConfOperationType.enumOf(result.getOperationType()))
         {
@@ -1813,8 +1928,9 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleConfEndInd(TsdkConference conference)
     {
-        Log.i(TAG, "handleConfEndInd" + conference.getHandle());
+        LogUtil.i(TAG, "handleConfEndInd" + conference.getHandle());
         currentConference = null;
+
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LEAVE_CONF, conference.getHandle());
     }
 
@@ -1825,7 +1941,7 @@ public class MeetingMgr implements IMeetingMgr{
      * @param conference
      */
     public void handleInfoAndStatusUpdate(TsdkConference conference){
-        Log.i(TAG, "onConfStatusUpdateInd");
+        LogUtil.i(TAG, "onConfStatusUpdateInd");
         if ((currentConference == null) || (conference == null))
         {
             return;
@@ -1847,7 +1963,7 @@ public class MeetingMgr implements IMeetingMgr{
      * @param speakerList
      */
     public void handleSpeakerInd(TsdkConfSpeakerInfo speakerList) {
-        Log.i(TAG, "onEvtSpeakerInd");
+        LogUtil.i(TAG, "onEvtSpeakerInd");
 
         if (null == speakerList)
         {
@@ -1868,7 +1984,7 @@ public class MeetingMgr implements IMeetingMgr{
      * @param conference
      */
     public void handleConfIncomingInd(TsdkConference conference){
-        Log.i(TAG, "handleConfIncomingInd");
+        LogUtil.i(TAG, "handleConfIncomingInd");
 
         if (null == conference)
         {
@@ -1898,7 +2014,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleAsStateChange(TsdkConfAsStateInfo asStateInfo)
     {
-        Log.i(TAG, "handleAsStateChange");
+        LogUtil.i(TAG, "handleAsStateChange");
 
         switch (TsdkConfShareState.enumOf(asStateInfo.getState()))
         {
@@ -1930,7 +2046,7 @@ public class MeetingMgr implements IMeetingMgr{
      *                          [cn]共享者
      */
     public void handleAsOwnerChange(TsdkConfAsActionType actionType, TsdkAttendee owner){
-        Log.i(TAG, "handleAsOwnerChange");
+        LogUtil.i(TAG, "handleAsOwnerChange");
         //数据会议与会者上报较慢时会导致self为null，这里再设置一次，解决悬浮框移除不掉的异常。
 //        for (Member member : getCurrentConferenceMemberList())
 //        {
@@ -1965,7 +2081,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleDsDocNew(TsdkDocBaseInfo docBaseInfo)
     {
-        Log.i(TAG, "handleDsDocNew");
+        LogUtil.i(TAG, "handleDsDocNew");
 
         if (null == docBaseInfo)
         {
@@ -1984,7 +2100,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleDsDocDel(TsdkDocShareDelDocInfo docShareDelDocInfo)
     {
-        Log.i(TAG, "handleDsDocDel");
+        LogUtil.i(TAG, "handleDsDocDel");
 
         if (null == docShareDelDocInfo)
         {
@@ -2014,7 +2130,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleWbDocNew(TsdkDocBaseInfo docBaseInfo)
     {
-        Log.i(TAG, "handleWbDocNew");
+        LogUtil.i(TAG, "handleWbDocNew");
 
         if (null == docBaseInfo)
         {
@@ -2033,7 +2149,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleWbDocDel(TsdkWbDelDocInfo wbDelDocInfo)
     {
-        Log.i(TAG, "handleWbDocDel");
+        LogUtil.i(TAG, "handleWbDocDel");
 
         if (null == wbDelDocInfo)
         {
@@ -2067,7 +2183,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleRecvChatMsg(TsdkConfChatMsgInfo confChatMsgInfo)
     {
-        Log.i(TAG, "handleRecvChatMsg");
+        LogUtil.i(TAG, "handleRecvChatMsg");
 
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.CONF_CHAT_MSG, confChatMsgInfo);
     }
@@ -2083,7 +2199,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleGetTempUserResult(int userId, TsdkCommonResult result)
     {
-        Log.i(TAG, "handleGetTempUserResult");
+        LogUtil.i(TAG, "handleGetTempUserResult");
 
         if(result == null){
             return;
@@ -2092,6 +2208,27 @@ public class MeetingMgr implements IMeetingMgr{
             setGetTempUserSuccess(true);
         }
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.GET_TEMP_USER_RESULT, result);
+    }
+
+    /**
+     * SVC(多流)会议下正在观看画面信息通知。
+     * @param conference
+     * @param svWatchInfo
+     */
+    public void handleSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svWatchInfo){
+
+        //TODO 此处上报的为选看画面信息，主要是为了根据对应的label值来匹配被选看成员的信息
+    }
+
+    /**
+     * 共享编解码信息上报，包括编解码，帧率，码率等信息（安卓中PktLoss，Rtt，Jitter信息meeting侧未上报，属于未启用）
+     * @param conference        [en]
+     *                          [cn]会议信息
+     * @param statisticInfo     [en]
+     *                          [cn]统计信息
+     */
+    public void handleShareStatisticInfo(TsdkConference conference, TsdkShareStatisticInfo statisticInfo){
+        this.currentShareStatisticInfo = statisticInfo;
     }
 
 }

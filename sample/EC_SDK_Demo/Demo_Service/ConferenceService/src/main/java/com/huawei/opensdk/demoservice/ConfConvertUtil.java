@@ -238,6 +238,7 @@ public class ConfConvertUtil {
 
         member.setInDataConference(attendeeStatusInfo.getIsJoinDataconf() == 1 ? true: false);
         member.setPresent(attendeeStatusInfo.getIsPresent() == 1 ? true :false);
+        member.setVideo(attendeeStatusInfo.getIsVideo() == 1 ? true : false);
 
         return member;
     }
@@ -251,6 +252,10 @@ public class ConfConvertUtil {
     public static List<Member> convertAttendeeInfoList(List<TsdkAttendeeBaseInfo> attendeeInfoList)
     {
         List<Member> memberList = new ArrayList<>();
+        if (null == attendeeInfoList)
+        {
+            return memberList;
+        }
         for (TsdkAttendeeBaseInfo attendeeInfo : attendeeInfoList)
         {
             Member member = new Member();

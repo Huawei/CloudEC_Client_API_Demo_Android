@@ -123,11 +123,11 @@ public class CtdMgr implements ICtdMgr {
         this.callId = callId;
         if (result.getResult() == 0)
         {
-            Log.e(TAG, "Start ctd call success.");
+            LogUtil.e(TAG, "Start ctd call success.");
         }
         else
         {
-            Log.e(TAG, "Start ctd call failed, result-->" + result.getResult());
+            LogUtil.e(TAG, "Start ctd call failed, result-->" + result.getResult());
         }
         this.ctdNotification.onStartCtdCallResult((int)result.getResult(), result.getReasonDescription());
     }

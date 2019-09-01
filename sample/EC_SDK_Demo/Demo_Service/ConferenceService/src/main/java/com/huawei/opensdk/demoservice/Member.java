@@ -111,6 +111,11 @@ public class Member {
      */
     private List<CameraEntity> cameraEntityList = new ArrayList<>();
 
+    /**
+     * 是否音频入会
+     */
+    private boolean isVideo;
+
     public Member()
     {
 
@@ -318,6 +323,13 @@ public class Member {
         this.participantId = participantId;
     }
 
+    public boolean isVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(boolean video) {
+        isVideo = video;
+    }
 
     public void update(TsdkAttendee attendeeInfo)
     {
@@ -345,6 +357,7 @@ public class Member {
         setSelf((attendeeStatusInfo.getIsSelf()==1));
         setInDataConference(attendeeStatusInfo.getIsJoinDataconf() == 1 ? true: false);
         setPresent(attendeeStatusInfo.getIsPresent() == 1 ? true :false);
+        setVideo(attendeeStatusInfo.getIsVideo() == 1 ? true : false);
 
     }
 

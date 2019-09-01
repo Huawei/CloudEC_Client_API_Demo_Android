@@ -195,6 +195,7 @@ public class ServiceMgr
         appInfoParam.setSupportEnterpriseAddressBook(this.isSupportAddressbook?1:0);
         appInfoParam.setSupportIm(this.isSupportIM?1:0);
         appInfoParam.setSupportRichMediaMessage(0);
+        appInfoParam.setSupportSvcConfCaps(1);
 
         ret = tsdkManager.init(appInfoParam);
         if (ret != 0)

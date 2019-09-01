@@ -19,6 +19,16 @@
                  android:background="@drawable/date_items_bg"
                  android:visibility="visible"/>
 
+    <ImageView android:id="@+id/signal_view"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="50dip"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/signal_4"
+        android:visibility="visible"/>
+
     <FrameLayout
         android:id="@+id/hide_video_view"
         android:layout_width="1dp"

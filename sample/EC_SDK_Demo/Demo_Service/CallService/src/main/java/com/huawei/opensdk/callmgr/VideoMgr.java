@@ -10,6 +10,7 @@ import android.view.SurfaceView;
 
 import com.huawei.ecterminalsdk.base.TsdkDeviceInfo;
 import com.huawei.ecterminalsdk.base.TsdkDeviceType;
+import com.huawei.ecterminalsdk.base.TsdkSvcVideoWndInfo;
 import com.huawei.ecterminalsdk.base.TsdkVideoCtrlInfo;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrient;
 import com.huawei.ecterminalsdk.base.TsdkVideoRenderInfo;
@@ -47,6 +48,7 @@ public class VideoMgr {
 
     private boolean isInitializedVideoWindows;
 
+    private List<Long> currentSvcLabel;
 
     /**
      * 本地隐藏窗口（只能创建一个）
@@ -59,7 +61,13 @@ public class VideoMgr {
     /**
      * 远端窗口（可以创建多个）
      */
-    private SurfaceView remoteVideoView;
+    private SurfaceView remoteBigVideoView;
+
+    private SurfaceView remoteSmallVideoView_01;
+
+    private SurfaceView remoteSmallVideoView_02;
+
+    private SurfaceView remoteSmallVideoView_03;
     /**
      * 辅流窗口（只能创建一个，创建方法和远端窗口一致）
      */
@@ -97,22 +105,46 @@ public class VideoMgr {
      * 创建视频Renderer
      * Create video renderer
      */
-    private void createVideoRenderer()
+    private void createVideoRenderer(boolean isSvcConf)
     {
         LogUtil.i(TAG, "createVideoRenderer() enter");
 
         // 创建本地视频窗口（本地窗口只能创建一个，底层可以直接获取到这个窗口）
         // 必须存在，否则远端视频无法显示
-        localHideView = ViERenderer.createLocalRenderer(context);
-        localHideView.setZOrderOnTop(false);
+        if (localHideView == null) {
+            localHideView = ViERenderer.createLocalRenderer(context);
+            localHideView.setZOrderOnTop(false);
+        }
 
-        // 本端小窗口显示
-        localVideoView = ViERenderer.createRenderer(context,true);
-        localVideoView.setZOrderMediaOverlay(true);
+        // 本端窗口显示
+        if (localVideoView == null) {
+            localVideoView = ViERenderer.createRenderer(context,true);
+            localVideoView.setZOrderMediaOverlay(true);
+        }
+
 
         // 创建远端视频窗口（可以创建多个）
-        remoteVideoView = ViERenderer.createRenderer(context, true);
-        remoteVideoView.setZOrderMediaOverlay(false);
+        if (remoteBigVideoView == null) {
+            remoteBigVideoView = ViERenderer.createRenderer(context, true);
+            remoteBigVideoView.setZOrderMediaOverlay(false);
+        }
+
+        if (isSvcConf) {
+            if (remoteSmallVideoView_01 == null) {
+                remoteSmallVideoView_01 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_01.setZOrderMediaOverlay(true);
+            }
+
+            if (remoteSmallVideoView_02 == null) {
+                remoteSmallVideoView_02 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_02.setZOrderMediaOverlay(true);
+            }
+
+            if (remoteSmallVideoView_03 == null) {
+                remoteSmallVideoView_03 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_03.setZOrderMediaOverlay(true);
+            }
+        }
     }
 
 
@@ -305,7 +337,7 @@ public class VideoMgr {
             public void run() {
 
                 if (isInitializedVideoWindows == false) {
-                    createVideoRenderer();
+                    createVideoRenderer(false);
                 }
                 isInitializedVideoWindows = true;
 
@@ -318,13 +350,13 @@ public class VideoMgr {
                 TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
                 localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
-                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
 
                 //设置远端视频窗口
                 TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
                 remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
-                remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteVideoView));
-                remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
+                remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteBigVideoView));
+                remoteWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
 
                 List<TsdkVideoWndInfo> list = new ArrayList<>();
                 list.add(localWndInfo);
@@ -334,6 +366,82 @@ public class VideoMgr {
                 if (tsdkCall != null) {
                     tsdkCall.setVideoWindow(list);
                 }
+            }
+        });
+
+    }
+
+    public void initSvcVideoWindow(final long callId, List<Long> svcLabel)
+    {
+        LogUtil.i(TAG, "initVideoWindow() enter" + callId);
+        currentSvcLabel = svcLabel;
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+                if (isInitializedVideoWindows == false) {
+                    createVideoRenderer(true);
+                }
+                else {
+                    LogUtil.i(TAG, "p2p to conference.");
+                    createVideoRenderer(true);
+                }
+                isInitializedVideoWindows = true;
+
+                setCurrentCallId(callId);
+
+                //设置视频窗口方向参数
+                setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+
+                TsdkCall tsdkCall = callManager.getCallByCallId(callId);
+                if (tsdkCall == null) {
+                    return;
+                }
+
+                // 设置本地视频窗口
+                TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
+                localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+                localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
+                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+
+                List<TsdkVideoWndInfo> list = new ArrayList<>();
+                list.add(localWndInfo);
+
+                tsdkCall.setVideoWindow(list);
+
+                //设置SVC远端视频窗口
+                TsdkSvcVideoWndInfo bigSvcVideoWndInfo = new TsdkSvcVideoWndInfo();
+                bigSvcVideoWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteBigVideoView));
+                bigSvcVideoWndInfo.setLabel(currentSvcLabel.get(0));
+                bigSvcVideoWndInfo.setWidth(960); // (960*540) usBandWidth[1300] (320*180) usBandWidth[195] (640*360) usBandWidth[620]
+                bigSvcVideoWndInfo.setHeight(540);
+
+                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_01 = new TsdkSvcVideoWndInfo();
+                smallSvcVideoWndInfo_01.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_01));
+                smallSvcVideoWndInfo_01.setLabel(currentSvcLabel.get(1));
+                smallSvcVideoWndInfo_01.setWidth(160); //320
+                smallSvcVideoWndInfo_01.setHeight(90);//180
+
+                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_02 = new TsdkSvcVideoWndInfo();
+                smallSvcVideoWndInfo_02.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_02));
+                smallSvcVideoWndInfo_02.setLabel(currentSvcLabel.get(2));
+                smallSvcVideoWndInfo_02.setWidth(160); //320
+                smallSvcVideoWndInfo_02.setHeight(90);//180
+
+                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_03 = new TsdkSvcVideoWndInfo();
+                smallSvcVideoWndInfo_03.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_03));
+                smallSvcVideoWndInfo_03.setLabel(currentSvcLabel.get(3));
+                smallSvcVideoWndInfo_03.setWidth(160); //320
+                smallSvcVideoWndInfo_03.setHeight(90);//180
+
+                List<TsdkSvcVideoWndInfo> svcWndInfoList = new ArrayList<>();
+                svcWndInfoList.add(bigSvcVideoWndInfo);
+                svcWndInfoList.add(smallSvcVideoWndInfo_01);
+                svcWndInfoList.add(smallSvcVideoWndInfo_02);
+                svcWndInfoList.add(smallSvcVideoWndInfo_03);
+
+                tsdkCall.setSvcVideoWindow(svcWndInfoList);
             }
         });
 
@@ -356,9 +464,24 @@ public class VideoMgr {
                 localVideoView = null;
             }
 
-            if (remoteVideoView != null) {
-                ViERenderer.setSurfaceNull(remoteVideoView);
-                remoteVideoView = null;
+            if (remoteBigVideoView != null) {
+                ViERenderer.setSurfaceNull(remoteBigVideoView);
+                remoteBigVideoView = null;
+            }
+
+            if (remoteSmallVideoView_01 != null) {
+                ViERenderer.setSurfaceNull(remoteSmallVideoView_01);
+                remoteSmallVideoView_01 = null;
+            }
+
+            if (remoteSmallVideoView_02 != null) {
+                ViERenderer.setSurfaceNull(remoteSmallVideoView_02);
+                remoteSmallVideoView_02 = null;
+            }
+
+            if (remoteSmallVideoView_03 != null) {
+                ViERenderer.setSurfaceNull(remoteSmallVideoView_03);
+                remoteSmallVideoView_03 = null;
             }
 
             if (auxDataView != null) {
@@ -399,8 +522,20 @@ public class VideoMgr {
      *
      * @return the remote call view
      */
-    public SurfaceView getRemoteVideoView() {
-        return remoteVideoView;
+    public SurfaceView getRemoteBigVideoView() {
+        return remoteBigVideoView;
+    }
+
+    public SurfaceView getRemoteSmallVideoView_01() {
+        return remoteSmallVideoView_01;
+    }
+
+    public SurfaceView getRemoteSmallVideoView_02() {
+        return remoteSmallVideoView_02;
+    }
+
+    public SurfaceView getRemoteSmallVideoView_03() {
+        return remoteSmallVideoView_03;
     }
 
 
@@ -842,7 +977,7 @@ public class VideoMgr {
                 TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
                 videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_HORIZONTAL);
-                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
 
                 tsdkCall.setVideoRender(videoRenderInfo);
             }
@@ -850,7 +985,7 @@ public class VideoMgr {
                 TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
                 videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_DEFAULE);
-                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
 
                 tsdkCall.setVideoRender(videoRenderInfo);
             }
@@ -877,9 +1012,9 @@ public class VideoMgr {
             TsdkVideoRenderInfo remoteVideoRenderInfo = new TsdkVideoRenderInfo();
 
             if (isLayoutPortrait()) {
-                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
             } else {
-                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_ZOOM);
+                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
             }
 
             remoteVideoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);

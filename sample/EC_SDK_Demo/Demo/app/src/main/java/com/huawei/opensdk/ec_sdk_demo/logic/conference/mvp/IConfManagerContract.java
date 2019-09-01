@@ -45,6 +45,13 @@ public interface IConfManagerContract
         void robShareRemoveAllScreenShareFloatWindow();
 
         void requestScreen();
+
+        void updateSignal(long signalStrength);
+
+        void refreshWatchMemberPage();
+
+        void setSmallVideoVisible(int sum);
+
     }
 
     interface ConfManagerPresenter
@@ -63,7 +70,12 @@ public interface IConfManagerContract
 
         boolean isChairMan();
 
-        void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout);
+        void setAvcVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout);
+
+        void setOnlyLocalVideoContainer(Context context, ViewGroup bigLayout, ViewGroup hideLayout);
+
+        void setSvcAllVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout,
+                                     ViewGroup twoLayout, ViewGroup threeLayout, ViewGroup fourLayout);
 
         void setAutoRotation(Object object, boolean isOpen, int orientation);
 
@@ -98,7 +110,13 @@ public interface IConfManagerContract
 
         SurfaceView getLocalVideoView();
 
-        SurfaceView getRemoteVideoView();
+        SurfaceView getRemoteBigVideoView();
+
+        SurfaceView getRemoteSmallVideoView_01();
+
+        SurfaceView getRemoteSmallVideoView_02();
+
+        SurfaceView getRemoteSmallVideoView_03();
 
         void onItemClick(int position);
 
@@ -133,6 +151,8 @@ public interface IConfManagerContract
         void confShare(Context context, Intent data);
 
         void setSelfPresenter();
+
+        List<Member> getWatchMemberList();
 
     }
 }

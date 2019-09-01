@@ -25,11 +25,11 @@ public class AnonymousPresenter{
     }
 
     public String getAnonymousAddress(){
-        return mSharedPreferences.getString(LoginConstant.ANONYMOUS_ADDRESS, LoginConstant.BLANK_STRING);
+        return mSharedPreferences.getString(LoginConstant.ANONYMOUS_ADDRESS, LoginConstant.UPORTAL_REGISTER_SERVER);
     }
 
     public String getAnonymousPort(){
-        return mSharedPreferences.getString(LoginConstant.ANONYMOUS_PORT, LoginConstant.BLANK_STRING);
+        return mSharedPreferences.getString(LoginConstant.ANONYMOUS_PORT, LoginConstant.UPORTAL_PORT);
     }
 
     public String getNickname(){

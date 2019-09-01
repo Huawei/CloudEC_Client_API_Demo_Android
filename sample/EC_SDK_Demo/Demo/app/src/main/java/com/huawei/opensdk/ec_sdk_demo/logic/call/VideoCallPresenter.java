@@ -203,7 +203,7 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
 
     @Override
     public SurfaceView getRemoteVideoView() {
-        return VideoMgr.getInstance().getRemoteVideoView();
+        return VideoMgr.getInstance().getRemoteBigVideoView();
     }
 
     @Override

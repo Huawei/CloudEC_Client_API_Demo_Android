@@ -390,4 +390,35 @@
             android:background="#ffffff"/>
     </LinearLayout>
 
+    <!--隐藏小窗口-->
+    <LinearLayout android:id="@+id/hide_remote_video_ll"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/hide_video_iv"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="12dp"
+                android:src="@drawable/conf_video_hide"/>
+
+            <TextView
+                android:id="@+id/status_video_window"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hide_video"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ffffff"/>
+    </LinearLayout>
+
 </LinearLayout>

@@ -26,7 +26,9 @@ import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.IVideoCallContract;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.VideoCallPresenter;
+import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInfomationActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 
@@ -44,6 +46,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private FrameLayout mVideoHangupArea;
     private TextView mShowTimeView;
     private TextView mCallNameTv;
+    private ImageView mSignalView;
     private FrameLayout mHideLocalBtn;
     private FrameLayout mShowLocalBtn;
     private ImageView mCameraStatusImage;
@@ -68,7 +71,8 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
             CustomBroadcastConstants.ADD_LOCAL_VIEW,
             CustomBroadcastConstants.DEL_LOCAL_VIEW,
             CustomBroadcastConstants.CONF_CALL_CONNECTED,
-            CustomBroadcastConstants.ACTION_CALL_END_FAILED};
+            CustomBroadcastConstants.ACTION_CALL_END_FAILED,
+            CustomBroadcastConstants.STATISTIC_LOCAL_QOS};
 
     private static final int NOT_ALPHA = 255;
     private static final int HALF_ALPHA = 127;
@@ -124,6 +128,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         mVideoSpeakerArea = (FrameLayout) findViewById(R.id.video_speaker_area);
         mShowTimeView = (TextView) findViewById(R.id.call_time);
         mCallNameTv = (TextView) findViewById(R.id.call_name);
+        mSignalView = (ImageView) findViewById(R.id.signal_view);
         mHideLocalBtn = (FrameLayout) findViewById(R.id.local_video_hide_btn);
         mShowLocalBtn = (FrameLayout) findViewById(R.id.local_video_show_btn);
         mMediaMoreBtn = (ImageView) findViewById(R.id.media_btn_more);
@@ -146,6 +151,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         mVideoSpeakerArea.setOnClickListener(this);
         mPlateBtn.setOnClickListener(this);
         mCloseArea.setOnClickListener(this);
+        mSignalView.setOnClickListener(this);
 
         mLocalView.setVisibility(View.VISIBLE);
         mPlateControl = new SecondDialPlateControl(mPlateArea, this.mCallID);
@@ -188,6 +194,27 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                     @Override
                     public void run() {
                         finish();
+                    }
+                });
+                break;
+
+            case CustomBroadcastConstants.STATISTIC_LOCAL_QOS:
+                final long signalStrength = (long)obj;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(signalStrength==1){
+                            mSignalView.setBackground(getDrawable(R.drawable.signal_1));
+                        }
+                        if(signalStrength==2){
+                            mSignalView.setBackground(getDrawable(R.drawable.signal_2));
+                        }
+                        if(signalStrength==3){
+                            mSignalView.setBackground(getDrawable(R.drawable.signal_3));
+                        }
+                        if(signalStrength==4 || signalStrength==5){
+                            mSignalView.setBackground(getDrawable(R.drawable.signal_4));
+                        }
                     }
                 });
                 break;
@@ -356,6 +383,14 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 break;
             case R.id.hide_dial_btn:
                 mPlateControl.hideDialPlate();
+                break;
+            case R.id.signal_view:
+                
+                Intent signalIntent = new Intent(VideoActivity.this, SignalInfomationActivity.class);
+                signalIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                signalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
+                signalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
+                startActivity(signalIntent);
                 break;
             default:
                 break;

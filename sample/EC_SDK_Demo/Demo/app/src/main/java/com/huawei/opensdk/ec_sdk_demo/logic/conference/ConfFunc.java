@@ -7,6 +7,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.widget.Toast;
 
+import com.huawei.ecterminalsdk.models.call.TsdkCall;
+import com.huawei.ecterminalsdk.models.conference.TsdkConference;
+import com.huawei.opensdk.callmgr.CallInfo;
+import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
@@ -66,26 +70,35 @@ public class ConfFunc implements IConfNotification
                     break;
 
                 case JOIN_VOICE_CONF_SUCCESS:
-                    if (msg.obj instanceof String)
+                    if (msg.obj instanceof TsdkConference)
                     {
-                        String confID = (String)msg.obj;
-//                        Intent intent = new Intent(IntentConstant.CONF_MEMBER_LIST_ACTIVITY_ACTION);
+                        String confID = ((TsdkConference) msg.obj).getHandle()+"";
+                        TsdkCall voiceCall = ((TsdkConference) msg.obj).getCall();
+                        CallInfo voiceCallInfo = CallMgr.getInstance().getCallInfo(voiceCall);
+
                         Intent intent = new Intent(IntentConstant.CONF_MANAGER_ACTIVITY_ACTION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(UIConstants.CONF_ID, confID);
+                        intent.putExtra(UIConstants.IS_SVC_VIDEO_CONF, false);
                         intent.putExtra(UIConstants.IS_VIDEO_CONF, false);
+                        intent.putExtra(UIConstants.CALL_INFO, voiceCallInfo);
                         ActivityUtil.startActivity(LocContext.getContext(), intent);
                     }
                     break;
 
                 case JOIN_VIDEO_CONF_SUCCESS:
-                    if (msg.obj instanceof String)
+                    if (msg.obj instanceof TsdkConference)
                     {
-                        String confID = (String)msg.obj;
+                        String confID = ((TsdkConference) msg.obj).getHandle()+"";
+                        TsdkCall voiceCall = ((TsdkConference) msg.obj).getCall();
+                        CallInfo videoCallInfo = CallMgr.getInstance().getCallInfo(voiceCall);
+
                         Intent intent = new Intent(IntentConstant.CONF_MANAGER_ACTIVITY_ACTION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(UIConstants.CONF_ID, confID);
+                        intent.putExtra(UIConstants.IS_SVC_VIDEO_CONF, ((TsdkConference) msg.obj).isSvcConf());
                         intent.putExtra(UIConstants.IS_VIDEO_CONF, true);
+                        intent.putExtra(UIConstants.CALL_INFO, videoCallInfo);
                         ActivityUtil.startActivity(LocContext.getContext(), intent);
                     }
                     break;

@@ -47,6 +47,7 @@ public interface CustomBroadcastConstants
     String WILL_TIMEOUT = "com.huawei.opensdk.conf.willtimeout";
     String POSTPONE_CONF_RESULT = "com.huawei.opensdk.conf.postponeconfresult";
     String SPEAKER_LIST_IND = "com.huawei.opensdk.conf.speakerlistind";
+    String STATISTIC_LOCAL_QOS = "com.huawei.opensdk.conf.statisticlocalqos";
 
     String SET_CONF_MODE_RESULT = "com.huawei.opensdk.conf.setconfmoderesult";
     String HOLD_CALL_RESULT = "com.huawei.opensdk.conf.holdcallresult";

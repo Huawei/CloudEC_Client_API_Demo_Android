@@ -22,6 +22,7 @@ import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ConfManagerPresenter extends ConfManagerBasePresenter
@@ -39,7 +40,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             switch (msg.what)
             {
                 case ADD_LOCAL_VIEW:
-                    //setVideoContainer(false);
+                    //setSvcAllVideoContainer(false);
                     getView().updateLocalVideo();
                     break;
 
@@ -77,7 +78,8 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.RELEASE_CHAIRMAN_RESULT,
                 CustomBroadcastConstants.SPEAKER_LIST_IND,
                 CustomBroadcastConstants.GET_CONF_END,
-                CustomBroadcastConstants.SCREEN_SHARE_STATE
+                CustomBroadcastConstants.SCREEN_SHARE_STATE,
+                CustomBroadcastConstants.STATISTIC_LOCAL_QOS
         };
     }
 
@@ -100,6 +102,11 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             case CustomBroadcastConstants.DEL_LOCAL_VIEW:
                 break;
 
+            case CustomBroadcastConstants.STATISTIC_LOCAL_QOS:
+                long signalStrength = (long) obj;
+                getView().updateSignal(signalStrength);
+                break;
+
             default:
                 break;
         }
@@ -120,16 +127,59 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     }
 
     @Override
-    public void setVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout)
+    public void setAvcVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout)
     {
         //TODO
         //VideoDeviceManager.getInstance().addRenderToContain((FrameLayout) smallLayout, (FrameLayout) bigLayout);
-        if (bigLayout != null) {
-            addSurfaceView(bigLayout, getRemoteVideoView());
-        }
-
         if (smallLayout != null) {
             addSurfaceView(smallLayout, getLocalVideoView());
+        }
+
+        if (bigLayout != null) {
+            addSurfaceView(bigLayout, getRemoteBigVideoView());
+        }
+
+        if (hideLayout != null) {
+            addSurfaceView(hideLayout, getHideVideoView());
+        }
+    }
+
+    @Override
+    public void setOnlyLocalVideoContainer(Context context, ViewGroup bigLayout, ViewGroup hideLayout)
+    {
+        if (bigLayout != null) {
+            addSurfaceView(bigLayout, getLocalVideoView());
+        }
+
+        if (hideLayout != null) {
+            addSurfaceView(hideLayout, getHideVideoView());
+        }
+    }
+
+    @Override
+    public void setSvcAllVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout,
+                                        ViewGroup twoLayout, ViewGroup threeLayout, ViewGroup fourLayout)
+    {
+        //TODO
+        //VideoDeviceManager.getInstance().addRenderToContain((FrameLayout) smallLayout, (FrameLayout) bigLayout);
+        if (smallLayout != null) {
+            addSurfaceView(smallLayout, getLocalVideoView());
+        }
+
+        if (bigLayout != null) {
+            addSurfaceView(bigLayout, getRemoteBigVideoView());
+        }
+
+        if (twoLayout != null) {
+            addSurfaceView(twoLayout, getRemoteSmallVideoView_01());
+        }
+
+        if (threeLayout != null) {
+            addSurfaceView(threeLayout, getRemoteSmallVideoView_02());
+        }
+
+        if (fourLayout != null) {
+            addSurfaceView(fourLayout, getRemoteSmallVideoView_03());
         }
 
         if (hideLayout != null) {
@@ -221,9 +271,24 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     }
 
     @Override
-    public SurfaceView getRemoteVideoView()
+    public SurfaceView getRemoteBigVideoView()
     {
-        return VideoMgr.getInstance().getRemoteVideoView();
+        return VideoMgr.getInstance().getRemoteBigVideoView();
+    }
+
+    @Override
+    public SurfaceView getRemoteSmallVideoView_01() {
+        return VideoMgr.getInstance().getRemoteSmallVideoView_01();
+    }
+
+    @Override
+    public SurfaceView getRemoteSmallVideoView_02() {
+        return VideoMgr.getInstance().getRemoteSmallVideoView_02();
+    }
+
+    @Override
+    public SurfaceView getRemoteSmallVideoView_03() {
+        return VideoMgr.getInstance().getRemoteSmallVideoView_03();
     }
 
     @Override
@@ -415,6 +480,36 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
         {
             getView().showCustomToast(R.string.screen_share_fail);
         }
+    }
+
+    @Override
+    public List<Member> getWatchMemberList() {
+        List<Member> watchMemberList = new ArrayList<>();
+        List<Member> watchMembers = MeetingMgr.getInstance().getCurrentConferenceMemberList();
+        if (null == watchMembers || watchMembers.size() <= 0)
+        {
+            return null;
+        }
+        for (Member watchMember : watchMembers)
+        {
+            if (ConfConstant.ParticipantStatus.LEAVED == watchMember.getStatus()
+                    || !watchMember.isVideo() || watchMember.isSelf())
+            {
+                continue;
+            }
+            watchMemberList.add(watchMember);
+        }
+//        Iterator<Member> memberIterator = watchMembers.iterator();
+//        while (memberIterator.hasNext())
+//        {
+//            Member watchMember = memberIterator.next();
+//            if (ConfConstant.ParticipantStatus.LEAVED == watchMember.getStatus()
+//                    || !watchMember.isVideo() || watchMember.isSelf())
+//            {
+//                memberIterator.remove();
+//            }
+//        }
+        return watchMemberList;
     }
 
     private Member getSelf()

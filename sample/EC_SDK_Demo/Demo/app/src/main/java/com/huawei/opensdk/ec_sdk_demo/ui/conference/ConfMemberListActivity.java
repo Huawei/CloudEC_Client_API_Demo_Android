@@ -222,6 +222,7 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         LinearLayout requestChairManLayout = (LinearLayout) popupView.findViewById(R.id.request_chairman_ll);
         LinearLayout releaseChairManLayout = (LinearLayout) popupView.findViewById(R.id.release_chairman_ll);
         LinearLayout seConfModeLayout = (LinearLayout) popupView.findViewById(R.id.set_conf_mode_ll);
+        LinearLayout hideVideoLayout = (LinearLayout) popupView.findViewById(R.id.hide_remote_video_ll);
         ImageView handUpIV = (ImageView) popupView.findViewById(R.id.hand_up_iv);
         TextView handUpTV = (TextView) popupView.findViewById(R.id.hand_up_tv);
 
@@ -229,6 +230,7 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         switchCameraBtn.setVisibility(View.GONE);
         closeCameraBtn.setVisibility(View.GONE);
         seConfModeLayout.setVisibility(View.GONE);
+        hideVideoLayout.setVisibility(View.GONE);
 
         // 主席：会场静音、锁定、释放主席权限； 普通与会者：举手、申请主席
         if (mPresenter.isChairMan())

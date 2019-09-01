@@ -362,7 +362,9 @@ public class CallFunc implements ICallNotification, ICtdNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_END_FAILED, obj);
                 break;
 
-
+            case STATISTIC_LOCAL_QOS:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.STATISTIC_LOCAL_QOS, obj);
+                break;
             default:
                 break;
         }

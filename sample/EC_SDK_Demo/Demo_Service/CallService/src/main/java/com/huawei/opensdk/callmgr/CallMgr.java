@@ -1,8 +1,8 @@
 package com.huawei.opensdk.callmgr;
 
 import android.text.TextUtils;
-import android.util.Log;
 
+import com.huawei.ecterminalsdk.base.TsdkCallStatisticInfo;
 import com.huawei.ecterminalsdk.base.TsdkMobileAuidoRoute;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
@@ -10,6 +10,7 @@ import com.huawei.ecterminalsdk.base.TsdkVideoViewRefreshEvent;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewType;
 import com.huawei.ecterminalsdk.models.TsdkManager;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
+import com.huawei.opensdk.commonservice.util.LogUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +63,8 @@ public class CallMgr implements ICallMgr
      */
     private long originalCallId = 0;
 
+    private TsdkCallStatisticInfo currentCallStatisticInfo = new TsdkCallStatisticInfo();
+
     private CallMgr()
     {
     }
@@ -85,6 +88,10 @@ public class CallMgr implements ICallMgr
 
     public void setOriginal_CallId(long original_CallId) {
         this.originalCallId = original_CallId;
+    }
+
+    public TsdkCallStatisticInfo getCurrentCallStatisticInfo() {
+        return currentCallStatisticInfo;
     }
 
     /**
@@ -190,12 +197,12 @@ public class CallMgr implements ICallMgr
     {
         //获取移动音频路由设备
         int audioRoute = getCurrentAudioRoute();
-        Log.i(TAG, "audioRoute is" + audioRoute);
+        LogUtil.i(TAG, "audioRoute is" + audioRoute);
 
         if (audioRoute == TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_LOUDSPEAKER.getIndex())
         {
             setAudioRoute(TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_DEFAULT);
-            Log.i(TAG, "set telReceiver Success");
+            LogUtil.i(TAG, "set telReceiver Success");
             return TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_DEFAULT.getIndex();
         }
         else
@@ -207,7 +214,7 @@ public class CallMgr implements ICallMgr
             //设置扬声器输出音量大小
             //set speaker output Volume size
             int setMediaSpeakVolumeResult = TsdkManager.getInstance().getCallManager().setSpeakVolume( 60);
-            Log.i(TAG, "setMediaSpeakVolumeResult" + setMediaSpeakVolumeResult);
+            LogUtil.i(TAG, "setMediaSpeakVolumeResult" + setMediaSpeakVolumeResult);
             return TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_LOUDSPEAKER.getIndex();
         }
     }
@@ -223,7 +230,7 @@ public class CallMgr implements ICallMgr
     {
         if (null == TsdkManager.getInstance().getCallManager().getMobileAudioRoute())
         {
-            Log.e(TAG, "getMobileAudioRoute is null");
+            LogUtil.e(TAG, "getMobileAudioRoute is null");
             return -1;
         }
         return TsdkManager.getInstance().getCallManager().getMobileAudioRoute().getIndex();
@@ -274,7 +281,7 @@ public class CallMgr implements ICallMgr
     {
         if (TextUtils.isEmpty(toNumber))
         {
-            Log.e(TAG, "call number is null!");
+            LogUtil.e(TAG, "call number is null!");
             return 0;
         }
 
@@ -291,11 +298,11 @@ public class CallMgr implements ICallMgr
                 newSession.initVideoWindow();
             }
 
-            Log.i(TAG, "make call is success.");
+            LogUtil.i(TAG, "make call is success.");
             return call.getCallInfo().getCallId();
         }
 
-        Log.e(TAG, "make call is failed.");
+        LogUtil.e(TAG, "make call is failed.");
         return 0;
     }
 
@@ -342,7 +349,7 @@ public class CallMgr implements ICallMgr
         int result = tsdkCall.endCall();
         if (result != 0)
         {
-            Log.e(TAG, "endCall return failed, result = " + result);
+            LogUtil.e(TAG, "endCall return failed, result = " + result);
             return false;
         }
 
@@ -656,6 +663,24 @@ public class CallMgr implements ICallMgr
     }
 
     /**
+     * [en] This interface is used to get call statistic infomation
+     * [cn] 获取呼叫统计信息
+     *
+     * @param callID
+     */
+    public void getCallStatisticInfo(long callID){
+        TsdkCall call = TsdkManager.getInstance().getCallManager().getCallByCallId(callID);
+        if (call == null)
+        {
+            return;
+        }
+        if (call.getCallStatisticInfo() != null)
+        {
+            this.currentCallStatisticInfo = call.getCallStatisticInfo();
+        }
+    }
+
+    /**
      * This method is used to play ringing tone
      * 播放铃音
      *
@@ -670,7 +695,7 @@ public class CallMgr implements ICallMgr
         if (ringingToneHandle != -1) {
             result = TsdkManager.getInstance().getCallManager().stopPlayMedia(ringingToneHandle);
             if (result != 0) {
-                Log.e(TAG, "mediaStopplay is return failed, result = " + result);
+                LogUtil.e(TAG, "mediaStopplay is return failed, result = " + result);
             }
         }
 
@@ -682,7 +707,7 @@ public class CallMgr implements ICallMgr
         //Play the specified ringing
         ringingToneHandle = TsdkManager.getInstance().getCallManager().startPlayMedia(0, ringingFile);
         if (ringingToneHandle == -1) {
-            Log.e(TAG, "mediaStartplay is return failed.");
+            LogUtil.e(TAG, "mediaStartplay is return failed.");
         }
     }
 
@@ -695,7 +720,7 @@ public class CallMgr implements ICallMgr
         if (ringingToneHandle != -1) {
             int result = TsdkManager.getInstance().getCallManager().stopPlayMedia(ringingToneHandle);
             if (result != 0) {
-                Log.e(TAG, "mediaStopPlay is return failed, result = " + result);
+                LogUtil.e(TAG, "mediaStopPlay is return failed, result = " + result);
             }
             ringingToneHandle = -1;
         }
@@ -715,7 +740,7 @@ public class CallMgr implements ICallMgr
         if (ringBackToneHandle != -1) {
             result = TsdkManager.getInstance().getCallManager().stopPlayMedia(ringBackToneHandle);
             if (result != 0) {
-                Log.e(TAG, "mediaStopPlay is return failed, result = " + result);
+                LogUtil.e(TAG, "mediaStopPlay is return failed, result = " + result);
             }
         }
 
@@ -727,7 +752,7 @@ public class CallMgr implements ICallMgr
         //Play the specified ring tone
         ringBackToneHandle = TsdkManager.getInstance().getCallManager().startPlayMedia(0, ringingFile);
         if (ringBackToneHandle == -1) {
-            Log.e(TAG, "mediaStartPlay is return failed.");
+            LogUtil.e(TAG, "mediaStartPlay is return failed.");
         }
     }
 
@@ -740,7 +765,7 @@ public class CallMgr implements ICallMgr
         if (ringBackToneHandle != -1) {
             int result = TsdkManager.getInstance().getCallManager().stopPlayMedia(ringBackToneHandle);
             if (result != 0) {
-                Log.e(TAG, "mediaStopPlay is return failed, result = " + result);
+                LogUtil.e(TAG, "mediaStopPlay is return failed, result = " + result);
             }
             ringBackToneHandle = -1;
         }
@@ -753,7 +778,7 @@ public class CallMgr implements ICallMgr
      * @param call
      * @return
      */
-    private CallInfo getCallInfo(TsdkCall call)
+    public CallInfo getCallInfo(TsdkCall call)
     {
         String peerNumber = call.getCallInfo().getPeerNumber();
         String peerDisplayName = call.getCallInfo().getPeerDisplayName();
@@ -819,10 +844,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]是否是视频
      */
     public void handleCallComing(TsdkCall call, Boolean maybeVideoCall){
-        Log.i(TAG, "onCallComing");
+        LogUtil.i(TAG, "onCallComing");
         if (null == call)
         {
-            Log.e(TAG, "onCallComing call is null");
+            LogUtil.e(TAG, "onCallComing call is null");
             return;
         }
         Session newSession = new Session(call);
@@ -842,10 +867,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallGoing(TsdkCall call){
-        Log.i(TAG, "onCallGoing");
+        LogUtil.i(TAG, "onCallGoing");
         if (null == call)
         {
-            Log.e(TAG, "tupCall obj is null");
+            LogUtil.e(TAG, "tupCall obj is null");
             return;
         }
         CallInfo callInfo = getCallInfo(call);
@@ -860,10 +885,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallConnected(TsdkCall call){
-        Log.i(TAG, "onCallConnected");
+        LogUtil.i(TAG, "onCallConnected");
         if (null == call)
         {
-            Log.e(TAG, "call obj is null");
+            LogUtil.e(TAG, "call obj is null");
             return;
         }
 
@@ -871,7 +896,7 @@ public class CallMgr implements ICallMgr
         Session callSession = getCallSessionByCallID(call.getCallInfo().getCallId());
         if (callSession == null)
         {
-            Log.e(TAG, "call session obj is null");
+            LogUtil.e(TAG, "call session obj is null");
             return;
         }
 
@@ -895,10 +920,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallRingback(TsdkCall call){
-        Log.i(TAG, "onCallRingBack");
+        LogUtil.i(TAG, "onCallRingBack");
         if (null == call)
         {
-            Log.e(TAG, "onCallRingBack call is null");
+            LogUtil.e(TAG, "onCallRingBack call is null");
             return;
         }
             if (null != mCallNotification)
@@ -915,10 +940,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallEnded(TsdkCall call){
-        Log.i(TAG, "onCallEnded");
+        LogUtil.i(TAG, "onCallEnded");
         if (null == call)
         {
-            Log.e(TAG, "onCallEnded call is null");
+            LogUtil.e(TAG, "onCallEnded call is null");
             return;
         }
         CallInfo callInfo = getCallInfo(call);
@@ -933,16 +958,16 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallDestroy(TsdkCall call){
-        Log.i(TAG, "onCallDestroy");
+        LogUtil.i(TAG, "onCallDestroy");
         if (null == call)
         {
-            Log.e(TAG, "call obj is null");
+            LogUtil.e(TAG, "call obj is null");
             return;
         }
         Session callSession = getCallSessionByCallID(call.getCallInfo().getCallId());
         if (callSession == null)
         {
-            Log.e(TAG, "call session obj is null");
+            LogUtil.e(TAG, "call session obj is null");
             return;
         }
 
@@ -958,10 +983,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleCallRtpCreated(TsdkCall call){
-        Log.i(TAG, "onCallRTPCreated");
+        LogUtil.i(TAG, "onCallRTPCreated");
         if (null == call)
         {
-            Log.e(TAG, "tupCall obj is null");
+            LogUtil.e(TAG, "tupCall obj is null");
             return;
         }
 
@@ -980,10 +1005,10 @@ public class CallMgr implements ICallMgr
      *                          [cn]视频显示方向类型
      */
     public void handleOpenVideoReq(TsdkCall call, TsdkVideoOrientation orientType){
-        Log.i(TAG, "onCallAddVideo");
+        LogUtil.i(TAG, "onCallAddVideo");
         if (null == call)
         {
-            Log.e(TAG, "onCallAddVideo tupCall is null");
+            LogUtil.e(TAG, "onCallAddVideo tupCall is null");
             return;
         }
 
@@ -991,7 +1016,7 @@ public class CallMgr implements ICallMgr
         Session callSession = getCallSessionByCallID(call.getCallInfo().getCallId());
         if (callSession == null)
         {
-            Log.e(TAG, "call session obj is null");
+            LogUtil.e(TAG, "call session obj is null");
             return;
         }
 
@@ -1018,7 +1043,7 @@ public class CallMgr implements ICallMgr
     public void handleOpenVideoInd(TsdkCall call){
         int isVideo = call.getCallInfo().getIsVideoCall(); // 1:video, 0: audio
         long callId  = call.getCallInfo().getCallId();
-        Log.i(TAG,  "isVideo: " + isVideo + "callId: " + callId);
+        LogUtil.i(TAG,  "isVideo: " + isVideo + "callId: " + callId);
 
         Session callSession = getCallSessionByCallID(callId);
         if (callSession == null)
@@ -1026,7 +1051,7 @@ public class CallMgr implements ICallMgr
             return;
         }
         CallInfo callInfo = getCallInfo(call);//audio --> video success
-        Log.i(TAG, "Upgrade To Video Call");
+        LogUtil.i(TAG, "Upgrade To Video Call");
         VideoMgr.getInstance().setVideoOrient(callId, CallConstant.FRONT_CAMERA);
 
         callSession.setCallStatus(CallConstant.CallStatus.VIDEO_CALLING);
@@ -1043,14 +1068,14 @@ public class CallMgr implements ICallMgr
     public void handleCloseVideoInd(TsdkCall call){
         if (null == call)
         {
-            Log.e(TAG, "onCallDelVideo tupCall is null");
+            LogUtil.e(TAG, "onCallDelVideo tupCall is null");
             return;
         }
 
         Session callSession = getCallSessionByCallID(call.getCallInfo().getCallId());
         if (callSession == null)
         {
-            Log.e(TAG, "call session obj is null");
+            LogUtil.e(TAG, "call session obj is null");
             return;
         }
 
@@ -1081,7 +1106,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]刷新信息
      */
     public void handleRefreshViewInd(TsdkCall call, TsdkVideoViewRefresh refreshInfo){
-        Log.i(TAG, "refreshLocalView");
+        LogUtil.i(TAG, "refreshLocalView");
         TsdkVideoViewType mediaType = TsdkVideoViewType.enumOf(refreshInfo.getViewType());
         TsdkVideoViewRefreshEvent eventType = TsdkVideoViewRefreshEvent.enumOf(refreshInfo.getEvent());
         long callId = call.getCallInfo().getCallId();
@@ -1119,7 +1144,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleHoldSuccess(TsdkCall call){
-        Log.i(TAG, "handleHoldSuccess");
+        LogUtil.i(TAG, "handleHoldSuccess");
         CallInfo callInfo = getCallInfo(call);
         Session callSession = getCallSessionByCallID(callInfo.getCallID());
         if (callSession.isVideoHold())
@@ -1140,7 +1165,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleHoldFailed(TsdkCall call){
-        Log.i(TAG, "handleHoldFailed");
+        LogUtil.i(TAG, "handleHoldFailed");
         CallInfo callInfo = getCallInfo(call);
         Session callSession = getCallSessionByCallID(callInfo.getCallID());
         if (callSession.isVideoHold())
@@ -1163,12 +1188,12 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleUnholdSuccess(TsdkCall call){
-        Log.i(TAG, "handleUnholdSuccess");
+        LogUtil.i(TAG, "handleUnholdSuccess");
         long callId = call.getCallInfo().getCallId();
         Session callSession = getCallSessionByCallID(callId);
         if (callSession == null)
         {
-            Log.e(TAG, "call session obj is null");
+            LogUtil.e(TAG, "call session obj is null");
             return;
         }
 
@@ -1192,7 +1217,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleUnholdFailed(TsdkCall call){
-        Log.i(TAG, "handleUnholdFailed");
+        LogUtil.i(TAG, "handleUnholdFailed");
 
         CallInfo callInfo = getCallInfo(call);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.UN_HOLD_FAILED, callInfo);
@@ -1206,7 +1231,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleDivertFailed(TsdkCall call){
-        Log.i(TAG, "handleDivertFailed");
+        LogUtil.i(TAG, "handleDivertFailed");
 
         CallInfo callInfo = getCallInfo(call);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.DIVERT_FAILED, callInfo);
@@ -1220,7 +1245,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleBldTransferSuccess(TsdkCall call){
-        Log.i(TAG, "handleBldTransferSuccess");
+        LogUtil.i(TAG, "handleBldTransferSuccess");
 
         CallInfo callInfo = getCallInfo(call);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.BLD_TRANSFER_SUCCESS, callInfo);
@@ -1234,7 +1259,7 @@ public class CallMgr implements ICallMgr
      *                          [cn]呼叫信息
      */
     public void handleBldTransferFailed(TsdkCall call){
-        Log.i(TAG, "handleBldTransferFailed");
+        LogUtil.i(TAG, "handleBldTransferFailed");
 
         CallInfo callInfo = getCallInfo(call);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.BLD_TRANSFER_FAILED, callInfo);
@@ -1257,6 +1282,14 @@ public class CallMgr implements ICallMgr
         CallInfo callInfo = getCallInfo(call);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.REMOTE_REFUSE_ADD_VIDEO_SREQUEST, callInfo);
 
+    }
+
+    /**
+     * 网络状态上报
+     */
+    public void handleUpDateCallStatisticInfo(long signalStrength, TsdkCallStatisticInfo statisticInfo){
+        this.currentCallStatisticInfo = statisticInfo;
+        mCallNotification.onCallEventNotify(CallConstant.CallEvent.STATISTIC_LOCAL_QOS, signalStrength);
     }
 
 }

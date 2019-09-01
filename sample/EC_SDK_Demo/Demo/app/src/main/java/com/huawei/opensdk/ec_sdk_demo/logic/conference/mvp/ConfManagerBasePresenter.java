@@ -34,6 +34,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         implements IConfManagerContract.ConfManagerPresenter
 {
     private String confID;
+    private int currentShowSmallWndCount = 0;
 
     protected String[] broadcastNames;
     protected LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -76,6 +77,17 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                             getView().updateUpgradeConfBtn(member.isInDataConference());
                             getView().updateAttendeeButton(member);
                         }
+                    }
+
+                    //SVC 会议时的处理
+                    getView().refreshWatchMemberPage();
+
+                    //远端小窗口+本地窗口数
+                    int num = MeetingMgr.getInstance().getCurrentWatchSamllCount() + 1;
+                    if (currentShowSmallWndCount != num)
+                    {
+                        currentShowSmallWndCount = num;
+                        getView().setSmallVideoVisible(currentShowSmallWndCount);
                     }
                     break;
 
@@ -376,7 +388,12 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
     public String getSubject()
     {
-        return MeetingMgr.getInstance().getCurrentConferenceBaseInfo().getSubject();
+        ConfBaseInfo baseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (baseInfo != null) {
+            return baseInfo.getSubject();
+        } else {
+            return null;
+        }
     }
 
     @Override
