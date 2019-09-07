@@ -22,7 +22,6 @@ import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ConfManagerPresenter extends ConfManagerBasePresenter
@@ -79,7 +78,8 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.SPEAKER_LIST_IND,
                 CustomBroadcastConstants.GET_CONF_END,
                 CustomBroadcastConstants.SCREEN_SHARE_STATE,
-                CustomBroadcastConstants.STATISTIC_LOCAL_QOS
+                CustomBroadcastConstants.STATISTIC_LOCAL_QOS,
+                CustomBroadcastConstants.GET_SVC_WATCH_INFO
         };
     }
 
@@ -160,8 +160,6 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     public void setSvcAllVideoContainer(Context context, ViewGroup smallLayout, ViewGroup bigLayout, ViewGroup hideLayout,
                                         ViewGroup twoLayout, ViewGroup threeLayout, ViewGroup fourLayout)
     {
-        //TODO
-        //VideoDeviceManager.getInstance().addRenderToContain((FrameLayout) smallLayout, (FrameLayout) bigLayout);
         if (smallLayout != null) {
             addSurfaceView(smallLayout, getLocalVideoView());
         }
@@ -252,7 +250,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             CallMgr.getInstance().closeCamera(callID);
         } else {
             CallMgr.getInstance().openCamera(callID);
-            VideoMgr.getInstance().setVideoOrient(callID, CallConstant.FRONT_CAMERA);
+            VideoMgr.getInstance().setVideoOrient(callID, mCameraIndex);
         }
 
         return true;
@@ -499,16 +497,6 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             }
             watchMemberList.add(watchMember);
         }
-//        Iterator<Member> memberIterator = watchMembers.iterator();
-//        while (memberIterator.hasNext())
-//        {
-//            Member watchMember = memberIterator.next();
-//            if (ConfConstant.ParticipantStatus.LEAVED == watchMember.getStatus()
-//                    || !watchMember.isVideo() || watchMember.isSelf())
-//            {
-//                memberIterator.remove();
-//            }
-//        }
         return watchMemberList;
     }
 

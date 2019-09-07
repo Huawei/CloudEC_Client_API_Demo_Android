@@ -10,6 +10,8 @@ import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkConfShareSubState;
+import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchAttendee;
+import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchInfo;
 import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
 import com.huawei.ecterminalsdk.base.TsdkWbDelDocInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
@@ -35,6 +37,11 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 {
     private String confID;
     private int currentShowSmallWndCount = 0;
+    private List<Long> svcLabel = MeetingMgr.getInstance().getSvcConfInfo().getSvcLabel();
+    String remoteDisplay = "";
+    String smallDisplay_01 = "";
+    String smallDisplay_02 = "";
+    String smallDisplay_03 = "";
 
     protected String[] broadcastNames;
     protected LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -83,7 +90,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     getView().refreshWatchMemberPage();
 
                     //远端小窗口+本地窗口数
-                    int num = MeetingMgr.getInstance().getCurrentWatchSamllCount() + 1;
+                    int num = MeetingMgr.getInstance().getCurrentWatchSmallCount() + 1;
                     if (currentShowSmallWndCount != num)
                     {
                         currentShowSmallWndCount = num;
@@ -355,7 +362,16 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     } if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_MODIFY){
                         getView().robShareRemoveAllScreenShareFloatWindow();
                     }
+                    break;
 
+                // 正在观看画面信息通知
+                case CustomBroadcastConstants.GET_SVC_WATCH_INFO:
+                    TsdkConfSvcWatchInfo svcWatchInfo = (TsdkConfSvcWatchInfo) obj;
+                    if (svcWatchInfo.getWatchAttendeeNum() <= 0 || svcLabel.size() <= 0)
+                    {
+                        return;
+                    }
+                    showSvcWatchInfo(svcWatchInfo.getWatchAttendees());
                     break;
 
                 default:
@@ -491,6 +507,30 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         {
             getView().showCustomToast(R.string.set_presenter_failed);
         }
+    }
+
+    @Override
+    public void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees) {
+        for (TsdkConfSvcWatchAttendee watchAttendee : watchAttendees)
+        {
+            if (svcLabel.get(0) == watchAttendee.getLabel())
+            {
+                remoteDisplay = watchAttendee.getBaseInfo().getDisplayName();
+            }
+            else if (svcLabel.get(1) == watchAttendee.getLabel())
+            {
+                smallDisplay_01 = watchAttendee.getBaseInfo().getDisplayName();
+            }
+            else if (svcLabel.get(2) == watchAttendee.getLabel())
+            {
+                smallDisplay_02 = watchAttendee.getBaseInfo().getDisplayName();
+            }
+            else if (svcLabel.get(3) == watchAttendee.getLabel())
+            {
+                smallDisplay_03 = watchAttendee.getBaseInfo().getDisplayName();
+            }
+        }
+        getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
     }
 
     /**

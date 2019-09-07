@@ -238,7 +238,6 @@ public class ConfBaseInfo {
         isMuteAll = muteAll;
     }
 
-
     public boolean isJoin() {
         return isJoin;
     }

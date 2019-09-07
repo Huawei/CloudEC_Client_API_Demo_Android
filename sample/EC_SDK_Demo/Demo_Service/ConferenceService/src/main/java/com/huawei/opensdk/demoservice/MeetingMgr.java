@@ -286,8 +286,8 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
 
-    public int getCurrentWatchSamllCount() {
-        return svcConfInfo.getCurrentWatchSamllCount();
+    public int getCurrentWatchSmallCount() {
+        return svcConfInfo.getCurrentWatchSmallCount();
     }
 
     public ConfBaseInfo getConfBaseInfo() {
@@ -342,6 +342,10 @@ public class MeetingMgr implements IMeetingMgr{
 
     public TsdkShareStatisticInfo getCurrentShareStatisticInfo() {
         return currentShareStatisticInfo;
+    }
+
+    public SvcMemberInfo getSvcConfInfo() {
+        return svcConfInfo;
     }
 
     public String[] getSpeakers() {
@@ -433,7 +437,6 @@ public class MeetingMgr implements IMeetingMgr{
             TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
             watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
             watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
-
             int ret = watchAttendee(watchAttendeesInfo);
             if (ret != 0){
                 LogUtil.e(TAG, "watchAttendee is return failed.");
@@ -2213,11 +2216,16 @@ public class MeetingMgr implements IMeetingMgr{
     /**
      * SVC(多流)会议下正在观看画面信息通知。
      * @param conference
-     * @param svWatchInfo
+     * @param svcWatchInfo
      */
-    public void handleSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svWatchInfo){
-
-        //TODO 此处上报的为选看画面信息，主要是为了根据对应的label值来匹配被选看成员的信息
+    public void handleSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svcWatchInfo)
+    {
+        LogUtil.i(TAG, "handleSvcWatchInfoInd");
+        if (null == conference || null == svcWatchInfo)
+        {
+            return;
+        }
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SVC_WATCH_INFO_IND, svcWatchInfo);
     }
 
     /**

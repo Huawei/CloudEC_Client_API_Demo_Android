@@ -602,9 +602,9 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svWatchInfo) {
+    public void onEvtSvcWatchInfoInd(TsdkConference conference, TsdkConfSvcWatchInfo svcWatchInfo) {
         LogUtil.i(TAG, "onEvtSvcWatchInfoInd notify.");
-        MeetingMgr.getInstance().handleSvcWatchInfoInd(conference, svWatchInfo);
+        MeetingMgr.getInstance().handleSvcWatchInfoInd(conference, svcWatchInfo);
     }
 
     @Override

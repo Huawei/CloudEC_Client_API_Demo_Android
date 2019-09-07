@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/conf_manager_ll">
+    android:id="@+id/conf_member_list_ll">
 
     <include layout="@layout/dial_title"/>
 

@@ -319,6 +319,10 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE, params);
                 break;
 
+            case SVC_WATCH_INFO_IND:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_SVC_WATCH_INFO, params);
+                break;
+
             default:
                 break;
         }

@@ -373,7 +373,7 @@ public class VideoMgr {
 
     public void initSvcVideoWindow(final long callId, List<Long> svcLabel)
     {
-        LogUtil.i(TAG, "initVideoWindow() enter" + callId);
+        LogUtil.i(TAG, "initSvcVideoWindow() enter" + callId);
         currentSvcLabel = svcLabel;
 
         handler.post(new Runnable() {

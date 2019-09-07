@@ -65,6 +65,7 @@ public interface CustomBroadcastConstants
     String GET_TEMP_USER_RESULT = "com.huawei.opensdk.conf.gettempuserresult";
 
     String CALL_TRANSFER_TO_CONFERENCE = "com.huawei.opensdk.conf.calltransfertoconference";
+    String GET_SVC_WATCH_INFO = "com.huawei.opensdk.conf.getsvcwatchinfo";
 
     //DataConf
     String CONF_INFO_PARAM = "com.huawei.opensdk.conf.dataconfparam";

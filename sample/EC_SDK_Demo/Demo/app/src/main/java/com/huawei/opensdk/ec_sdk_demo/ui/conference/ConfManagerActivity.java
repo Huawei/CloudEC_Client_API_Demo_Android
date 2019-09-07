@@ -79,11 +79,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private FrameLayout mConfRemoteSmallVideoLayout_03;
     private FrameLayout mHideVideoLayout;
     private ImageView mRecordPoint;
+    private TextView mConfRemoteBigVideoText;
+    private TextView mConfLocalVideoText;
+    private TextView mConfRemoteSmallVideoText_01;
+    private TextView mConfRemoteSmallVideoText_02;
+    private TextView mConfRemoteSmallVideoText_03;
 
-    private FrameLayout mHideLocalVideoBtn;
-    private FrameLayout mShowLocalVideoBtn;
-
-    private LinearLayout mConfButton;
     private ImageView mLeaveIV;
     private TextView mTitleTV;
     private ImageView mRightIV;
@@ -106,6 +107,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private ImageView mConfVideoBackIV;
     private ImageView mConfVideoForwardIV;
     private ImageView mSignalView;
+    private ImageView mAudioSignalView;
 
     private String confID;
     private CallInfo mCallInfo;
@@ -125,13 +127,14 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isStartShare = false;
     private boolean isAllowAnnot = false;
 
-    private int activeCameraTime = 0;
     private boolean isActiveOpenCamera = true;
     private boolean isActiveShare = false;
 
     private int mScreenWidth;
     private int mScreenHeight;
     private boolean isHideVideoWindow = false;
+    private boolean isOnlyLocal = true;
+    private boolean isSetOnlyLocalWind = false;
 
     private static final int START_SCREEN_SHARE_HANDLE = 666;
     private static final int STOP_SCREEN_SHARE_HANDLE = 888;
@@ -188,7 +191,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     public void initializeComposition()
     {
         setContentView(R.layout.conf_manager_activity);
-        mConfButton = (LinearLayout) findViewById(R.id.media_btn_group);
         mVideoConfLayout = (RelativeLayout) findViewById(R.id.conference_video_layout);
         mTitleLayout = (RelativeLayout) findViewById(R.id.title_layout_transparent);
         mConfMediaLayout = (LinearLayout) findViewById(R.id.media_btn_group);
@@ -199,8 +201,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mTitleTV = (TextView) findViewById(R.id.conf_title);
         mRightIV = (ImageView) findViewById(R.id.right_iv);
         mShareIV = (ImageView) findViewById(R.id.share_iv);
-
-        mSignalView = (ImageView) findViewById(R.id.signal_view);
 
         //main tab
         mConfHangup = (FrameLayout) findViewById(R.id.conf_hangup);
@@ -222,9 +222,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         {
             //video layout
             mVideoConfLayout.setVisibility(View.VISIBLE);
-            mHideLocalVideoBtn = (FrameLayout) findViewById(R.id.local_video_hide);
             mHideVideoLayout = (FrameLayout) findViewById(R.id.hide_video_view);
-            mShowLocalVideoBtn = (FrameLayout) findViewById(R.id.local_video_hide_cancel);
 
             mConfSmallVideoWndLL = (LinearLayout) findViewById(R.id.conf_video_ll);
             mConfRemoteBigVideoLayout = (FrameLayout) findViewById(R.id.conf_remote_big_video_layout);
@@ -233,35 +231,51 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             mConfRemoteSmallVideoLayout_02 = (FrameLayout) findViewById(R.id.conf_remote_small_video_layout_02);
             mConfRemoteSmallVideoLayout_03 = (FrameLayout) findViewById(R.id.conf_remote_small_video_layout_03);
 
+            mConfRemoteBigVideoText = (TextView) findViewById(R.id.conf_remote_big_video_text);
+            mConfLocalVideoText = (TextView) findViewById(R.id.conf_local_video_text);
+            mConfRemoteSmallVideoText_01 = (TextView) findViewById(R.id.conf_remote_small_video_text_01);
+            mConfRemoteSmallVideoText_02 = (TextView) findViewById(R.id.conf_remote_small_video_text_02);
+            mConfRemoteSmallVideoText_03 = (TextView) findViewById(R.id.conf_remote_small_video_text_03);
+
             mConfVideoBackIV = (ImageView) findViewById(R.id.watch_previous_page);
             mConfVideoForwardIV = (ImageView) findViewById(R.id.watch_next_page);
+
+            mSignalView = (ImageView) findViewById(R.id.signal_view);
+            mSignalView.setVisibility(View.VISIBLE);
+
 
             if (!isSvcConf)
             {
                 mConfVideoBackIV.setVisibility(View.INVISIBLE);
                 mConfVideoForwardIV.setVisibility(View.INVISIBLE);
+                mConfRemoteBigVideoText.setVisibility(View.INVISIBLE);
+                mConfLocalVideoText.setVisibility(View.INVISIBLE);
             }
 
             //title
             mRightIV.setVisibility(View.VISIBLE);
 
-            //mConfSmallVideoWndLL.setVisibility(View.GONE);
-            //mConfLocalVideoLayout.setVisibility(View.GONE);
+            mConfLocalVideoLayout.setVisibility(View.GONE);
             mConfRemoteSmallVideoLayout_01.setVisibility(View.GONE);
             mConfRemoteSmallVideoLayout_02.setVisibility(View.GONE);
             mConfRemoteSmallVideoLayout_03.setVisibility(View.GONE);
+            mConfRemoteBigVideoText.setVisibility(View.GONE);
+            mConfLocalVideoText.setVisibility(View.GONE);
+            mConfRemoteSmallVideoText_01.setVisibility(View.GONE);
+            mConfRemoteSmallVideoText_02.setVisibility(View.GONE);
+            mConfRemoteSmallVideoText_03.setVisibility(View.GONE);
 
-            mHideLocalVideoBtn.setOnClickListener(this);
-            mShowLocalVideoBtn.setOnClickListener(this);
             mRightIV.setOnClickListener(this);
-
             mConfVideoBackIV.setOnClickListener(this);
             mConfVideoForwardIV.setOnClickListener(this);
+            mSignalView.setOnClickListener(this);
         }
         else
         {
             mAudioConfAttendeeTV = (TextView) findViewById(R.id.tv_audio_conf_attendee);
             mAudioConfLayout = (RelativeLayout) findViewById(R.id.audio_conf_layout_logo);
+            mAudioSignalView = (ImageView) findViewById(R.id.audio_signal_view);
+            mAudioSignalView.setVisibility(View.VISIBLE);
 
             mAudioConfAttendeeTV.setSelected(true);
 
@@ -270,6 +284,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
             //title
             mRightIV.setVisibility(View.GONE);
+
+            mAudioSignalView.setOnClickListener(this);
         }
 
         mVideoConfLayout.setOnClickListener(this);
@@ -282,7 +298,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mConfMore.setOnClickListener(this);
         mLeaveIV.setOnClickListener(this);
         mShareIV.setOnClickListener(this);
-        mSignalView.setOnClickListener(this);
     }
 
     @Override
@@ -316,10 +331,19 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         }
 
         if (isSvcConf) {
-            mPresenter.setSvcAllVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
-                    mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
-            //mPresenter.setOnlyLocalVideoContainer(this, mConfRemoteBigVideoLayout, mHideVideoLayout);
-
+            if (isOnlyLocal)
+            {
+                mPresenter.setOnlyLocalVideoContainer(this, mConfRemoteBigVideoLayout, mHideVideoLayout);
+                mConfSmallVideoWndLL.setVisibility(View.GONE);
+                isSetOnlyLocalWind = true;
+            }
+            else
+            {
+                mPresenter.setSvcAllVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
+                        mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
+                mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
+                isSetOnlyLocalWind = false;
+            }
         } else {
             // AVC会议保持原逻辑不变
             mPresenter.setAvcVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout);
@@ -419,8 +443,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
         // 获取屏幕的宽和高
         int px = DisplayUtils.dp2px(this, 40);
-        mScreenWidth = DisplayUtils.getScreenWidthPixels(this) - px;
-        mScreenHeight = DisplayUtils.getScreenHeightPixels(this) - px;
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            mScreenWidth = DisplayUtils.getScreenHeightPixels(this) - px;
+            mScreenHeight = DisplayUtils.getScreenWidthPixels(this) - px;
+        }
+        else
+        {
+            mScreenWidth = DisplayUtils.getScreenWidthPixels(this) - px;
+            mScreenHeight = DisplayUtils.getScreenHeightPixels(this) - px;
+        }
     }
 
     @Override
@@ -501,25 +533,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             case R.id.conf_loud_speaker:
                 LogUtil.i(UIConstants.DEMO_TAG, "conference speaker!");
                 updateLoudSpeakerButton(mPresenter.switchLoudSpeaker());
-                break;
-            case R.id.local_video_hide:
-                mPresenter.changeLocalVideoVisible(false);
-
-                mHideLocalVideoBtn.setVisibility(View.GONE);
-                mShowLocalVideoBtn.setVisibility(View.VISIBLE);
-
-//                mConfSmallLayout.setVisibility(View.GONE);
-                mHideVideoLayout.setVisibility(View.VISIBLE);
-                break;
-            case R.id.local_video_hide_cancel:
-                mPresenter.changeLocalVideoVisible(true);
-
-                mHideLocalVideoBtn.setVisibility(View.VISIBLE);
-                mShowLocalVideoBtn.setVisibility(View.GONE);
-
-                mHideVideoLayout.setVisibility(View.GONE);
-//                mConfSmallLayout.setVisibility(View.VISIBLE);
-
                 break;
             case R.id.right_iv:
                 final List<Member> memberList = mPresenter.getWatchMemberList();
@@ -616,6 +629,14 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 signalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
                 signalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
                 startActivity(signalIntent);
+                break;
+            case R.id.audio_signal_view:
+                Intent audioSignalIntent = new Intent(ConfManagerActivity.this, SignalInfomationActivity.class);
+                audioSignalIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                audioSignalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
+                audioSignalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
+                startActivity(audioSignalIntent);
+                break;
             default:
                 break;
         }
@@ -660,15 +681,15 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             {
                 case R.id.switch_camera_ll:
                     LogUtil.i(UIConstants.DEMO_TAG, "conference switch camera!");
+                    if (isCameraClose)
+                    {
+                        isCameraClose = false;
+                        isActiveOpenCamera = true;
+                    }
                     mPresenter.switchCamera();
                     break;
                 case R.id.close_camera_ll:
-                    activeCameraTime++;
-                    if (activeCameraTime%2==0){
-                        isActiveOpenCamera = true;
-                    }else {
-                        isActiveOpenCamera = false;
-                    }
+                    isActiveOpenCamera = !isActiveOpenCamera;
                     isCameraClose = !isCameraClose;
                     boolean result = mPresenter.closeOrOpenLocalVideo(isCameraClose);
                     if (!result)
@@ -726,12 +747,29 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 if (isHideVideoWindow)
                 {
                     isHideVideoWindow = false;
-                    setSmallVideoVisible(MeetingMgr.getInstance().getCurrentWatchSamllCount() + 1);
+                    if (isSvcConf)
+                    {
+                        setSmallVideoVisible(MeetingMgr.getInstance().getCurrentWatchSmallCount() + 1);
+                    }
+                    else
+                    {
+                        mPresenter.changeLocalVideoVisible(true);
+                        mHideVideoLayout.setVisibility(View.GONE);
+                    }
+
                     mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    setSmallVideoVisible(0);
+                    if (isSvcConf)
+                    {
+                        setSmallVideoVisible(0);
+                    }
+                    else
+                    {
+                        mPresenter.changeLocalVideoVisible(false);
+                        mHideVideoLayout.setVisibility(View.VISIBLE);
+                    }
                     mConfSmallVideoWndLL.setVisibility(View.INVISIBLE);
                     isHideVideoWindow = true;
                 }
@@ -774,6 +812,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         {
             return;
         }
+
         runOnUiThread(new Runnable()
         {
             @Override
@@ -794,6 +833,17 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     public void refreshWatchMemberPage() {
         final int currentPage = MeetingMgr.getInstance().getCurrentWatchPage();
         final int totalPage = MeetingMgr.getInstance().getTotalWatchablePage();
+        final int watchSum = MeetingMgr.getInstance().getWatchSum();
+
+        if (0 == watchSum)
+        {
+            isOnlyLocal = true;
+        }
+        else
+        {
+            isOnlyLocal = false;
+        }
+        updateLocalVideo();
 
         if (isHideVideoWindow)
         {
@@ -851,6 +901,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         mConfRemoteSmallVideoLayout_01.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_02.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_03.setVisibility(View.GONE);
+
+                        mConfLocalVideoText.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_01.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_02.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_03.setVisibility(View.GONE);
                         break;
                     case 1:
                         mPresenter.getLocalVideoView().setVisibility(View.VISIBLE);
@@ -858,11 +913,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         mPresenter.getRemoteSmallVideoView_02().setVisibility(View.GONE);
                         mPresenter.getRemoteSmallVideoView_03().setVisibility(View.GONE);
 
-                        mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
-                        mConfLocalVideoLayout.setVisibility(View.VISIBLE);
+                        mConfSmallVideoWndLL.setVisibility(View.GONE);
+                        mConfLocalVideoLayout.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_01.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_02.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_03.setVisibility(View.GONE);
+
+                        mConfLocalVideoText.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_01.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_02.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_03.setVisibility(View.GONE);
                         break;
                     case 2:
                         mPresenter.getLocalVideoView().setVisibility(View.VISIBLE);
@@ -875,6 +935,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         mConfRemoteSmallVideoLayout_01.setVisibility(View.VISIBLE);
                         mConfRemoteSmallVideoLayout_02.setVisibility(View.GONE);
                         mConfRemoteSmallVideoLayout_03.setVisibility(View.GONE);
+
+                        mConfLocalVideoText.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_01.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_02.setVisibility(View.GONE);
+                        mConfRemoteSmallVideoText_03.setVisibility(View.GONE);
                         break;
                     case 3:
                         mPresenter.getLocalVideoView().setVisibility(View.VISIBLE);
@@ -887,6 +952,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         mConfRemoteSmallVideoLayout_01.setVisibility(View.VISIBLE);
                         mConfRemoteSmallVideoLayout_02.setVisibility(View.VISIBLE);
                         mConfRemoteSmallVideoLayout_03.setVisibility(View.GONE);
+
+                        mConfLocalVideoText.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_01.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_02.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_03.setVisibility(View.GONE);
                         break;
                     case 4:
                         mPresenter.getLocalVideoView().setVisibility(View.VISIBLE);
@@ -899,10 +969,32 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                         mConfRemoteSmallVideoLayout_01.setVisibility(View.VISIBLE);
                         mConfRemoteSmallVideoLayout_02.setVisibility(View.VISIBLE);
                         mConfRemoteSmallVideoLayout_03.setVisibility(View.VISIBLE);
+
+                        mConfLocalVideoText.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_01.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_02.setVisibility(View.VISIBLE);
+                        mConfRemoteSmallVideoText_03.setVisibility(View.VISIBLE);
                         break;
                     default:
                         break;
                 }
+            }
+        });
+    }
+
+    @Override
+    public void refreshSvcWatchDisplayName(final String remote, final String small_01, final String small_02, final String small_03) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!"".equals(remote))
+                {
+                    mConfRemoteBigVideoText.setVisibility(View.VISIBLE);
+                }
+                mConfRemoteBigVideoText.setText(remote);
+                mConfRemoteSmallVideoText_01.setText(small_01);
+                mConfRemoteSmallVideoText_02.setText(small_02);
+                mConfRemoteSmallVideoText_03.setText(small_03);
             }
         });
     }
@@ -1142,8 +1234,21 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     }
 
     @Override
-    public void updateAttendeeButton(Member member) {
-
+    public void updateAttendeeButton(final Member member) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isVideo || !isSvcConf)
+                {
+                    return;
+                }
+                if (isOnlyLocal || isHideVideoWindow)
+                {
+                    return;
+                }
+                mConfLocalVideoText.setText(getString(R.string.me) + member.getDisplayName());
+            }
+        });
     }
 
     @Override
@@ -1164,14 +1269,39 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             setConfVideoSize(true);
         }
 
-        if (isSvcConf) {
-            mPresenter.setSvcAllVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
-                    mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isSvcConf) {
 
-        } else {
-            // AVC会议保持原逻辑不变
-            mPresenter.setAvcVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout);
-        }
+                    if (isOnlyLocal)
+                    {
+                        if (isSetOnlyLocalWind)
+                        {
+                            return;
+                        }
+                        mPresenter.setOnlyLocalVideoContainer(ConfManagerActivity.this, mConfRemoteBigVideoLayout, mHideVideoLayout);
+                        mConfSmallVideoWndLL.setVisibility(View.GONE);
+                        isSetOnlyLocalWind = true;
+                    }
+                    else
+                    {
+                        if (!isSetOnlyLocalWind)
+                        {
+                            return;
+                        }
+                        mPresenter.setSvcAllVideoContainer(ConfManagerActivity.this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
+                                mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
+                        mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
+                        isSetOnlyLocalWind = false;
+                    }
+                } else {
+                    // AVC会议保持原逻辑不变
+                    mPresenter.setAvcVideoContainer(ConfManagerActivity.this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout);
+                }
+            }
+        });
+
 
     }
 
@@ -1187,26 +1317,47 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         }
     }
 
+    @TargetApi(21)
     @Override
     public void updateSignal(long signalStrength) {
         final long signal = signalStrength;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(signal==1){
-                    mSignalView.setBackground(getDrawable(R.drawable.signal_1));
+        if(isVideo){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(signal==1){
+                        mSignalView.setBackground(getDrawable(R.drawable.signal_1));
+                    }
+                    if(signal==2){
+                        mSignalView.setBackground(getDrawable(R.drawable.signal_2));
+                    }
+                    if(signal==3){
+                        mSignalView.setBackground(getDrawable(R.drawable.signal_3));
+                    }
+                    if(signal==4 || signal==5){
+                        mSignalView.setBackground(getDrawable(R.drawable.signal_4));
+                    }
                 }
-                if(signal==2){
-                    mSignalView.setBackground(getDrawable(R.drawable.signal_2));
+            });
+        }else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(signal==1){
+                        mAudioSignalView.setBackground(getDrawable(R.drawable.signal_1));
+                    }
+                    if(signal==2){
+                        mAudioSignalView.setBackground(getDrawable(R.drawable.signal_2));
+                    }
+                    if(signal==3){
+                        mAudioSignalView.setBackground(getDrawable(R.drawable.signal_3));
+                    }
+                    if(signal==4 || signal==5){
+                        mAudioSignalView.setBackground(getDrawable(R.drawable.signal_4));
+                    }
                 }
-                if(signal==3){
-                    mSignalView.setBackground(getDrawable(R.drawable.signal_3));
-                }
-                if(signal==4 || signal==5){
-                    mSignalView.setBackground(getDrawable(R.drawable.signal_4));
-                }
-            }
-        });
+            });
+        }
     }
 
     private synchronized PopupWindow generatePopupWindow(View view, int width, int height)
@@ -1403,6 +1554,15 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             }
         }
 
+        if (isOnlyLocal)
+        {
+            hideVideoLayout.setVisibility(View.GONE);
+        }
+        else
+        {
+            hideVideoLayout.setVisibility(View.VISIBLE);
+        }
+
         // 音频不显示关闭、切换摄像头、选看和广播、隐藏或者显示视频小窗口以及设置会议模式
         if (!isVideo)
         {
@@ -1437,7 +1597,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         hideVideoLayout.setOnClickListener(moreButtonListener);
 
         mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
-        mPopupWindow.showAtLocation(findViewById(R.id.media_btn_group), Gravity.RIGHT | Gravity.BOTTOM, 0, mConfButton.getHeight());
+        mPopupWindow.showAtLocation(findViewById(R.id.media_btn_group), Gravity.RIGHT | Gravity.BOTTOM, 0, mConfMediaLayout.getHeight());
     }
 
     /**

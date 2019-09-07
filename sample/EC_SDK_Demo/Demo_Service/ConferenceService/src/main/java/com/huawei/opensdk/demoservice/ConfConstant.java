@@ -122,6 +122,8 @@ public class ConfConstant {
 
         CALL_TRANSFER_TO_CONFERENCE(),//通话转会议，创会成功
 
+        SVC_WATCH_INFO_IND(),//SVC(多流)会议下正在观看画面信息
+
         BUTT()
     }
 

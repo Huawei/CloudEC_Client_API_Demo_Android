@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchAttendee;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.demoservice.ConfConstant;
 
@@ -51,6 +52,8 @@ public interface IConfManagerContract
         void refreshWatchMemberPage();
 
         void setSmallVideoVisible(int sum);
+
+        void refreshSvcWatchDisplayName(String remote, String small_01, String small_02, String small_03);
 
     }
 
@@ -153,6 +156,8 @@ public interface IConfManagerContract
         void setSelfPresenter();
 
         List<Member> getWatchMemberList();
+
+        void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees);
 
     }
 }

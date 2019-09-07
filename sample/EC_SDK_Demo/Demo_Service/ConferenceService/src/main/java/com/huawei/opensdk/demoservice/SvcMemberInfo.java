@@ -81,7 +81,7 @@ public class SvcMemberInfo {
         this.totalWatchablePage = totalWatchablePage;
     }
 
-    public int getCurrentWatchSamllCount(){
+    public int getCurrentWatchSmallCount(){
 
         if (beWatchMemberList.size() > 0) {
             return beWatchMemberList.size() - 1;

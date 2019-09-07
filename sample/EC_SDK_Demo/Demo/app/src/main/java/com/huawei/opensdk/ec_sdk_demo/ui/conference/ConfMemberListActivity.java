@@ -346,7 +346,7 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         endRecordLayout.setOnClickListener(moreButtonListener);
 
         mPopupWindow = generatePopupWindow(popupView, wrap, wrap);
-        mPopupWindow.showAtLocation(findViewById(R.id.conf_manager_ll), Gravity.RIGHT | Gravity.BOTTOM, 0, confButtonGroup.getHeight());
+        mPopupWindow.showAtLocation(findViewById(R.id.conf_member_list_ll), Gravity.RIGHT | Gravity.BOTTOM, 0, confButtonGroup.getHeight());
     }
 
     private View.OnClickListener moreButtonListener = new View.OnClickListener()

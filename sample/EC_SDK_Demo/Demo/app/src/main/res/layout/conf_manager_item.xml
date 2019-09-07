@@ -27,9 +27,10 @@
         android:orientation="vertical"
         android:gravity="center_vertical"
         android:layout_marginLeft="10dp">
-        <TextView android:layout_width="wrap_content"
+        <TextView android:layout_width="@dimen/dp160"
             android:layout_height="wrap_content"
             android:id="@+id/member_name_tv"
+            android:ellipsize="middle"
             android:text="test"
             android:layout_marginBottom="2dp"
             android:textSize="14sp"/>

@@ -73,7 +73,15 @@ public class ConfManagerAdapter extends BaseAdapter
         viewHolder = (ViewHolder) convertView.getTag();
 
         Member conferenceMemberEntity = conferenceMemberEntityList.get(position);
-        viewHolder.memberNameTV.setText(conferenceMemberEntity.getDisplayName());
+        if (conferenceMemberEntity.isSelf())
+        {
+            viewHolder.memberNameTV.setText(conferenceMemberEntity.getDisplayName()
+                    + parent.getResources().getString(R.string.me));
+        }
+        else
+        {
+            viewHolder.memberNameTV.setText(conferenceMemberEntity.getDisplayName());
+        }
         viewHolder.memberNumberTV.setText(conferenceMemberEntity.getNumber());
         boolean isChairMan = (conferenceMemberEntity.getRole() == TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN);
         viewHolder.chairmanPicIV.setVisibility(isChairMan ? View.VISIBLE : View.INVISIBLE);

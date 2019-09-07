@@ -558,7 +558,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="matchphonecontactsing">Associating phone contacts…</string>
     <string name="matchphoneisopened">Associating your phone contacts… You can check the association result later.</string>
     <string name="maxselectcontact">The number of selected participants reached the maximum.</string>
-    <string name="me">Me</string>
+    <string name="me">&#040;Me&#041;</string>
     <string name="media_home">Home</string>
     <string name="media_setting">Media Settings</string>
     <string name="media_transout">Transfer</string>

@@ -110,6 +110,10 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
     private LinearLayout shareSend;
     private LinearLayout shareReceive;
 
+    private LinearLayout videoData;
+    private LinearLayout categoryTwo;
+    private View underlinesTwo;
+
     private CallInfo mCallInfo;
 
     private TextView localSendNameOne;
@@ -138,6 +142,10 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
         audioReceiveDelay = (TextView)findViewById(R.id.audio_receive_delay);
         audioReceiveJitter = (TextView)findViewById(R.id.audio_receive_jitter);
         //视频模块
+        //音频会议隐藏此栏
+        videoData = (LinearLayout)findViewById(R.id.video_data);
+        categoryTwo = (LinearLayout)findViewById(R.id.category_two);
+        underlinesTwo = findViewById(R.id.underlines_two);
 
         localSendNameOne = (TextView)findViewById(R.id.local_send_name_one);
         localReceNameOne = (TextView)findViewById(R.id.local_rece_name_one);
@@ -229,6 +237,8 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
         shareCategory.setVisibility(View.GONE);
         shareSend.setVisibility(View.GONE);
         shareReceive.setVisibility(View.GONE);
+
+        initCallInfo();
     }
 
     @Override
@@ -263,9 +273,7 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void initCallInfo(){
         Intent intent = getIntent();
         mCallInfo = (CallInfo) intent.getSerializableExtra(UIConstants.CALL_INFO);
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
@@ -280,7 +288,6 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
         }else {
             getCallStatisticInfo();
         }
-
     }
 
     @Override
@@ -463,6 +470,13 @@ public class SignalInfomationActivity extends BaseActivity implements View.OnCli
             return;
         }
         int count = callStatisticInfo.getSvcStreamCount();
+        if(mCallInfo!=null && !mCallInfo.isVideoCall()){
+            videoData.setVisibility(View.GONE);
+            categoryTwo.setVisibility(View.GONE);
+            underlinesTwo.setVisibility(View.GONE);
+            sendTwo.setVisibility(View.GONE);
+            receiveTwo.setVisibility(View.GONE);
+        }
         if (count==1||count==0){
             sendThree.setVisibility(View.GONE);
             receiveThree.setVisibility(View.GONE);
