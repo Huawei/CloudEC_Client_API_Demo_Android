@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
     <ListView android:id="@+id/popup_conf_member_list"
-        android:background="@color/black"
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:cacheColorHint="#00000000"

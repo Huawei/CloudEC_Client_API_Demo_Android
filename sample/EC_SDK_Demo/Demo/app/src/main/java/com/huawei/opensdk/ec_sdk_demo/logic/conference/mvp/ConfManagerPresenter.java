@@ -79,7 +79,11 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.GET_CONF_END,
                 CustomBroadcastConstants.SCREEN_SHARE_STATE,
                 CustomBroadcastConstants.STATISTIC_LOCAL_QOS,
-                CustomBroadcastConstants.GET_SVC_WATCH_INFO
+                CustomBroadcastConstants.GET_SVC_WATCH_INFO,
+                CustomBroadcastConstants.RESUME_JOIN_CONF_RESULT,
+                CustomBroadcastConstants.RESUME_JOIN_CONF_IND,
+                CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND,
+                CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT
         };
     }
 
@@ -490,8 +494,17 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
         }
         for (Member watchMember : watchMembers)
         {
-            if (ConfConstant.ParticipantStatus.LEAVED == watchMember.getStatus()
-                    || !watchMember.isVideo() || watchMember.isSelf())
+            if (ConfConstant.ParticipantStatus.IN_CONF != watchMember.getStatus())
+            {
+                continue;
+            }
+
+            if (!watchMember.isVideo())
+            {
+                continue;
+            }
+
+            if (watchMember.isSelf())
             {
                 continue;
             }

@@ -2223,6 +2223,11 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="first_page">Already the first page.</string>
     <string name="show_video">Show video window</string>
     <string name="hide_video">Hide video window</string>
+    <string name="login_resume">Reconnection is in progress.</string>
+    <string name="login_resume_success">The network connection is successful.</string>
+    <string name="login_resume_failed">The network connection is failed</string>
+    <string name="connect_progress">Reconnection is in progress...</string>
+    <string name="resume_join_conf">The network is poor. Try to join the conference again</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>
@@ -2247,6 +2252,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="set_read_failed">Set message read failed</string>
     <string name="set_input_failed">Set input status failed</string>
     <string name="modify_pwd_failed">Password modification failed</string>
+    <string name="resume_join_failed">Rejoin the conference failed</string>
 
     <string name="agree_resquest_screen">Agree sharing</string>
     <string name="reject_resquest_screen">Reject sharing</string>

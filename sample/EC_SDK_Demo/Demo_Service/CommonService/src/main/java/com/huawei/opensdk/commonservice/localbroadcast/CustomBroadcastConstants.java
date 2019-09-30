@@ -31,6 +31,8 @@ public interface CustomBroadcastConstants
     String LOGIN_FAILED = "com.huawei.opensdk.login.failed";
     String LOGOUT = "com.huawei.opensdk.login.logout";
     String MODIFY_PWD_SUCCESS = "com.huawei.opensdk.modifypwd.success";
+    String LOGIN_STATUS_RESUME_IND = "com.huawei.opensdk.loginstatusresumeind";
+    String LOGIN_STATUS_RESUME_RESULT = "com.huawei.opensdk.loginstatusresumeresult";
     String MUTE_ATTENDEE_RESULT = "com.huawei.opensdk.conf.muteattendeeresult";
     String UN_MUTE_ATTENDEE_RESULT = "com.huawei.opensdk.conf.unmuteattendeeresult";
     String MUTE_CONF_RESULT = "com.huawei.opensdk.conf.muteconfresult";
@@ -66,6 +68,8 @@ public interface CustomBroadcastConstants
 
     String CALL_TRANSFER_TO_CONFERENCE = "com.huawei.opensdk.conf.calltransfertoconference";
     String GET_SVC_WATCH_INFO = "com.huawei.opensdk.conf.getsvcwatchinfo";
+    String RESUME_JOIN_CONF_RESULT = "com.huawei.opensdk.conf.resumejoinconfresult";
+    String RESUME_JOIN_CONF_IND = "com.huawei.opensdk.conf.resumejoinconfind";
 
     //DataConf
     String CONF_INFO_PARAM = "com.huawei.opensdk.conf.dataconfparam";

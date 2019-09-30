@@ -6,11 +6,14 @@ import android.os.Bundle;
 
 import com.huawei.opensdk.servicemgr.ServiceMgr;
 
+import org.json.JSONObject;
+
 public class ECApplication extends Application
 {
     private static int appCount = 0;
 
     private static Application app = null;
+    private static JSONObject lastInfo = null;
 
     @Override
     public void onCreate()
@@ -63,6 +66,14 @@ public class ECApplication extends Application
 
     public static void setApp(Application app) {
         ECApplication.app = app;
+    }
+
+    public static JSONObject getLastInfo() {
+        return lastInfo;
+    }
+
+    public static void setLastInfo(JSONObject lastInfo) {
+        ECApplication.lastInfo = lastInfo;
     }
 
     @Override

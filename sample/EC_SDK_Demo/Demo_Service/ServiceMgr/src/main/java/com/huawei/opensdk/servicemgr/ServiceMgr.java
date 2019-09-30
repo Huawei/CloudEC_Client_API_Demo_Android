@@ -333,7 +333,9 @@ public class ServiceMgr
         TsdkAvcCapsLevel enCapsLevel = transCapsLevel(encodeLevel);
         TsdkAvcCapsLevel deCapsLevel = transCapsLevel(decodeLevel);
 
-        TsdkAvcCapsLevelInfo avcCapsLevelInfo = new TsdkAvcCapsLevelInfo(enCapsLevel, deCapsLevel);
+        TsdkAvcCapsLevelInfo avcCapsLevelInfo = new TsdkAvcCapsLevelInfo();
+        avcCapsLevelInfo.setDecodeLevel(deCapsLevel);
+        avcCapsLevelInfo.setEncodeLevel(enCapsLevel);
         TsdkManager.getInstance().setConfigParam(avcCapsLevelInfo);
     }
 

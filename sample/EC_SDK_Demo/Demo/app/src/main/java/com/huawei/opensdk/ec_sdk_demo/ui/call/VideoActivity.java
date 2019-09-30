@@ -22,21 +22,25 @@ import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
+import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.IVideoCallContract;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.VideoCallPresenter;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInfomationActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
+
+import org.json.JSONObject;
 
 /**
  * This class is about video call activity.
  */
 public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallBaseView, VideoCallPresenter>
-        implements View.OnClickListener, IVideoCallContract.VideoCallBaseView, LocBroadcastReceiver
+        implements View.OnClickListener, IVideoCallContract.VideoCallBaseView, LocBroadcastReceiver, NetworkConnectivityListener.OnNetWorkListener
 {
     private static final int ADD_LOCAL_VIEW = 101;
 
@@ -80,6 +84,9 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private CallInfo mCallInfo;
     private long mCallID;
     private Object thisVideoActivity = this;
+    private boolean mIsConfCall = false;
+
+    private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
     private Handler mHandler = new Handler()
     {
@@ -204,16 +211,16 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                     @Override
                     public void run() {
                         if(signalStrength==1){
-                            mSignalView.setBackground(getDrawable(R.drawable.signal_1));
+                            mSignalView.setBackgroundResource(R.drawable.signal_1);
                         }
                         if(signalStrength==2){
-                            mSignalView.setBackground(getDrawable(R.drawable.signal_2));
+                            mSignalView.setBackgroundResource(R.drawable.signal_2);
                         }
                         if(signalStrength==3){
-                            mSignalView.setBackground(getDrawable(R.drawable.signal_3));
+                            mSignalView.setBackgroundResource(R.drawable.signal_3);
                         }
                         if(signalStrength==4 || signalStrength==5){
-                            mSignalView.setBackground(getDrawable(R.drawable.signal_4));
+                            mSignalView.setBackgroundResource(R.drawable.signal_4);
                         }
                     }
                 });
@@ -249,6 +256,8 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         super.onResume();
 
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
+        networkConnectivityListener.registerListener(this);
+        networkConnectivityListener.startListening(this);
         addSurfaceView(false);
         mPresenter.setAutoRotation(this, true);
         mPresenter.startTimer();
@@ -259,6 +268,8 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     {
         super.onDestroy();
         LocBroadcast.getInstance().unRegisterBroadcast(this, mActions);
+        networkConnectivityListener.stopListening();
+        networkConnectivityListener.deregisterListener(this);
         mPresenter.removeCallback();
         mPresenter.setAutoRotation(this, false);
         dismissDialog(mDialog);
@@ -430,5 +441,19 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     public void setTime(String time)
     {
         mShowTimeView.setText(time);
+    }
+
+    @Override
+    public void onNetWorkChange(JSONObject nwd) {
+        ECApplication.setLastInfo(nwd);
+        if (null != mCallInfo)
+        {
+            mIsConfCall = mCallInfo.isFocus();
+        }
+
+        if (!mIsConfCall)
+        {
+            mPresenter.endCall();
+        }
     }
 }

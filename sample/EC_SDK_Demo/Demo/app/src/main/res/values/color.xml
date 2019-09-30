@@ -100,6 +100,7 @@
     <color name="sketch_color_red">#EA3C0B</color>
     <color name="message_pressed">#e5e5e5</color>
     <color name="log_pressed">#d9dbdc</color>
+    <color name="login_resume_status">#F9F400</color>
 
     <color name="white">#ffFFFFFF</color>
     <color name="atColor">#ff3b2f</color>

@@ -39,6 +39,7 @@ import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.ecterminalsdk.base.TsdkMsgReadIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkReqJoinChatGroupMsg;
+import com.huawei.ecterminalsdk.base.TsdkResumeConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkRspJoinChatGroupMsg;
 import com.huawei.ecterminalsdk.base.TsdkSearchContactsResult;
 import com.huawei.ecterminalsdk.base.TsdkSearchDepartmentResult;
@@ -170,8 +171,20 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
+    public void onEvtLoginResumingInd(long userId) {
+        LogUtil.i(TAG, "onEvtLoginResumingInd notify.");
+        LoginMgr.getInstance().handLoginResumingInd((int)userId);
+    }
+
+    @Override
+    public void onEvtLoginResumeResult(long userId, TsdkCommonResult result) {
+        LogUtil.i(TAG, "onEvtLoginResumeResult notify.");
+        LoginMgr.getInstance().handLoginResumeResult(result);
+    }
+
+    @Override
     public void onEvtCallStartResult(TsdkCall call, TsdkCommonResult result) {
-        LogUtil.e(TAG, "onEvtCallStartResult notify.");
+        LogUtil.i(TAG, "onEvtCallStartResult notify.");
 
     }
 
@@ -611,5 +624,17 @@ public class ServiceNotify implements TsdkNotify{
     public void onEvtShareStatisticInfo(TsdkConference conference, TsdkShareStatisticInfo statisticInfo) {
         LogUtil.i(TAG, "onEvtShareStatisticInfo notify.");
         MeetingMgr.getInstance().handleShareStatisticInfo(conference, statisticInfo);
+    }
+
+    @Override
+    public void onEvtConfResumingInd(TsdkConference conference) {
+        LogUtil.i(TAG, "onEvtConfResumingInd notify.");
+        MeetingMgr.getInstance().handleConfResumingInd();
+    }
+
+    @Override
+    public void onEvtConfResumeResult(TsdkConference conference, TsdkCommonResult result, TsdkResumeConfIndInfo info) {
+        LogUtil.i(TAG, "onEvtConfResumeResult notify.");
+        MeetingMgr.getInstance().handleConfResumeResult(conference, result, info);
     }
 }

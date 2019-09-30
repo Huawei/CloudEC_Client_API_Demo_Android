@@ -16,8 +16,6 @@ import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
-import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
-import com.huawei.opensdk.ec_sdk_demo.ui.login.LoginActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.ILoginEventNotifyUI;
 import com.huawei.opensdk.loginmgr.LoginConstant;
@@ -41,6 +39,11 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
     private static final int PWD_REMAIN_DAYS = 109;
 
     private static LoginFunc INSTANCE = new LoginFunc();
+
+    /**
+     * 是否是在登录进入主界面后，(切换网络)(断网重连)重新登录成功
+     */
+    private boolean isResumeAfterLogin = false;
 
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT};
 
@@ -105,6 +108,14 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 }
                 sendHandlerMessage(MODIFY_PWD_FAILED, description);
                 break;
+            case RESUME_IND:
+                LogUtil.i(UIConstants.DEMO_TAG, "login status resume");
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND, null);
+                break;
+            case RESUME_RESULT:
+                LogUtil.i(UIConstants.DEMO_TAG, "login status resume result");
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT, reason);
+                break;
 
             case LOGOUT:
                 LogUtil.i(UIConstants.DEMO_TAG, "logout");
@@ -153,9 +164,21 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
         {
             case VOIP_LOGIN_SUCCESS:
                 LogUtil.i(UIConstants.DEMO_TAG, "voip login success,notify UI!");
-                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
-                ActivityUtil.startActivity(LocContext.getContext(), IntentConstant.MAIN_ACTIVITY_ACTION);
-                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_SUCCESS, null);
+                String currentActivity = ActivityUtil.getCurrentActivity(LocContext.getContext());
+                if ("LoginActivity".equals(currentActivity) || "AnonymousJoinConfActivity".equals(currentActivity))
+                {
+                    isResumeAfterLogin = false;
+                }
+                else
+                {
+                    isResumeAfterLogin = true;
+                }
+                if (!isResumeAfterLogin)
+                {
+                    Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                    ActivityUtil.startActivity(LocContext.getContext(), IntentConstant.MAIN_ACTIVITY_ACTION);
+                    LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_SUCCESS, null);
+                }
                 //CallMgr.getInstance().addDefaultAudioRoute();
                 Executors.newSingleThreadExecutor().execute(new Runnable()
                 {
@@ -173,7 +196,6 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 break;
             case LOGOUT:
                 LogUtil.i(UIConstants.DEMO_TAG, "logout success,notify UI!");
-                ActivityStack.getIns().popupAbove(LoginActivity.class);
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGOUT, null);
                 Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                 break;
@@ -195,15 +217,21 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 break;
             case FIRST_LOGIN:
                 LogUtil.i(UIConstants.DEMO_TAG, "first login,notify UI!");
-                Toast toast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
+                if (!isResumeAfterLogin)
+                {
+                    Toast toast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
                 break;
             case PWD_REMAIN_DAYS:
                 LogUtil.i(UIConstants.DEMO_TAG, "password remain days,notify UI!");
-                Toast pwdToast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
-                pwdToast.setGravity(Gravity.CENTER, 0, 0);
-                pwdToast.show();
+                if (!isResumeAfterLogin)
+                {
+                    Toast pwdToast = Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_LONG);
+                    pwdToast.setGravity(Gravity.CENTER, 0, 0);
+                    pwdToast.show();
+                }
                 break;
             default:
                 break;

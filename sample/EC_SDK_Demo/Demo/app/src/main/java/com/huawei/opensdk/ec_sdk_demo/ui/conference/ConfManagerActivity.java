@@ -30,6 +30,7 @@ import com.huawei.opensdk.callmgr.CallConstant;
 import com.huawei.opensdk.callmgr.CallInfo;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
+import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
 import com.huawei.opensdk.demoservice.ConfConstant;
@@ -47,6 +48,7 @@ import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IConfManagerContract;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInfomationActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
@@ -57,6 +59,11 @@ import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
+import com.huawei.opensdk.loginmgr.LoginConstant;
+import com.huawei.opensdk.loginmgr.LoginMgr;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +73,7 @@ import java.util.TimerTask;
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.ConfManagerView, ConfManagerBasePresenter>
-        implements IConfManagerContract.ConfManagerView, View.OnClickListener
+        implements IConfManagerContract.ConfManagerView, View.OnClickListener,NetworkConnectivityListener.OnNetWorkListener
 {
     private ConfManagerPresenter mPresenter;
     private RelativeLayout mVideoConfLayout;
@@ -135,6 +142,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isHideVideoWindow = false;
     private boolean isOnlyLocal = true;
     private boolean isSetOnlyLocalWind = false;
+    private String mCurrentActivity = ConfManagerActivity.class.getSimpleName();
+    private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
     private static final int START_SCREEN_SHARE_HANDLE = 666;
     private static final int STOP_SCREEN_SHARE_HANDLE = 888;
@@ -212,11 +221,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mConfShare = (FrameLayout) findViewById(R.id.conf_share);
 
         // 在与会者列表上报之前会控按钮全部屏蔽
-        mConfMute.setVisibility(View.GONE);
-        mConfAddAttendee.setVisibility(View.GONE);
-        mConfShare.setVisibility(View.GONE);
-        mConfAttendee.setVisibility(View.GONE);
-        mConfMore.setVisibility(View.GONE);
+        hideConfCtrlButton();
 
         if (isVideo)
         {
@@ -300,11 +305,28 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mShareIV.setOnClickListener(this);
     }
 
+    private void hideConfCtrlButton()
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mConfMute.setVisibility(View.GONE);
+                mConfAddAttendee.setVisibility(View.GONE);
+                mConfShare.setVisibility(View.GONE);
+                mConfAttendee.setVisibility(View.GONE);
+                mConfMore.setVisibility(View.GONE);
+                mShareIV.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     protected void onResume()
     {
         super.onResume();
         mPresenter.registerBroadcast();
+        networkConnectivityListener.registerListener(this);
+        networkConnectivityListener.startListening(this);
 
         // 刷新当前扬声器状态
         updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
@@ -385,6 +407,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     protected void onStart() {
         super.onStart();
+        if (!isVideo)
+        {
+            return;
+        }
         if (isActiveOpenCamera){
             mPresenter.closeOrOpenLocalVideo(false);
         }else {
@@ -395,8 +421,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     protected void onStop() {
         super.onStop();
-        if (!DeviceUtil.isAppForeground()) {
-            mPresenter.closeOrOpenLocalVideo(true);
+        if (isVideo)
+        {
+            if (!DeviceUtil.isAppForeground()) {
+                mPresenter.closeOrOpenLocalVideo(true);
+            }
         }
         stopTimer();
         isFirstStart = true;
@@ -999,7 +1028,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         });
     }
 
-
     private String getAttendeeName(List<Member> list)
     {
         if (1 == list.size())
@@ -1217,6 +1245,9 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mPresenter.unregisterBroadcast();
         mPresenter.setAutoRotation(this, false, mOrientation);
         PopupWindowUtil.getInstance().dismissPopupWindow(mPopupWindow);
+
+        networkConnectivityListener.deregisterListener(this);
+        networkConnectivityListener.stopListening();
     }
 
     @Override
@@ -1490,11 +1521,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             // 融合会议显示锁定
             if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == MeetingMgr.getInstance().getConfEnvType()) {
                 if (mPresenter.isConfLock()) {
-                    unlockLayout.setVisibility(View.VISIBLE);
+//                    unlockLayout.setVisibility(View.VISIBLE);
                     lockLayout.setVisibility(View.GONE);
                 } else {
                     unlockLayout.setVisibility(View.GONE);
-                    lockLayout.setVisibility(View.VISIBLE);
+//                    lockLayout.setVisibility(View.VISIBLE);
                 }
 
             } else {
@@ -1713,6 +1744,45 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 }
             });
         }
+    }
+
+    @Override
+    public void onNetWorkChange(JSONObject nwd) {
+        ECApplication.setLastInfo(nwd);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject networkInfo = ECApplication.getLastInfo();
+                LogUtil.i("onNetWorkChange","conf networkInfo: " + networkInfo);
+                try {
+                    int type = DeviceManager.getNetworkEnumByStr(networkInfo.getString("type"));
+                    if (0 == type)
+                    {
+                        LoginMgr.getInstance().setConnectedStatus(LoginConstant.NO_NETWORK);
+                        showCustomToast(R.string.connect_error);
+                    }
+                    else
+                    {
+                        mPresenter.configIpResume();
+                    }
+
+                    mCurrentActivity = ActivityUtil.getCurrentActivity(ConfManagerActivity.this);
+                    if ("ConfMemberListActivity".equals(mCurrentActivity))
+                    {
+                        ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                    }
+
+                    if ("DataConfActivity".equals(mCurrentActivity))
+                    {
+                        ActivityStack.getIns().popup(DataConfActivity.class);
+                    }
+
+                } catch (JSONException e) {
+                    LogUtil.e("onNetWorkChange","JSONException: " + e.toString());
+                }
+            }
+        });
     }
 
 }

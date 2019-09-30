@@ -1,10 +1,6 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.Context;
-
 import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
@@ -26,7 +22,11 @@ import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.floatView.util.DeviceUtil;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBasePresenter;
+import com.huawei.opensdk.ec_sdk_demo.ui.conference.DataConfActivity;
+import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 
 import java.util.List;
 
@@ -38,10 +38,12 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
     private String confID;
     private int currentShowSmallWndCount = 0;
     private List<Long> svcLabel = MeetingMgr.getInstance().getSvcConfInfo().getSvcLabel();
-    String remoteDisplay = "";
-    String smallDisplay_01 = "";
-    String smallDisplay_02 = "";
-    String smallDisplay_03 = "";
+    private String remoteDisplay = "";
+    private String smallDisplay_01 = "";
+    private String smallDisplay_02 = "";
+    private String smallDisplay_03 = "";
+    private boolean isResuming = false; // 是否在重新login中
+    private boolean isNeedConfigIp = false; // 是否需要重新配置本地ip
 
     protected String[] broadcastNames;
     protected LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -335,7 +337,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
                 // 发言人通知
                 case CustomBroadcastConstants.SPEAKER_LIST_IND:
-                    if (!"ConfManagerActivity".equals(getCurrentActivity(LocContext.getContext())))
+                    if (!"ConfManagerActivity".equals(ActivityUtil.getCurrentActivity(LocContext.getContext())))
                     {
                         return;
                     }
@@ -372,6 +374,43 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         return;
                     }
                     showSvcWatchInfo(svcWatchInfo.getWatchAttendees());
+                    break;
+
+                // 会议恢复中通知
+                case CustomBroadcastConstants.RESUME_JOIN_CONF_IND:
+                    getView().showMessage(LocContext.getString(R.string.resume_join_conf));
+
+                    //恢复会议时，SDK会自动停止共享，APP在收到这个消息时自动回到会议主界面
+                    getView().removeAllScreenShareFloatWindow();
+                    if (!DeviceUtil.isAppForeground()) {
+                        DeviceUtil.bringTaskBackToFront();
+                    }
+                    break;
+
+                // 重新加入会议结果
+                case CustomBroadcastConstants.RESUME_JOIN_CONF_RESULT:
+                    if (0 != (int) obj)
+                    {
+                        failedConnectedAndExit(R.string.resume_join_failed);
+                    }
+                    else
+                    {
+                        svcLabel = MeetingMgr.getInstance().getSvcConfInfo().getSvcLabel();
+                    }
+                    break;
+
+                // 登录状态恢复中的通知
+                case CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND:
+                    isResuming = true;
+                    break;
+
+                // 登录状态的恢复结果
+                case CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT:
+                    isResuming = false;
+                    if (isNeedConfigIp)
+                    {
+                        configIpResume();
+                    }
                     break;
 
                 default:
@@ -533,27 +572,25 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
     }
 
+    @Override
+    public void configIpResume() {
+        // 如果收到重新登录通知还没有收到重新登录结果则不进行配置本地ip
+        isNeedConfigIp = true;
+        if (!isResuming)
+        {
+            LoginMgr.getInstance().resetConfig(false);
+            isNeedConfigIp = false;
+        }
+    }
+
     /**
-     * 获取当前显示的activity名称
-     * @param context
-     * @return
+     * 加入会议失败后退出会议界面
+     * @param id
      */
-    private String getCurrentActivity(Context context)
+    private void failedConnectedAndExit(int id)
     {
-        ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
-        ComponentName componentName = manager.getRunningTasks(1).get(0).topActivity;
-        String className = componentName.getClassName();
-        if (null == className)
-        {
-            return null;
-        }
-
-        if (!className.contains("."))
-        {
-            return className;
-        }
-
-        String[] str = className.split("\\.");
-        return str[str.length - 1];
+        getView().showMessage(LocContext.getString(id));
+        ActivityStack.getIns().popup(DataConfActivity.class);
+        getView().finishActivity();
     }
 }

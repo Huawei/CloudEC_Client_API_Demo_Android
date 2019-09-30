@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -29,7 +30,7 @@ public class ConfListActivity extends MVPBaseActivity<IConfListContract.ConfList
     private ListView listView;
     private ImageView rightIV;
     private ImageView directJoinConfIV;
-
+    private SwipeRefreshLayout refreshConfListRL;
 
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.GET_CONF_LIST_RESULT};
 
@@ -62,6 +63,19 @@ public class ConfListActivity extends MVPBaseActivity<IConfListContract.ConfList
         listView = (ListView) findViewById(R.id.conference_list);
         rightIV = (ImageView) findViewById(R.id.right_img);
         directJoinConfIV = (ImageView) findViewById(R.id.join_conf_iv);
+        refreshConfListRL = (SwipeRefreshLayout) findViewById(R.id.refresh_conference_list);
+
+        refreshConfListRL.setSize(SwipeRefreshLayout.DEFAULT);
+        refreshConfListRL.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (refreshConfListRL.isRefreshing())
+                {
+                    mPresenter.queryConfList();
+                }
+                refreshConfListRL.setRefreshing(false);
+            }
+        });
 
         //TODO
         directJoinConfIV.setVisibility(View.VISIBLE);
@@ -104,6 +118,7 @@ public class ConfListActivity extends MVPBaseActivity<IConfListContract.ConfList
     @Override
     protected void onDestroy()
     {
+        refreshConfListRL.setRefreshing(false);
         LocBroadcast.getInstance().unRegisterBroadcast(receiver, broadcastNames);
         super.onDestroy();
     }

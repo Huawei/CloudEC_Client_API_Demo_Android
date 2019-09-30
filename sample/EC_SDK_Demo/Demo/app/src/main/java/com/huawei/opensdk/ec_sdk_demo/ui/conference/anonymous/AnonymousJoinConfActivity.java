@@ -21,6 +21,7 @@ import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.anonymous.AnonymousPresenter;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.loginmgr.LoginConstant;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 
 public class AnonymousJoinConfActivity extends BaseActivity {
 

@@ -4,7 +4,7 @@
     android:layout_height="@dimen/dp60">
 
     <RelativeLayout android:id="@+id/video_status_layout"
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true">
 
@@ -25,18 +25,25 @@
         android:layout_marginLeft="4dp"
         android:layout_toLeftOf="@id/video_status_layout">
 
-        <ImageView android:id="@+id/host_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_centerVertical="true"
-            android:src="@drawable/video_host"/>
+        <RelativeLayout
+            android:id="@+id/watch_tag_layout"
+            android:layout_width="25dp"
+            android:layout_height="fill_parent">
+
+            <ImageView android:id="@+id/host_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/video_host"/>
+        </RelativeLayout>
 
         <TextView android:id="@+id/name_tv"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/host_logo"
+            android:layout_toRightOf="@id/watch_tag_layout"
+            android:textColor="@color/textcolor_item_first"
             android:singleLine="true"
             android:textSize="16sp"/>
     </RelativeLayout>

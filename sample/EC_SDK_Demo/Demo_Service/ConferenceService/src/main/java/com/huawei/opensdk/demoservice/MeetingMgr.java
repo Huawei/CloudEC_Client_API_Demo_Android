@@ -37,6 +37,7 @@ import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkLocalAddress;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfDetailReq;
 import com.huawei.ecterminalsdk.base.TsdkQueryConfListReq;
+import com.huawei.ecterminalsdk.base.TsdkResumeConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkShareStatisticInfo;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendees;
 import com.huawei.ecterminalsdk.base.TsdkWatchAttendeesInfo;
@@ -143,15 +144,12 @@ public class MeetingMgr implements IMeetingMgr{
      */
     private List<Long> documentId = new ArrayList<>();
 
-
     /**
      * SVC 会议信息
      */
     private SvcMemberInfo svcConfInfo;
 
-
     private TsdkShareStatisticInfo currentShareStatisticInfo;
-
 
     private MeetingMgr()
     {
@@ -433,7 +431,6 @@ public class MeetingMgr implements IMeetingMgr{
 
         boolean reWatch = svcConfInfo.svcMemberListUpdateHandle(memberList);
         if (reWatch) {
-
             TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
             watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
             watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
@@ -1051,7 +1048,8 @@ public class MeetingMgr implements IMeetingMgr{
 
         //设置本端IP
         String localIpAddress = DeviceManager.getLocalIpAddress(isVPN);
-        TsdkLocalAddress localAddress = new TsdkLocalAddress(localIpAddress);
+        TsdkLocalAddress localAddress = new TsdkLocalAddress();
+        localAddress.setIpAddress(localIpAddress);
         TsdkManager.getInstance().setConfigParam(localAddress);
 
         TsdkConfAnonymousJoinParam anonymousParam = new TsdkConfAnonymousJoinParam();
@@ -1241,7 +1239,6 @@ public class MeetingMgr implements IMeetingMgr{
         }
         else
         {
-
             TsdkWatchAttendees attendees = new TsdkWatchAttendees();
             attendees.setNumber(attendee.getNumber());
             List<TsdkWatchAttendees> list = new ArrayList<>();
@@ -1256,7 +1253,7 @@ public class MeetingMgr implements IMeetingMgr{
     public int watchAttendee(TsdkWatchAttendeesInfo watchAttendeesInfo) {
         if (null == currentConference)
         {
-            LogUtil.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
             return -1;
         }
 
@@ -1269,13 +1266,13 @@ public class MeetingMgr implements IMeetingMgr{
     public int watchAttendee(int watchPage) {
         if (null == currentConference)
         {
-            LogUtil.e(TAG,  "broadcast attendee failed, currentConference is null ");
+            LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
             return -1;
         }
 
 
-        boolean rewatch = svcConfInfo.setBeWatchMemberList(watchPage);
-        if (rewatch) {
+        boolean reWatch = svcConfInfo.setBeWatchMemberList(watchPage);
+        if (reWatch) {
             TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
             watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
             watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
@@ -1937,8 +1934,6 @@ public class MeetingMgr implements IMeetingMgr{
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LEAVE_CONF, conference.getHandle());
     }
 
-
-
     /**
      * 与会者状态信息和状态更新处理
      * @param conference
@@ -2237,6 +2232,69 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleShareStatisticInfo(TsdkConference conference, TsdkShareStatisticInfo statisticInfo){
         this.currentShareStatisticInfo = statisticInfo;
+    }
+
+    /**
+     * This method is used to handle network recovery notifications in conference.
+     * 处理会议中网络恢复通知
+     */
+    public void handleConfResumingInd()
+    {
+        LogUtil.i(TAG, "handleConfResumingInd");
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RESUME_JOIN_CONF_IND, null);
+    }
+
+    /**
+     * This method is used to handle rejoin the conference result.
+     * 处理会议恢复(重新加入)结果
+     * @param tsdkConference
+     * @param commonResult
+     * @param tsdkResumeConfIndInfo
+     */
+    public void handleConfResumeResult(TsdkConference tsdkConference, TsdkCommonResult commonResult, TsdkResumeConfIndInfo tsdkResumeConfIndInfo)
+    {
+        LogUtil.i(TAG, "handleConfResumeResult");
+        if ((tsdkConference == null) || (commonResult == null))
+        {
+            return;
+        }
+
+        int result = (int)commonResult.getResult();
+        if (result == 0)
+        {
+            this.currentConference = tsdkConference;
+
+            TsdkCall tsdkCall = tsdkConference.getCall();
+            if (null != tsdkCall)
+            {
+                Session newSession = CallMgr.getInstance().getCallSessionByCallID(tsdkCall.getCallInfo().getCallId());
+                if (null == newSession)
+                {
+                    newSession = new Session(tsdkCall);
+                    CallMgr.getInstance().putCallSessionToMap(newSession);
+                }
+
+                if (tsdkCall.getCallInfo().getIsVideoCall() == 1)
+                {
+                    if (tsdkResumeConfIndInfo.getJoinConfIndInfo().getIsSvcConf() == 0)
+                    {
+                        /* AVC Conf */
+                        VideoMgr.getInstance().initVideoWindow(tsdkCall.getCallInfo().getCallId());
+                    }
+                    else
+                    {
+                        /* SVC Conf */
+                        VideoMgr.getInstance().initSvcVideoWindow(tsdkCall.getCallInfo().getCallId(), tsdkResumeConfIndInfo.getJoinConfIndInfo().getSvcLabel());
+                        this.svcConfInfo.setSvcLabel(tsdkResumeConfIndInfo.getJoinConfIndInfo().getSvcLabel());
+                    }
+                }
+            }
+
+            // 清空与会者
+            memberList.clear();
+        }
+
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RESUME_JOIN_CONF_RESULT, result);
     }
 
 }

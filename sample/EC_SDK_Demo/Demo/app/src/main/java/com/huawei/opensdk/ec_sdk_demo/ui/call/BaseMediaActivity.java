@@ -24,13 +24,17 @@ import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.MeetingMgr;
+import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.CallFunc;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
+
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,7 +43,8 @@ import java.util.concurrent.Executors;
 /**
  * This class is about base media activity.
  */
-public class BaseMediaActivity extends BaseActivity implements View.OnClickListener, LocBroadcastReceiver {
+public class BaseMediaActivity extends BaseActivity implements View.OnClickListener,
+        LocBroadcastReceiver, NetworkConnectivityListener.OnNetWorkListener {
     private static final int CALL_CONNECTED = 100;
     private static final int CALL_UPGRADE = 101;
     private static final int HOLD_CALL_SUCCESS = 102;
@@ -93,6 +98,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     private CallFunc mCallFunc;
 
     private boolean mMuteStatus;
+
+    private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
     private Handler mHandler = new Handler() {
         @Override
@@ -236,6 +243,15 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
     private AlertDialog mDialog;
 
+    @Override
+    public void onNetWorkChange(JSONObject nwd) {
+        ECApplication.setLastInfo(nwd);
+        if (!mIsConfCall)
+        {
+            CallMgr.getInstance().endCall(mCallID);
+        }
+    }
+
     private static class DismissDialogTimerTask extends TimerTask {
         private final AlertDialog dialog;
         private long callID;
@@ -364,6 +380,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         LocBroadcast.getInstance().unRegisterBroadcast(this, mActions);
+        networkConnectivityListener.stopListening();
+        networkConnectivityListener.deregisterListener(this);
         dismissDialog(mDialog);
     }
 
@@ -377,6 +395,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
+        networkConnectivityListener.registerListener(this);
+        networkConnectivityListener.startListening(this);
     }
 
     @Override

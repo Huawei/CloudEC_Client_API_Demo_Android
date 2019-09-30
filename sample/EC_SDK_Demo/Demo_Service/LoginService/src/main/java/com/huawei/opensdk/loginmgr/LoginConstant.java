@@ -47,6 +47,14 @@ public class LoginConstant {
     public static final int FIXED_NUMBER = 5;
 
     /**
+     * 网络连接状态
+     */
+    public static final int NO_NETWORK = 10;
+    public static final int NETWORK_CONNECTED = 11;
+    public static final int NETWORK_CONNECTED_FAILED = 12;
+    public static final int NETWORK_CONNECTED_SUCCESS = 13;
+
+    /**
      * This class is about login result
      * 登录结果枚举类
      */
@@ -65,6 +73,10 @@ public class LoginConstant {
         BUILD_STG_FAILED(),
 
         MODIFY_PASSWORD(),
+
+        RESUME_IND(),
+
+        RESUME_RESULT(),
 
         LOGOUT(),
     }

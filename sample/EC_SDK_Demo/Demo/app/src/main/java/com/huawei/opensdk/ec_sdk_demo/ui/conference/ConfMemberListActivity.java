@@ -3,6 +3,7 @@ package com.huawei.opensdk.ec_sdk_demo.ui.conference;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,7 +38,8 @@ import java.util.List;
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 
-public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContract.IAttendeeListView, ConfMemberListPresenter> implements IAttendeeListContract.IAttendeeListView, View.OnClickListener
+public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContract.IAttendeeListView, ConfMemberListPresenter>
+        implements IAttendeeListContract.IAttendeeListView, View.OnClickListener
 {
 
     private ConfMemberListPresenter mPresenter;
@@ -45,11 +47,10 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
 
     private LinearLayout confButtonGroup;
     private ListView confListView;
+    private FrameLayout mMuteSelfFL;
     private FrameLayout mAddAttendeeFL;
-    private ImageView muteSelfIV;
-    private ImageView loudSpeakerIV;
-    private ImageView addAttendeeIV;
-    private ImageView btnMoreIV;
+    private FrameLayout mLoudSpeakerFL;
+    private FrameLayout mBtnMoreFL;
     private TextView titleTV;
     PopupWindow mPopupWindow;
     private TextView tvSpeakerOne;
@@ -62,6 +63,8 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     private String confID;
     private boolean isVideo = false;
     private boolean isDateConf = false;
+    private Handler mHandler = new Handler();
+    private boolean isTiming = true;
 
     @Override
     protected IAttendeeListContract.IAttendeeListView createView()
@@ -82,11 +85,10 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         setContentView(R.layout.conf_member_list_activity);
         confButtonGroup = (LinearLayout) findViewById(R.id.media_btn_group);
         confListView = (ListView) findViewById(R.id.member_list);
+        mMuteSelfFL = (FrameLayout) findViewById(R.id.conf_mute);
         mAddAttendeeFL = (FrameLayout) findViewById(R.id.conf_add_attendee);
-        muteSelfIV = (ImageView) findViewById(R.id.conf_mute_iv);
-        loudSpeakerIV = (ImageView) findViewById(R.id.conf_loud_speaker_iv);
-        addAttendeeIV = (ImageView) findViewById(R.id.conf_add_attendee_iv);
-        btnMoreIV = (ImageView) findViewById(R.id.conf_btn_more_iv);
+        mLoudSpeakerFL = (FrameLayout) findViewById(R.id.conf_loud_speaker);
+        mBtnMoreFL = (FrameLayout) findViewById(R.id.conf_more);
         titleTV = (TextView) findViewById(R.id.title_text);
         tvSpeakerOne = (TextView) findViewById(R.id.speaker_one);
         tvSpeakerTwo = (TextView) findViewById(R.id.speaker_two);
@@ -98,10 +100,10 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         ivSpeakerOne.setVisibility(View.GONE);
         ivSpeakerTwo.setVisibility(View.GONE);
 
-        muteSelfIV.setOnClickListener(this);
-        loudSpeakerIV.setOnClickListener(this);
-        addAttendeeIV.setOnClickListener(this);
-        btnMoreIV.setOnClickListener(this);
+        mMuteSelfFL.setOnClickListener(this);
+        mLoudSpeakerFL.setOnClickListener(this);
+        mAddAttendeeFL.setOnClickListener(this);
+        mBtnMoreFL.setOnClickListener(this);
 
         confListView.setAdapter(adapter);
 
@@ -121,6 +123,10 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                 mPresenter.onItemClick(position);
             }
         });
+
+        updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
+        updateAddAttendeeButton(mPresenter.isChairMan());
+        updateMuteButton(mPresenter.isMuteSelf());
     }
 
     @Override
@@ -145,9 +151,6 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
         {
             mPresenter.setVideoContainer(this, mLocalVideoView, mHideVideoView);
         }
-        updateLoudSpeakerButton(CallMgr.getInstance().getCurrentAudioRoute());
-        updateAddAttendeeButton(mPresenter.isChairMan());
-        updateMuteButton(mPresenter.isMuteSelf());
     }
 
     @Override
@@ -187,16 +190,16 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     {
         switch (v.getId())
         {
-            case R.id.conf_mute_iv:
+            case R.id.conf_mute:
                 mPresenter.muteSelf();
                 break;
-            case R.id.conf_loud_speaker_iv:
+            case R.id.conf_loud_speaker:
                 mPresenter.switchLoudSpeaker();
                 break;
-            case R.id.conf_add_attendee_iv:
+            case R.id.conf_add_attendee:
                 showAddMemberDialog();
                 break;
-            case R.id.conf_btn_more_iv:
+            case R.id.conf_more:
                 showMoreButton();
                 break;
             default:
@@ -260,13 +263,13 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
             {
                 if (mPresenter.isConfLock())
                 {
-                    unlockLayout.setVisibility(View.VISIBLE);
+//                    unlockLayout.setVisibility(View.VISIBLE);
                     lockLayout.setVisibility(View.GONE);
                 }
                 else
                 {
                     unlockLayout.setVisibility(View.GONE);
-                    lockLayout.setVisibility(View.VISIBLE);
+//                    lockLayout.setVisibility(View.VISIBLE);
                 }
             }
             else
@@ -462,6 +465,7 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
             @Override
             public void run()
             {
+                mBtnMoreFL.setVisibility(View.VISIBLE);
                 adapter.setData(list);
                 adapter.notifyDataSetChanged();
             }
@@ -470,23 +474,20 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     }
 
     @Override
-    public void updateAddAttendeeButton(boolean isChairman) {
-        if (!isChairman) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mAddAttendeeFL.setVisibility(View.GONE);
-                }
-            });
-
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+    public void updateAddAttendeeButton(final boolean isChairman) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isChairman)
+                {
                     mAddAttendeeFL.setVisibility(View.VISIBLE);
                 }
-            });
-        }
+                else
+                {
+                    mAddAttendeeFL.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     @Override
@@ -513,14 +514,9 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     }
 
     @Override
-    public void updateUpgradeConfBtn(final boolean isDataConf)
+    public void updateUpgradeConfBtn(boolean isDataConf)
     {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                isDateConf = isDataConf;
-            }
-        });
+        isDateConf = isDataConf;
     }
 
     @Override
@@ -532,6 +528,17 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
             }
         });
     }
+
+    Runnable run = new Runnable() {
+        @Override
+        public void run() {
+            tvSpeakerOne.setText("");
+            tvSpeakerTwo.setText("");
+            ivSpeakerOne.setVisibility(View.GONE);
+            ivSpeakerTwo.setVisibility(View.GONE);
+            isTiming = true;
+        }
+    };
 
     @Override
     public void updateSpeaker(final String[] speakers, final boolean noSpeaker) {
@@ -561,6 +568,12 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                     ivSpeakerOne.setVisibility(View.VISIBLE);
                     ivSpeakerTwo.setVisibility(View.GONE);
                 }
+
+                if (isTiming)
+                {
+                    mHandler.postDelayed(run, 3000);
+                    isTiming = false;
+                }
             }
         });
     }
@@ -572,7 +585,8 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
             @Override
             public void run()
             {
-                muteSelfIV.setActivated(isMute);
+                mMuteSelfFL.setVisibility(View.VISIBLE);
+                mMuteSelfFL.setActivated(isMute);
             }
         });
     }
@@ -582,11 +596,11 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     {
         if (type == CallConstant.TYPE_LOUD_SPEAKER)
         {
-            loudSpeakerIV.setActivated(true);
+            mLoudSpeakerFL.setActivated(true);
         }
         else
         {
-            loudSpeakerIV.setActivated(false);
+            mLoudSpeakerFL.setActivated(false);
         }
     }
 
@@ -631,6 +645,7 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     {
         super.onBackPressed();
         mPresenter.unregisterBroadcast();
+        closeTiming();
     }
 
     @Override
@@ -638,5 +653,14 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     {
         super.onDestroy();
         mPresenter.unregisterBroadcast();
+        closeTiming();
+    }
+
+    private void closeTiming()
+    {
+        if (null != mHandler)
+        {
+            mHandler.removeCallbacks(run);
+        }
     }
 }

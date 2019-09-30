@@ -44,12 +44,6 @@ public class LoginMgr {
     private ILoginEventNotifyUI loginEventNotifyUI;
 
     /**
-     * Force exit
-     * 强制退出
-     */
-    private boolean isForceLogout = false;
-
-    /**
      * local Ip Address
      * 本地IP
      */
@@ -60,6 +54,8 @@ public class LoginMgr {
     private String terminal;
 
     private String sipNumber;
+
+    private int connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
 
     /**
      * Define a TupEaddrContactorInfo object
@@ -104,7 +100,8 @@ public class LoginMgr {
         //Get local IP
         //获取本地IP
         localIpAddress = DeviceManager.getLocalIpAddress(loginParam.isVPN());
-        TsdkLocalAddress localAddress = new TsdkLocalAddress(localIpAddress);
+        TsdkLocalAddress localAddress = new TsdkLocalAddress();
+        localAddress.setIpAddress(localIpAddress);
         ret = TsdkManager.getInstance().setConfigParam(localAddress);
         if (ret != 0) {
             LogUtil.e(TAG, "config local ip is failed, return " + ret);
@@ -133,7 +130,6 @@ public class LoginMgr {
         return ret;
     }
 
-
     /**
      * This method is used to logout
      * 登出
@@ -154,12 +150,42 @@ public class LoginMgr {
      * @return
      */
     public int modifyPwd(String newPwd, String oldPwd) {
-        TsdkModifyPasswordParam modifyPasswordParam = new TsdkModifyPasswordParam(newPwd, oldPwd);
+        TsdkModifyPasswordParam modifyPasswordParam = new TsdkModifyPasswordParam();
+        modifyPasswordParam.setNewPassword(newPwd);
+        modifyPasswordParam.setOldPassword(oldPwd);
         int ret = TsdkManager.getInstance().getLoginManager().modifyPassword(modifyPasswordParam);
         if (ret != 0) {
             LogUtil.e(TAG, "modifyPwd is failed, return " + ret);
         }
 
+        return ret;
+    }
+
+    /**
+     * This method is used to reset local Ip address
+     * 监测到网络变化重新设置本地IP地址
+     * @param isVpn
+     * @return
+     */
+    public int resetConfig(boolean isVpn)
+    {
+        int ret;
+        String ipAddress = DeviceManager.getLocalIpAddress(isVpn);
+        if ("".equals(ipAddress) || localIpAddress.equals(ipAddress))
+        {
+            localIpAddress = ipAddress;
+            return -1;
+        }
+        localIpAddress = ipAddress;
+
+        TsdkLocalAddress localAddress = new TsdkLocalAddress();
+        localAddress.setIpAddress(localIpAddress);
+        localAddress.setIsTryResume(1);
+        ret = TsdkManager.getInstance().setConfigParam(localAddress);
+        if (ret != 0)
+        {
+            LogUtil.e(TAG, "resetConfig local ip is failed, return " + ret);
+        }
         return ret;
     }
 
@@ -174,7 +200,7 @@ public class LoginMgr {
      *                          [cn]IM登录参数
      */
     public void handleAuthSuccess(int userId, TsdkImLoginParam imLoginParam) {
-        LogUtil.e(TAG, "authorize success.");
+        LogUtil.i(TAG, "authorize success.");
     }
 
     /**
@@ -225,6 +251,7 @@ public class LoginMgr {
 
         if (TSDK_E_VOIP_SERVICE_ACCOUNT == serviceAccountType)
         {
+            connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
             this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.VOIP_LOGIN_SUCCESS, userId, "voip login success");
             this.loginEventNotifyUI.onPwdInfoEventNotify(LoginConstant.LoginUIEvent.PASSWORD_INFO, loginSuccessInfo);
         }
@@ -243,6 +270,7 @@ public class LoginMgr {
      */
     public void handleLoginFailed(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
         LogUtil.e(TAG, "voip login failed: " + loginFailedInfo.getReasonDescription());
+        connectedStatus = LoginConstant.NETWORK_CONNECTED_FAILED;
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, loginFailedInfo.getReasonCode(), loginFailedInfo.getReasonDescription());
     }
 
@@ -256,7 +284,7 @@ public class LoginMgr {
      *                                 [cn]VOIP/im登录账号类型
      */
     public void handleLogoutSuccess(int userId, TsdkServiceAccountType serviceAccountType) {
-        LogUtil.e(TAG, "logout success " );
+        LogUtil.i(TAG, "logout success " );
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "logout success ");
     }
 
@@ -283,9 +311,7 @@ public class LoginMgr {
      */
     public void handleForceLogout(int userId ) {
         LogUtil.i(TAG, "voip force logout");
-        isForceLogout = true;
         this.logout();
-
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, "voip force logout");
     }
 
@@ -299,7 +325,7 @@ public class LoginMgr {
      *                          [cn]voip账号信息
      */
     public void handleVoipAccountStatus(int userId, TsdkVoipAccountInfo voipAccountInfo ) {
-        LogUtil.e(TAG, "voip account status: " );
+        LogUtil.i(TAG, "voip account status: " );
 
         this.sipNumber = voipAccountInfo.getNumber();
         if (!voipAccountInfo.getTerminal().equals("")) {
@@ -371,6 +397,38 @@ public class LoginMgr {
                 (int)result.getResult(), result.getReasonDescription());
     }
 
+    /**
+     * [en]This method is used to hand notifications in login status recovery.
+     * [cn]处理登录状态恢复中的通知
+     * @param userId            [en]Indicates user id
+     *                          [cn]用户ID
+     */
+    public void handLoginResumingInd(int userId) {
+        LogUtil.i(TAG, "login resume status, userId: " + userId);
+        connectedStatus = LoginConstant.NETWORK_CONNECTED;
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.RESUME_IND, 0, null);
+    }
+
+    /**
+     * [en]This method is used to handle the result of login status recovery.
+     * [cn]处理登录状态的恢复结果
+     * @param result            [en]Indicates response results
+     *                          [cn]响应结果
+     */
+    public void handLoginResumeResult(TsdkCommonResult result) {
+        LogUtil.i(TAG, "login resume result: " + result.getReasonDescription());
+        if (0 == result.getResult())
+        {
+            connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
+        }
+        else
+        {
+            connectedStatus = LoginConstant.NETWORK_CONNECTED_FAILED;
+        }
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.RESUME_RESULT,
+                (int)result.getResult(), result.getReasonDescription());
+    }
+
     public void setTerminal(String terminal) {
         this.terminal = terminal;
     }
@@ -411,6 +469,14 @@ public class LoginMgr {
      */
     public String getAccount() {
         return account;
+    }
+
+    public int getConnectedStatus() {
+        return connectedStatus;
+    }
+
+    public void setConnectedStatus(int connectedStatus) {
+        this.connectedStatus = connectedStatus;
     }
 
     private Handler mMainHandler = new Handler(Looper.getMainLooper()) {

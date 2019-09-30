@@ -55,6 +55,10 @@ public final class UIConstants
     public static final int PRO_LOAD_HEADICON = 101;
     public static final int LOAD_SELF_HEADIMAGE = 102;
 
+    public static final int LOGIN_RESUME_IND = 200;
+    public static final int LOGIN_RESUME_RESULT = 201;
+    public static final int LOGIN_FAILED = 202;
+
     /**
      * Avatar Image source
      */

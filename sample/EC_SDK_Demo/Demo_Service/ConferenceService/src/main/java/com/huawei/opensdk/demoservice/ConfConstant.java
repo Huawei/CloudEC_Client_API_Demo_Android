@@ -63,6 +63,8 @@ public class ConfConstant {
         JOIN_VOICE_CONF_SUCCESS(),
         JOIN_VIDEO_CONF_SUCCESS(),
         JOIN_CONF_FAILED(),
+        RESUME_JOIN_CONF_RESULT(),
+        RESUME_JOIN_CONF_IND(),
 
         REQUEST_RIGHT_FAILED(),
 

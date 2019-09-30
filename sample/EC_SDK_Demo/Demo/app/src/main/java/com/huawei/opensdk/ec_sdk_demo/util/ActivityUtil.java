@@ -1,7 +1,9 @@
 package com.huawei.opensdk.ec_sdk_demo.util;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -85,5 +87,29 @@ public final class ActivityUtil
         {
             Log.e(UIConstants.DEMO_TAG, e.getMessage());
         }
+    }
+
+    /**
+     * 获取当前显示的activity名称
+     * @param context
+     * @return
+     */
+    public static String getCurrentActivity(Context context)
+    {
+        ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+        ComponentName componentName = manager.getRunningTasks(1).get(0).topActivity;
+        String className = componentName.getClassName();
+        if (null == className)
+        {
+            return null;
+        }
+
+        if (!className.contains("."))
+        {
+            return className;
+        }
+
+        String[] str = className.split("\\.");
+        return str[str.length - 1];
     }
 }

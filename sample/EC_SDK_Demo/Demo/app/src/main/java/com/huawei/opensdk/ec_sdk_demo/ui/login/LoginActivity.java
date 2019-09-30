@@ -383,7 +383,8 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
             return;
         }
 
-        String appPath = getApplicationInfo().dataDir + "/lib";
+//        String appPath = getApplicationInfo().dataDir + "/lib";
+        String appPath = getApplication().getApplicationInfo().nativeLibraryDir;
         ServiceMgr.getServiceMgr().startService(this, appPath, mIdoProtocol);
         Log.i("SDKDemo", "onCreate: MAIN Process.");
 

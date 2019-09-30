@@ -23,7 +23,8 @@
         android:textColor="@color/white"
         android:gravity="center"
         android:ellipsize="middle"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:visibility="gone"/>
 
     <ImageView android:id="@+id/signal_view"
         android:layout_width="20dp"
@@ -78,7 +79,8 @@
         android:id="@+id/conf_video_ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/watch_previous_page"

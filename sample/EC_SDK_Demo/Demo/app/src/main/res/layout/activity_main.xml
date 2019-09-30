@@ -12,6 +12,41 @@
 
         <include layout="@layout/main_tabs"/>
 
+        <LinearLayout
+            android:id="@+id/login_resume_status_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/login_resume_status">
+
+                <ImageView
+                    android:id="@+id/network_alarm_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dp10"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/net_status"/>
+
+                <TextView
+                    android:id="@+id/login_resume_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_marginLeft="@dimen/dp32"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/text_light_black"
+                    android:textSize="@dimen/dp12" />
+            </FrameLayout>
+
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#cccccc"/>
+        </LinearLayout>
+
         <android.support.v4.view.ViewPager android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

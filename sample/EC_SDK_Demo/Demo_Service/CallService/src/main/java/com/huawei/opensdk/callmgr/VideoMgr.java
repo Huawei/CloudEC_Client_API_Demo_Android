@@ -191,6 +191,10 @@ public class VideoMgr {
     private int controlLocalCameraMode1(TsdkCall call, boolean isOpen) {
         int result = 0;
 
+        if (null == call) {
+            return -1;
+        }
+
         if (isOpen) {
             //重新设置摄像头采集角度
             result = call.setCaptureRotation(CallConstant.FRONT_CAMERA, 0);
@@ -373,7 +377,7 @@ public class VideoMgr {
 
     public void initSvcVideoWindow(final long callId, List<Long> svcLabel)
     {
-        LogUtil.i(TAG, "initSvcVideoWindow() enter" + callId);
+        LogUtil.i(TAG, "initSvcVideoWindow() enter, callID: " + callId);
         currentSvcLabel = svcLabel;
 
         handler.post(new Runnable() {

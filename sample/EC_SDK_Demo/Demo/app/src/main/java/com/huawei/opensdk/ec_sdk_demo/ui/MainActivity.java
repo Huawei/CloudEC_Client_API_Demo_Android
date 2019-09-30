@@ -18,25 +18,34 @@ import android.widget.TextView;
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
+import com.huawei.opensdk.commonservice.util.DeviceManager;
+import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EntAddressBookIconInfo;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
+import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
-import com.huawei.opensdk.ec_sdk_demo.module.headphoto.ContactHeadFetcher;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.ui.call.CallFragment;
 import com.huawei.opensdk.ec_sdk_demo.ui.discover.DiscoverFragment;
 import com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook.EnterpriseAddrTools;
+import com.huawei.opensdk.ec_sdk_demo.ui.login.LoginActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.BaseDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
+import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, LocBroadcastReceiver
+public class MainActivity extends BaseActivity implements View.OnClickListener, LocBroadcastReceiver, NetworkConnectivityListener.OnNetWorkListener
 {
     private ImageView mCallTab;
     private ImageView mDiscoverTab;
@@ -54,17 +63,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private BaseDialog mLogoutDialog;
     private ImageView mSearchBtn;
     private ImageView mHeadIv;
+    private LinearLayout mNetworkStatusLL;
+    private ImageView mNetworkAlarmIV;
+    private TextView mNetworkStatusTV;
+
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_IM_SET_HEAD_PHOTO,
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED,
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_PHOTO_RESULT,
-            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT
+            CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT,
+            CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND,
+            CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT,
+            CustomBroadcastConstants.LOGIN_FAILED
     };
     private String mMyAccount;
-    private ContactHeadFetcher contactHeadFetcher;
 
     private String mIconPath;
     private int mIconId;
     private static int[] mSystemIcon = EnterpriseAddrTools.getSystemIcon();
+    private NetworkConnectivityListener mNetworkConnectivityListener = new NetworkConnectivityListener();
+    private boolean mIsResuming = false;
 
     @Override
     public void initializeComposition()
@@ -84,10 +101,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         displayName = (TextView) findViewById(R.id.blog_name_tv);
         sipNumber = (TextView) findViewById(R.id.blog_number_tv);
 
+        mNetworkStatusLL = (LinearLayout) findViewById(R.id.login_resume_status_ll);
+        mNetworkAlarmIV = (ImageView) findViewById(R.id.network_alarm_iv);
+        mNetworkStatusTV = (TextView) findViewById(R.id.login_resume_text);
 
         initIndicator();
         initViewPager();
-//        initDrawerShow();
 
         settingButton.setOnClickListener(this);
         logoutButton.setOnClickListener(this);
@@ -96,6 +115,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mSearchBtn.setOnClickListener(this);
 
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
+        mNetworkConnectivityListener.registerListener(this);
+        mNetworkConnectivityListener.startListening(this);
         updateHeadPhoto();
     }
 
@@ -162,7 +183,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void initializeData()
     {
         mMyAccount = LoginMgr.getInstance().getAccount();
-        contactHeadFetcher = new ContactHeadFetcher(this);
     }
 
     private void initIndicator()
@@ -221,6 +241,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume()
     {
+        refreshNetworkStatus(LoginMgr.getInstance().getConnectedStatus());
         mHeadIv.postDelayed(new Runnable()
         {
             @Override
@@ -239,6 +260,33 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         showLogoutDialog();
     }
 
+    private void refreshNetworkStatus(int status)
+    {
+        switch (status)
+        {
+            case LoginConstant.NO_NETWORK:
+                mNetworkStatusLL.setVisibility(View.VISIBLE);
+                mNetworkAlarmIV.setVisibility(View.VISIBLE);
+                mNetworkStatusTV.setText(R.string.connect_error);
+                break;
+            case LoginConstant.NETWORK_CONNECTED:
+                mNetworkStatusLL.setVisibility(View.VISIBLE);
+                mNetworkAlarmIV.setVisibility(View.INVISIBLE);
+                mNetworkStatusTV.setText(R.string.connect_progress);
+                break;
+            case LoginConstant.NETWORK_CONNECTED_FAILED:
+                mNetworkStatusLL.setVisibility(View.VISIBLE);
+                mNetworkAlarmIV.setVisibility(View.VISIBLE);
+                mNetworkStatusTV.setText(R.string.login_resume_failed);
+                break;
+            case LoginConstant.NETWORK_CONNECTED_SUCCESS:
+                mNetworkStatusLL.setVisibility(View.GONE);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void showLogoutDialog()
     {
         if (null == mLogoutDialog)
@@ -251,6 +299,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 {
                     Log.i(UIConstants.DEMO_TAG, "logout");
                     LoginMgr.getInstance().logout();
+                    ActivityStack.getIns().popupAbove(LoginActivity.class);
                 }
             });
         }
@@ -262,6 +311,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     {
         super.onDestroy();
         LocBroadcast.getInstance().unRegisterBroadcast(this, mActions);
+        mNetworkConnectivityListener.stopListening();
+        mNetworkConnectivityListener.deregisterListener(this);
         if (null != mLogoutDialog)
         {
             mLogoutDialog.dismiss();
@@ -298,6 +349,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case UIConstants.ENTERPRISE_SELF_TERMINAL:
                     initDrawerShow();
                     break;
+                case UIConstants.LOGIN_RESUME_IND:
+                    mIsResuming = true;
+                    refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED);
+                    break;
+                case UIConstants.LOGIN_RESUME_RESULT:
+                    mIsResuming = false;
+                    if (0 == (int) msg.obj)
+                    {
+                        refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED_SUCCESS);
+                    }
+                    else
+                    {
+                        refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED_FAILED);
+                    }
+                    break;
+                case UIConstants.LOGIN_FAILED:
+                    refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED_FAILED);
+                    break;
                 default:
                     break;
 
@@ -321,6 +390,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT:
                 handler.sendEmptyMessage(UIConstants.ENTERPRISE_SELF_TERMINAL);
                 break;
+            case CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND:
+                handler.sendEmptyMessage(UIConstants.LOGIN_RESUME_IND);
+                break;
+            case CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT:
+                Message resumeResult = handler.obtainMessage(UIConstants.LOGIN_RESUME_RESULT, obj);
+                handler.sendMessage(resumeResult);
+                break;
+            case CustomBroadcastConstants.LOGIN_FAILED:
+                handler.sendEmptyMessage(UIConstants.LOGIN_FAILED);
+                break;
             default:
                 break;
         }
@@ -329,5 +408,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void updateHeadPhoto()
     {
         EnterpriseAddressBookMgr.getInstance().getSelfIcon(mMyAccount);
+    }
+
+    @Override
+    public void onNetWorkChange(JSONObject nwd) {
+        ECApplication.setLastInfo(nwd);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject networkInfo = ECApplication.getLastInfo();
+                LogUtil.i("onNetWorkChange","main networkInfo: " + networkInfo);
+                try {
+                    // 将type通知给js type: (0: none 1: Wi-Fi 2: 2G 3: 3G 4: 4G)
+                    int type = DeviceManager.getNetworkEnumByStr(networkInfo.getString("type"));
+                    if (0 == type)
+                    {
+                        LoginMgr.getInstance().setConnectedStatus(LoginConstant.NO_NETWORK);
+                        refreshNetworkStatus(LoginConstant.NO_NETWORK);
+                    }
+
+                    // 如果收到重新登录通知还没有收到重新登录结果则不进行配置本地ip
+                    if (!mIsResuming)
+                    {
+                        LoginMgr.getInstance().resetConfig(false);
+                    }
+                } catch (JSONException e) {
+                    LogUtil.e("onNetWorkChange","JSONException: " + e.toString());
+                }
+            }
+        });
     }
 }

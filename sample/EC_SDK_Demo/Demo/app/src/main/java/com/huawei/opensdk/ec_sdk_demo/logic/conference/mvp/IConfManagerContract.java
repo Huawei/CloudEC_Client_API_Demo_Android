@@ -159,5 +159,7 @@ public interface IConfManagerContract
 
         void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees);
 
+        void configIpResume();
+
     }
 }
