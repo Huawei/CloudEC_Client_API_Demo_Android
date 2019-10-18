@@ -73,7 +73,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT,
             CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND,
             CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT,
-            CustomBroadcastConstants.LOGIN_FAILED
+            CustomBroadcastConstants.LOGIN_FAILED,
+            CustomBroadcastConstants.LOGIN_SUCCESS
     };
     private String mMyAccount;
 
@@ -224,7 +225,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showLogoutDialog();
                 break;
             case R.id.nav_iv:
-                EnterpriseAddressBookMgr.getInstance().searchSelfInfo(mMyAccount);
+                if (isLoginSuccess())
+                {
+                    EnterpriseAddressBookMgr.getInstance().searchSelfInfo(mMyAccount);
+                }
                 mDrawerLayout.openDrawer(Gravity.LEFT);
                 break;
             case R.id.iv_setting:
@@ -319,6 +323,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    private boolean isLoginSuccess()
+    {
+        return LoginMgr.getInstance().isLoginSuccess();
+    }
+
     Handler handler = new Handler()
     {
         @Override
@@ -367,6 +376,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 case UIConstants.LOGIN_FAILED:
                     refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED_FAILED);
                     break;
+                case UIConstants.LOGIN_SUCCESS:
+                    refreshNetworkStatus(LoginConstant.NETWORK_CONNECTED_SUCCESS);
+                    break;
                 default:
                     break;
 
@@ -400,6 +412,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case CustomBroadcastConstants.LOGIN_FAILED:
                 handler.sendEmptyMessage(UIConstants.LOGIN_FAILED);
                 break;
+            case CustomBroadcastConstants.LOGIN_SUCCESS:
+                handler.sendEmptyMessage(UIConstants.LOGIN_SUCCESS);
+                break;
             default:
                 break;
         }
@@ -407,7 +422,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     private void updateHeadPhoto()
     {
-        EnterpriseAddressBookMgr.getInstance().getSelfIcon(mMyAccount);
+        if (isLoginSuccess())
+        {
+            EnterpriseAddressBookMgr.getInstance().getSelfIcon(mMyAccount);
+        }
     }
 
     @Override

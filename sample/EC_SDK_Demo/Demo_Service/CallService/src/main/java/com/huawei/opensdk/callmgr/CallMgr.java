@@ -95,6 +95,16 @@ public class CallMgr implements ICallMgr
     }
 
     /**
+     * This method is used to determine whether a call exists.
+     * 判断当前是否在呼叫中
+     * @return
+     */
+    public boolean isExistCall()
+    {
+        return TsdkManager.getInstance().getCallManager().isExistCall();
+    }
+
+    /**
      * This method is used to store call session
      * @param session 会话信息
      */

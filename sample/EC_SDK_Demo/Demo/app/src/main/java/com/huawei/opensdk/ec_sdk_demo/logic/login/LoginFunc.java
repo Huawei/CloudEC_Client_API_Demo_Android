@@ -165,6 +165,7 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
             case VOIP_LOGIN_SUCCESS:
                 LogUtil.i(UIConstants.DEMO_TAG, "voip login success,notify UI!");
                 String currentActivity = ActivityUtil.getCurrentActivity(LocContext.getContext());
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_SUCCESS, null);
                 if ("LoginActivity".equals(currentActivity) || "AnonymousJoinConfActivity".equals(currentActivity))
                 {
                     isResumeAfterLogin = false;
@@ -177,17 +178,16 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 {
                     Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                     ActivityUtil.startActivity(LocContext.getContext(), IntentConstant.MAIN_ACTIVITY_ACTION);
-                    LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGIN_SUCCESS, null);
-                }
                 //CallMgr.getInstance().addDefaultAudioRoute();
-                Executors.newSingleThreadExecutor().execute(new Runnable()
-                {
-                    @Override
-                    public void run()
+                    Executors.newSingleThreadExecutor().execute(new Runnable()
                     {
-                        EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
-                    }
-                });
+                        @Override
+                        public void run()
+                        {
+                            EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
+                        }
+                    });
+                }
                 break;
             case LOGIN_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "login failed,notify UI!");
@@ -197,7 +197,10 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
             case LOGOUT:
                 LogUtil.i(UIConstants.DEMO_TAG, "logout success,notify UI!");
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGOUT, null);
-                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                if (!isResumeAfterLogin)
+                {
+                    Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case FIREWALL_DETECT_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "firewall detect failed,notify UI!");

@@ -77,7 +77,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
         if(convertView == null)
         {
             viewHolder = new ContactViewHolder();
-            convertView = LayoutInflater.from(context).inflate(R.layout.activity_enterprise_list,null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.activity_enterprise_list,parent, false);
             viewHolder.ivHead = (ImageView) convertView.findViewById(R.id.head);
             viewHolder.tvName = (TextView) convertView.findViewById(R.id.user_name);
             viewHolder.tvDept = (TextView) convertView.findViewById(R.id.dept);

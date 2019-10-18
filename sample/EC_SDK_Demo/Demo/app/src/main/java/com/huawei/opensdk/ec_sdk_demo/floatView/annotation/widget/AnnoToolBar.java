@@ -174,7 +174,7 @@ public class AnnoToolBar extends LinearLayout implements View.OnClickListener {
                 mPen.setSelected(true);
                 selectedButton = mPen;
                 if (currentPenColor == 0){
-                    currentPenColor = AnnotationConstants.PEN_COLOR_RED;;
+                    currentPenColor = AnnotationConstants.PEN_COLOR_RED;
                 }
                 int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
                 MeetingMgr.getInstance().setAnnotationPen(currentPenColor, penWidth);

@@ -103,7 +103,7 @@ public class ConfManagerAdapter extends BaseAdapter
     private void updateMemberStatus(ViewHolder viewHolder, Member conferenceMemberEntity)
     {
         ImageView stateIV = viewHolder.callingStateIV;
-        viewHolder.callingStateIV.setBackgroundResource(R.anim.conf_calling_animation);
+        viewHolder.callingStateIV.setBackgroundResource(R.drawable.conf_calling_animation);
         AnimationDrawable animationDrawable;
 
         switch (conferenceMemberEntity.getStatus())

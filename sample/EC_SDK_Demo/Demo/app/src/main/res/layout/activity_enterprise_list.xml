@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60sp">
 
     <ImageView
-        android:layout_width="48sp"
-        android:layout_height="48sp"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
         android:id="@+id/head"
-        android:layout_marginLeft="3sp"
-        android:layout_marginRight="4sp"
-        android:padding="3dp"
-        android:layout_marginTop="3sp"/>
+        android:src="@drawable/default_head"
+        android:layout_marginLeft="15sp"
+        android:layout_marginRight="15sp"
+        android:layout_centerVertical="true" />
 
-    <LinearLayout
-        android:layout_marginTop="3sp"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:id="@+id/user_name"
+        android:layout_toRightOf="@id/head"
+        android:layout_alignTop="@id/head"
+        android:gravity="top"
+        android:textSize="15dp"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="22sp"
-            android:id="@+id/user_name"
-            android:layout_marginTop="5sp"
-            android:gravity="center_vertical"
-            android:textSize="16dp"/>
+    <TextView
+        android:id="@+id/dept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/head"
+        android:layout_alignBottom="@id/head"
+        android:gravity="bottom"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="11dp" />
 
-        <TextView
-            android:id="@+id/dept"
-            android:layout_width="match_parent"
-            android:layout_height="18sp"
-            android:gravity="bottom"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12dp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@id/dept"
+        android:background="@color/divider"
+        android:layout_height="1sp" />
 
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

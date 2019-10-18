@@ -55,6 +55,8 @@ public interface IConfManagerContract
 
         void refreshSvcWatchDisplayName(String remote, String small_01, String small_02, String small_03);
 
+        void closeConf();
+
     }
 
     interface ConfManagerPresenter
@@ -160,6 +162,8 @@ public interface IConfManagerContract
         void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees);
 
         void configIpResume();
+
+        String getAttendeeName(List<Member> list);
 
     }
 }

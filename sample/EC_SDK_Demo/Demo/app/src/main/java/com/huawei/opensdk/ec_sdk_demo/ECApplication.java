@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.huawei.opensdk.callmgr.CallMgr;
+import com.huawei.opensdk.commonservice.common.LocContext;
+import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
+import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
 
 import org.json.JSONObject;
@@ -28,6 +32,15 @@ public class ECApplication extends Application
 
             @Override
             public void onActivityStarted(Activity activity) {
+                if (0 == appCount)
+                {
+                    String currentActivity = ActivityUtil.getCurrentActivity(LocContext.getContext());
+                    if (!currentActivity.equals("LoginActivity") || !currentActivity.equals("AnonymousJoinConfActivity"))
+                    {
+                        boolean isInCall = CallMgr.getInstance().isExistCall();
+                        LoginMgr.getInstance().reRegister(isInCall);
+                    }
+                }
                 appCount++;
             }
 

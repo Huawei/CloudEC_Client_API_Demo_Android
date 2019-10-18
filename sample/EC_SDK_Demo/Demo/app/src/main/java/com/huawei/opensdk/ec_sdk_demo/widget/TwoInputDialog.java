@@ -68,4 +68,9 @@ public class TwoInputDialog extends BaseDialog
     {
         inputET2.setHint(hint2);
     }
+
+    public void setTitle(int id)
+    {
+        titleTV.setText(id);
+    }
 }

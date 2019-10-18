@@ -112,36 +112,35 @@ public class VideoMgr {
         // 创建本地视频窗口（本地窗口只能创建一个，底层可以直接获取到这个窗口）
         // 必须存在，否则远端视频无法显示
         if (localHideView == null) {
-            localHideView = ViERenderer.createLocalRenderer(context);
+            localHideView = callManager.createLocalRenderer(context);
             localHideView.setZOrderOnTop(false);
         }
 
         // 本端窗口显示
         if (localVideoView == null) {
-            localVideoView = ViERenderer.createRenderer(context,true);
+            localVideoView = callManager.createRemoteRenderer(context);
             localVideoView.setZOrderMediaOverlay(true);
         }
 
-
         // 创建远端视频窗口（可以创建多个）
         if (remoteBigVideoView == null) {
-            remoteBigVideoView = ViERenderer.createRenderer(context, true);
+            remoteBigVideoView = callManager.createRemoteRenderer(context);
             remoteBigVideoView.setZOrderMediaOverlay(false);
         }
 
         if (isSvcConf) {
             if (remoteSmallVideoView_01 == null) {
-                remoteSmallVideoView_01 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_01 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_01.setZOrderMediaOverlay(true);
             }
 
             if (remoteSmallVideoView_02 == null) {
-                remoteSmallVideoView_02 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_02 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_02.setZOrderMediaOverlay(true);
             }
 
             if (remoteSmallVideoView_03 == null) {
-                remoteSmallVideoView_03 = ViERenderer.createRenderer(context, true);
+                remoteSmallVideoView_03 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_03.setZOrderMediaOverlay(true);
             }
         }

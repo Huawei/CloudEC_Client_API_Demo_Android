@@ -261,7 +261,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                     {
                         if (list.get(w).getEaddrAccount().equals(defIconInfo.getAccount()))
                         {
-                            list.get(w).setSysIconID(10);
+                            list.get(w).setSysIconID(sysIcon[10]);
                         }
 
                         if (stopFlag >= 0 && stopFlag < list.size() - 1)

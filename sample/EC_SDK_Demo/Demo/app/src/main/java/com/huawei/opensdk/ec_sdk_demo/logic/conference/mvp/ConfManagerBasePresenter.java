@@ -17,6 +17,7 @@ import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.ConfBaseInfo;
+import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
@@ -28,6 +29,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.conference.DataConfActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -413,6 +415,18 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     }
                     break;
 
+                // 会议中，sip注册超时结果(UI主动挂断通话并且离开会议)
+                case CustomBroadcastConstants.LOGIN_FAILED:
+                    long callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
+                    LogUtil.i(UIConstants.DEMO_TAG, "exit during the conf, + callId:" + callID);
+                    if (0 != callID)
+                    {
+                        CallMgr.getInstance().endCall(callID);
+                    }
+
+                    getView().closeConf();
+                    break;
+
                 default:
                     break;
             }
@@ -581,6 +595,40 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
             LoginMgr.getInstance().resetConfig(false);
             isNeedConfigIp = false;
         }
+    }
+
+    @Override
+    public String getAttendeeName(List<Member> list) {
+        List<Member> attendeeName = new ArrayList<>();
+        for (Member member : list)
+        {
+            if (ConfConstant.ParticipantStatus.IN_CONF != member.getStatus())
+            {
+                continue;
+            }
+            attendeeName.add(member);
+        }
+
+        if (1 == attendeeName.size())
+        {
+            return attendeeName.get(0).getDisplayName();
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < attendeeName.size(); i ++)
+        {
+
+            if (i == attendeeName.size() - 1)
+            {
+                builder.append(attendeeName.get(i).getDisplayName());
+            }
+            else
+            {
+                builder.append(attendeeName.get(i).getDisplayName() + ", ");
+            }
+        }
+
+        return builder.toString();
     }
 
     /**

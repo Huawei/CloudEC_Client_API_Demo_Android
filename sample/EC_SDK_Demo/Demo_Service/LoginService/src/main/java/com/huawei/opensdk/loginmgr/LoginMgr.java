@@ -57,11 +57,19 @@ public class LoginMgr {
 
     private int connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
 
+    private boolean isLoginSuccess = false;
+
     /**
      * Define a TupEaddrContactorInfo object
      * 通讯录联系人详细信息对象
      */
     private TsdkContactsInfo selfInfo;
+
+    /**
+     * Parameters for authenticating login information.
+     * 鉴权登录信息参数
+     */
+    private TsdkLoginParam tsdkLoginParam;
 
     /**
      * [en]This method is used to get login manager instance
@@ -109,7 +117,7 @@ public class LoginMgr {
         }
 
         //TSDK 鉴权登录入参
-        TsdkLoginParam tsdkLoginParam = new TsdkLoginParam();
+        tsdkLoginParam = new TsdkLoginParam();
         tsdkLoginParam.setUserId(1);
         tsdkLoginParam.setAuthType(TsdkAuthType.TSDK_E_AUTH_NORMAL);
         tsdkLoginParam.setUserName(loginParam.getUserName());
@@ -189,6 +197,31 @@ public class LoginMgr {
         return ret;
     }
 
+    /**
+     * This method is used to register again.
+     * 重新注册
+     * @param isInCall
+     * @return
+     */
+    public int reRegister(boolean isInCall)
+    {
+        // 不在呼叫且不在会议中，进行重新注册的流程
+        LogUtil.i(TAG, "isInCall-->" + isInCall);
+        if (!isInCall)
+        {
+            int ret;
+
+            ret = TsdkManager.getInstance().getLoginManager().login(tsdkLoginParam);
+            if (ret != 0) {
+                LogUtil.e(TAG, "login is failed, return " + ret);
+                return ret;
+            }
+
+            LogUtil.i(TAG, "reRegister success");
+        }
+
+        return 0;
+    }
 
     /**
      * [en]This method is used to handle the successful authentication.
@@ -214,6 +247,7 @@ public class LoginMgr {
      */
     public void handleAuthFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "authorize failed: " + result.getReasonDescription());
+        this.isLoginSuccess = false;
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, (int)result.getResult(), result.getReasonDescription());
     }
 
@@ -229,6 +263,7 @@ public class LoginMgr {
     public void handleAuthRefreshFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "refresh token failed:" + result.getReasonDescription());
 
+        this.isLoginSuccess = false;
         this.logout();
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGOUT, 0, result.getReasonDescription());
 
@@ -251,6 +286,7 @@ public class LoginMgr {
 
         if (TSDK_E_VOIP_SERVICE_ACCOUNT == serviceAccountType)
         {
+            this.isLoginSuccess = true;
             connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
             this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.VOIP_LOGIN_SUCCESS, userId, "voip login success");
             this.loginEventNotifyUI.onPwdInfoEventNotify(LoginConstant.LoginUIEvent.PASSWORD_INFO, loginSuccessInfo);
@@ -270,6 +306,7 @@ public class LoginMgr {
      */
     public void handleLoginFailed(int userId, TsdkServiceAccountType serviceAccountType, TsdkLoginFailedInfo loginFailedInfo) {
         LogUtil.e(TAG, "voip login failed: " + loginFailedInfo.getReasonDescription());
+        this.isLoginSuccess = false;
         connectedStatus = LoginConstant.NETWORK_CONNECTED_FAILED;
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, loginFailedInfo.getReasonCode(), loginFailedInfo.getReasonDescription());
     }
@@ -405,6 +442,7 @@ public class LoginMgr {
      */
     public void handLoginResumingInd(int userId) {
         LogUtil.i(TAG, "login resume status, userId: " + userId);
+        this.isLoginSuccess = false;
         connectedStatus = LoginConstant.NETWORK_CONNECTED;
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.RESUME_IND, 0, null);
     }
@@ -419,10 +457,12 @@ public class LoginMgr {
         LogUtil.i(TAG, "login resume result: " + result.getReasonDescription());
         if (0 == result.getResult())
         {
+            this.isLoginSuccess = true;
             connectedStatus = LoginConstant.NETWORK_CONNECTED_SUCCESS;
         }
         else
         {
+            this.isLoginSuccess = false;
             connectedStatus = LoginConstant.NETWORK_CONNECTED_FAILED;
         }
         this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.RESUME_RESULT,
@@ -477,6 +517,10 @@ public class LoginMgr {
 
     public void setConnectedStatus(int connectedStatus) {
         this.connectedStatus = connectedStatus;
+    }
+
+    public boolean isLoginSuccess() {
+        return isLoginSuccess;
     }
 
     private Handler mMainHandler = new Handler(Looper.getMainLooper()) {

@@ -103,7 +103,14 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
         }
         else
         {
-            userAvatar.setImageResource(entAddressBookInfo.getSysIconID());
+            if (10 == entAddressBookInfo.getSysIconID())
+            {
+                userAvatar.setImageResource(EnterpriseAddrTools.getSystemIcon()[10]);
+            }
+            else
+            {
+                userAvatar.setImageResource(entAddressBookInfo.getSysIconID());
+            }
         }
         name.setText(entAddressBookInfo.getEaddrName());
         number.setVisibility(View.GONE);

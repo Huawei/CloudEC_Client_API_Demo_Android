@@ -63,8 +63,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/search_list"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true">
+            android:divider="@color/transparent"
+            android:dividerHeight="@dimen/dp0"
+            android:fadingEdge="none"
+            android:layout_alignParentBottom="true">
         </ListView>
 
     </RelativeLayout>

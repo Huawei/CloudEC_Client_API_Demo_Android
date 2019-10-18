@@ -58,6 +58,7 @@ public final class UIConstants
     public static final int LOGIN_RESUME_IND = 200;
     public static final int LOGIN_RESUME_RESULT = 201;
     public static final int LOGIN_FAILED = 202;
+    public static final int LOGIN_SUCCESS = 203;
 
     /**
      * Avatar Image source

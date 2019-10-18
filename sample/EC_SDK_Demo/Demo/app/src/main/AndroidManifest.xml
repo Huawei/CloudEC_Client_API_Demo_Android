@@ -273,8 +273,10 @@
         </activity>
         <activity android:name=".ui.base.SignalInfomationActivity"
             android:theme="@style/Theme.FloatActivity">
-
         </activity>
+
+        <!--声明最大屏幕纵横比即应用程序适配全面屏手机，若在手机上旋转屏幕显示不全，请在应用设置中选择全面屏显示-->
+        <meta-data android:name="android.max_aspect" android:value="2.1" />
     </application>
 
 </manifest>

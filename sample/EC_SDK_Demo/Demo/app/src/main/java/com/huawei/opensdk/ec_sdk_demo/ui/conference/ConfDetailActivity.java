@@ -84,8 +84,15 @@ public class ConfDetailActivity extends MVPBaseActivity<ICreateConfContract.Conf
         switch (v.getId())
         {
             case R.id.join_conf_btn:
-                mPresenter.joinConf(participantNumberTV.getText().toString());
-                finish();
+                if (LoginMgr.getInstance().isLoginSuccess())
+                {
+                    mPresenter.joinConf(participantNumberTV.getText().toString());
+                    finish();
+                }
+                else
+                {
+                    showCustomToast(R.string.ban_join_conf);
+                }
                 break;
             case R.id.reject_btn:
 

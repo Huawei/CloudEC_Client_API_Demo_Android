@@ -138,7 +138,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isActiveShare = false;
 
     private int mScreenWidth;
-    private int mScreenHeight;
     private boolean isHideVideoWindow = false;
     private boolean isOnlyLocal = true;
     private boolean isSetOnlyLocalWind = false;
@@ -381,25 +380,25 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             mConfVideoBackIV.setRotation(0);
             mConfVideoForwardIV.setRotation(0);
             mConfLocalVideoLayout.getLayoutParams().width = mScreenWidth / 4;
-            mConfLocalVideoLayout.getLayoutParams().height = mScreenHeight / 4;
+            mConfLocalVideoLayout.getLayoutParams().height = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_01.getLayoutParams().width = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_01.getLayoutParams().height = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_01.getLayoutParams().height = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_02.getLayoutParams().width = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_02.getLayoutParams().height = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_02.getLayoutParams().height = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_03.getLayoutParams().width = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_03.getLayoutParams().height = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_03.getLayoutParams().height = (int) (mScreenWidth / 4 * (16.0/9.0));
         }
         else
         {
             mConfVideoBackIV.setRotation(90);
             mConfVideoForwardIV.setRotation(90);
-            mConfLocalVideoLayout.getLayoutParams().width = mScreenHeight / 4;
+            mConfLocalVideoLayout.getLayoutParams().width = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfLocalVideoLayout.getLayoutParams().height = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_01.getLayoutParams().width = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_01.getLayoutParams().width = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_01.getLayoutParams().height = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_02.getLayoutParams().width = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_02.getLayoutParams().width = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_02.getLayoutParams().height = mScreenWidth / 4;
-            mConfRemoteSmallVideoLayout_03.getLayoutParams().width = mScreenHeight / 4;
+            mConfRemoteSmallVideoLayout_03.getLayoutParams().width = (int) (mScreenWidth / 4 * (16.0/9.0));
             mConfRemoteSmallVideoLayout_03.getLayoutParams().height = mScreenWidth / 4;
         }
     }
@@ -475,12 +474,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
         {
             mScreenWidth = DisplayUtils.getScreenHeightPixels(this) - px;
-            mScreenHeight = DisplayUtils.getScreenWidthPixels(this) - px;
         }
         else
         {
             mScreenWidth = DisplayUtils.getScreenWidthPixels(this) - px;
-            mScreenHeight = DisplayUtils.getScreenHeightPixels(this) - px;
         }
     }
 
@@ -852,7 +849,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 mAdapter.notifyDataSetChanged();
                 if (!isVideo)
                 {
-                    mAudioConfAttendeeTV.setText(getAttendeeName(list));
+                    mAudioConfAttendeeTV.setText(mPresenter.getAttendeeName(list));
                 }
             }
         });
@@ -1028,29 +1025,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         });
     }
 
-    private String getAttendeeName(List<Member> list)
-    {
-        if (1 == list.size())
-        {
-            return list.get(0).getDisplayName();
-        }
-
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < list.size(); i ++)
-        {
-            if (i == list.size() - 1)
-            {
-                builder.append(list.get(i).getDisplayName());
-            }
-            else
-            {
-                builder.append(list.get(i).getDisplayName() + ", ");
-            }
-        }
-
-        return builder.toString();
-    }
-
     private void showMoreButton()
     {
         mConfAttendee.setVisibility(View.VISIBLE);
@@ -1183,6 +1157,17 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             @Override
             public void onClick(View v)
             {
+                closeConf();
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    public void closeConf() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
@@ -1190,7 +1175,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 finish();
             }
         });
-        dialog.show();
     }
 
     private void showEndConfDialog()
@@ -1638,17 +1622,22 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         if (newConfig.orientation == 2)
         {
             mConfSmallVideoWndLL.setOrientation(LinearLayout.VERTICAL);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             setConfVideoSize(false);
         }
         else
         {
             mConfSmallVideoWndLL.setOrientation(LinearLayout.HORIZONTAL);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             setConfVideoSize(true);
         }
+        mConfSmallVideoWndLL.setLayoutParams(layoutParams);
 
         if (this.mOrientation == newConfig.orientation)
         {
