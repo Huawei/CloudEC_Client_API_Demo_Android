@@ -21,6 +21,9 @@ import com.huawei.opensdk.demoservice.Member;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBasePresenter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 
 public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataConfView>
         implements IDataConfContract.IDataConfPresenter
@@ -84,10 +87,16 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
 
                 case CustomBroadcastConstants.DATE_CONFERENCE_CHAT_MSG:
                     TsdkConfChatMsgInfo chatMsgInfo = (TsdkConfChatMsgInfo) obj;
-                    String msgInfo = chatMsgInfo.getChatMsg();
+                    String msgInfo = "";
                     String userName = chatMsgInfo.getSenderDisplayName();
                     String userNumber = chatMsgInfo.getSenderNumber();
                     boolean isSelfMsg = false;
+
+                    try {
+                        msgInfo = URLDecoder.decode(chatMsgInfo.getChatMsg(), "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
 
                     Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
                     if (null != self)

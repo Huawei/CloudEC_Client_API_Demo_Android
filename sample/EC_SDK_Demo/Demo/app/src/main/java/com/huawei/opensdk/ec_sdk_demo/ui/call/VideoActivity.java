@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -27,11 +28,11 @@ import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.IVideoCallContract;
 import com.huawei.opensdk.ec_sdk_demo.logic.call.VideoCallPresenter;
-import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
-import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInfomationActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInformationDialog;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.DisplayUtils;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 
 import org.json.JSONObject;
@@ -70,6 +71,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private boolean mIsCameraClose = false;
     private SecondDialPlateControl mPlateControl;
     private AlertDialog mDialog;
+    private SignalInformationDialog mSignalDialog;
 
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_CALL_END,
             CustomBroadcastConstants.ADD_LOCAL_VIEW,
@@ -85,6 +87,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private long mCallID;
     private Object thisVideoActivity = this;
     private boolean mIsConfCall = false;
+    private int mScreenWidth;
 
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
@@ -248,6 +251,8 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         mCallInfo = (CallInfo) intent.getSerializableExtra(UIConstants.CALL_INFO);
         mPresenter.setCurrentCallInfo(mCallInfo);
         this.mCallID = mCallInfo.getCallID();
+
+        mScreenWidth = DisplayUtils.getScreenWidthPixels(this);
     }
 
     @Override
@@ -396,16 +401,28 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 mPlateControl.hideDialPlate();
                 break;
             case R.id.signal_view:
-                
-                Intent signalIntent = new Intent(VideoActivity.this, SignalInfomationActivity.class);
-                signalIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                signalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
-                signalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
-                startActivity(signalIntent);
+                showSignalDialog();
                 break;
             default:
                 break;
         }
+    }
+
+    private void showSignalDialog()
+    {
+        if (null == mSignalDialog)
+        {
+            mSignalDialog = new SignalInformationDialog(this);
+        }
+        mSignalDialog.updateCallInfo(mCallInfo);
+        Window window = mSignalDialog.getWindow();
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.width = mScreenWidth - 60;
+        layoutParams.height = (int) ((mScreenWidth - 60) * (3.0 / 5.0));
+        layoutParams.alpha = 0.5f;      //设置本身透明度
+        layoutParams.dimAmount = 0.0f;      //设置窗口外黑暗度
+        window.setAttributes(layoutParams);
+        mSignalDialog.show();
     }
 
     private void addSurfaceView(ViewGroup container, SurfaceView child)

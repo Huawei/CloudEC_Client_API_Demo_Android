@@ -53,6 +53,8 @@ import com.huawei.opensdk.commonservice.util.DeviceManager;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -148,6 +150,11 @@ public class MeetingMgr implements IMeetingMgr{
      * SVC 会议信息
      */
     private SvcMemberInfo svcConfInfo;
+
+    /**
+     * 会议是否存在
+     */
+    private boolean isExistConf = false;
 
     private TsdkShareStatisticInfo currentShareStatisticInfo;
 
@@ -344,6 +351,14 @@ public class MeetingMgr implements IMeetingMgr{
 
     public SvcMemberInfo getSvcConfInfo() {
         return svcConfInfo;
+    }
+
+    public void setExistConf(boolean existConf) {
+        isExistConf = existConf;
+    }
+
+    public boolean isExistConf() {
+        return isExistConf;
     }
 
     public String[] getSpeakers() {
@@ -1538,9 +1553,17 @@ public class MeetingMgr implements IMeetingMgr{
             LogUtil.e(TAG,  "send chat failed, currentConference is null ");
             return;
         }
+        String encodeStr = "";
+        try {
+            encodeStr = URLEncoder.encode(message, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         TsdkConfChatMsgInfo chatMsgInfo = new TsdkConfChatMsgInfo();
         chatMsgInfo.setChatType(TsdkConfChatType.TSDK_E_CONF_CHAT_PUBLIC);
-        chatMsgInfo.setChatMsg(message);
+        chatMsgInfo.setChatMsgLen(encodeStr.length());
+        chatMsgInfo.setChatMsg(encodeStr);
+
         if (null == self)
         {
             chatMsgInfo.setSenderDisplayName(LoginMgr.getInstance().getAccount());
@@ -1719,6 +1742,7 @@ public class MeetingMgr implements IMeetingMgr{
             this.currentConference = tsdkConference;
             this.memberList = null;
             this.self = null;
+            this.isExistConf = true;
 
             if (isGetTempUserSuccess()){
                 setAnonymous(true);
@@ -1776,7 +1800,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void  handleGetDataConfParamsResult(TsdkConference tsdkConference, TsdkCommonResult commonResult){
 
-        LogUtil.i(TAG, "handleJoinConfResult");
+        LogUtil.i(TAG, "handleGetDataConfParamsResult");
         if (tsdkConference == null) {
             LogUtil.e(TAG, "handleJoinConfResult tsdkConference is null");
             return;
@@ -1928,7 +1952,7 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleConfEndInd(TsdkConference conference)
     {
-        LogUtil.i(TAG, "handleConfEndInd" + conference.getHandle());
+        LogUtil.i(TAG, "handleConfEndInd, handle-->" + conference.getHandle());
         currentConference = null;
 
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LEAVE_CONF, conference.getHandle());

@@ -56,6 +56,7 @@ public interface CustomBroadcastConstants
     String CONF_CALL_CONNECTED = "com.huawei.opensdk.conf.confcallconnected";
     String DIVERT_RESULT = "com.huawei.opensdk.conf.divertresult";
     String BLD_TRANSFER_RESULT = "com.huawei.opensdk.conf.bldtransferresult";
+    String JOIN_CONF_FAILED = "com.huawei.opensdk.conf.joinconffailed";
 
     String UPGRADE_CONF_RESULT = "com.huawei.opensdk.conf.upgradeconfresult";
     String WATCH_ATTENDEE_CONF_RESULT = "com.huawei.opensdk.conf.watchattendeeconfresult";

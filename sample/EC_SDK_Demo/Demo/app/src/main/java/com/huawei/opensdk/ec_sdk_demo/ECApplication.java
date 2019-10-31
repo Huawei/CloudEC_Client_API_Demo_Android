@@ -35,7 +35,7 @@ public class ECApplication extends Application
                 if (0 == appCount)
                 {
                     String currentActivity = ActivityUtil.getCurrentActivity(LocContext.getContext());
-                    if (!currentActivity.equals("LoginActivity") || !currentActivity.equals("AnonymousJoinConfActivity"))
+                    if (!currentActivity.equals("LoginActivity") && !currentActivity.equals("AnonymousJoinConfActivity"))
                     {
                         boolean isInCall = CallMgr.getInstance().isExistCall();
                         LoginMgr.getInstance().reRegister(isInCall);

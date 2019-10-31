@@ -15,6 +15,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -49,12 +51,13 @@ import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
-import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInfomationActivity;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInformationDialog;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.DisplayUtils;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
+import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmSimpleDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
@@ -123,7 +126,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isSvcConf = false;
     private boolean isDateConf = false;
     private List<Object> items = new ArrayList<>();
-    private int mOrientation = 1;
+    private int mOrientation = 1; // 屏幕方向：2：横屏；1：竖屏
 
     private MyTimerTask myTimerTask;
     private Timer timer;
@@ -141,6 +144,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isHideVideoWindow = false;
     private boolean isOnlyLocal = true;
     private boolean isSetOnlyLocalWind = false;
+    private boolean isSharing = false; // 是否有人正在共享
+    private boolean isShareOwner = false; // 自己是否正在共享
+    private SignalInformationDialog dialog;
+    private ConfirmDialog confirmDialog;
     private String mCurrentActivity = ConfManagerActivity.class.getSimpleName();
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
@@ -198,6 +205,9 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void initializeComposition()
     {
+        // keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.conf_manager_activity);
         mVideoConfLayout = (RelativeLayout) findViewById(R.id.conference_video_layout);
         mTitleLayout = (RelativeLayout) findViewById(R.id.title_layout_transparent);
@@ -449,6 +459,21 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mPresenter.setConfID(confID);
         mAdapter = new PopupConfListAdapter(this);
 
+        // 获取屏幕方向
+        Configuration configuration = this.getResources().getConfiguration();
+        mOrientation = configuration.orientation;
+
+        // 获取屏幕的宽和高
+        int px = DisplayUtils.dp2px(this, 40);
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            mScreenWidth = DisplayUtils.getScreenHeightPixels(this) - px;
+        }
+        else
+        {
+            mScreenWidth = DisplayUtils.getScreenWidthPixels(this) - px;
+        }
+
         if (!isVideo)
         {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
@@ -463,21 +488,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             items.add(getString(R.string.broadcast_mode));
             items.add(getString(R.string.voice_control_mode));
             items.add(getString(R.string.free_mode));
-        }
-
-        // 获取屏幕方向
-        Configuration configuration = this.getResources().getConfiguration();
-        mOrientation = configuration.orientation;
-
-        // 获取屏幕的宽和高
-        int px = DisplayUtils.dp2px(this, 40);
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-            mScreenWidth = DisplayUtils.getScreenHeightPixels(this) - px;
-        }
-        else
-        {
-            mScreenWidth = DisplayUtils.getScreenWidthPixels(this) - px;
         }
     }
 
@@ -615,6 +625,30 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 ActivityUtil.startActivity(this, intent);
                 break;
             case R.id.conf_share:
+                if (!mPresenter.isChairMan())
+                {
+                    // 不是主席先判断是否有人正在共享
+                    if (this.isSharing)
+                    {
+                        showSharingDialog(getString(R.string.share_later));
+                        return;
+                    }
+                }
+                else
+                {
+                    if (this.isSharing)
+                    {
+                        showGrabShareDialog();
+                        return;
+                    }
+                }
+
+                if (isShareOwner)
+                {
+                    showSharingDialog(getString(R.string.you_are_sharing));
+                    return;
+                }
+
                 if (FloatWindowsManager.getInstance().checkPermission(this)) {
                     requestScreenSharePermission();
                 } else {
@@ -650,22 +684,83 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 turnPage(true);
                 break;	
             case R.id.signal_view:
-                Intent signalIntent = new Intent(ConfManagerActivity.this, SignalInfomationActivity.class);
-                signalIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                signalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
-                signalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
-                startActivity(signalIntent);
-                break;
             case R.id.audio_signal_view:
-                Intent audioSignalIntent = new Intent(ConfManagerActivity.this, SignalInfomationActivity.class);
-                audioSignalIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                audioSignalIntent.addCategory(IntentConstant.DEFAULT_CATEGORY);
-                audioSignalIntent.putExtra(UIConstants.CALL_INFO, mCallInfo);
-                startActivity(audioSignalIntent);
+                showSignalInfoDialog();
                 break;
             default:
                 break;
         }
+    }
+
+    private void showSharingDialog(String message)
+    {
+        ConfirmSimpleDialog simpleDialog = new ConfirmSimpleDialog(this, message);
+        simpleDialog.show();
+    }
+
+    private void showGrabShareDialog()
+    {
+        if (null == confirmDialog)
+        {
+            confirmDialog = new ConfirmDialog(this, R.string.grab_share);
+        }
+        confirmDialog.setRightButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (FloatWindowsManager.getInstance().checkPermission(ConfManagerActivity.this))
+                {
+                    requestScreenSharePermission();
+                }
+                else
+                {
+                    FloatWindowsManager.getInstance().applyPermission(ConfManagerActivity.this);
+                }
+            }
+        });
+        confirmDialog.show();
+    }
+
+    private void showSignalInfoDialog()
+    {
+        if (null == dialog)
+        {
+            dialog = new SignalInformationDialog(this);
+        }
+        dialog.updateCallInfo(mCallInfo);
+        setDialogSize();
+        dialog.show();
+    }
+
+    private void setDialogSize()
+    {
+        if (null == dialog)
+        {
+            return;
+        }
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.0f;      //设置窗口外黑暗度
+        
+        if (!isVideo)
+        {
+            layoutParams.width = mScreenWidth - 20;
+            layoutParams.height = (int) ((mScreenWidth + 40) * (3.0 / 5.0));
+            window.setAttributes(layoutParams);
+            return;
+        }
+
+        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            layoutParams.width = (int) ((mScreenWidth + 40) * (6.0 / 5.0));
+            layoutParams.height = mScreenWidth - 20;
+        }
+        else
+        {
+            layoutParams.width = mScreenWidth - 20;
+            layoutParams.height = (int) ((mScreenWidth + 40) * (3.0 / 5.0));
+        }
+        layoutParams.alpha = 0.5f;      //设置本身透明度
+        window.setAttributes(layoutParams);
     }
 	
 	private void turnPage(boolean isBack)
@@ -1177,6 +1272,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         });
     }
 
+    @Override
+    public void updateSharingStatus(boolean isSharing) {
+        this.isSharing = isSharing;
+    }
+
     private void showEndConfDialog()
     {
         TripleDialog dialog = new TripleDialog(this);
@@ -1250,6 +1350,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
     @Override
     public void updateAttendeeButton(final Member member) {
+        this.isShareOwner = member.isShareOwner();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1622,6 +1723,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (!isVideo)
+        {
+            return;
+        }
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
@@ -1647,6 +1752,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         {
             this.mOrientation = newConfig.orientation;
             mPresenter.setAutoRotation(this, true, this.mOrientation);
+            setDialogSize();
         }
     }
     

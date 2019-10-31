@@ -17,6 +17,7 @@ import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.demoservice.ConfConstant;
 import com.huawei.opensdk.demoservice.IConfNotification;
+import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
@@ -33,6 +34,7 @@ public class ConfFunc implements IConfNotification
     private static final int JOIN_VOICE_CONF_SUCCESS = 109;
     private static final int JOIN_VIDEO_CONF_SUCCESS = 110;
     private static final int JOIN_CONF_FAILED = 111;
+    private static final int GET_DATA_CONF_PARAM = 112;
 
     private static ConfFunc mInstance = new ConfFunc();
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.CONF_INFO_PARAM};
@@ -108,6 +110,10 @@ public class ConfFunc implements IConfNotification
                             Toast.LENGTH_SHORT).show();
                     break;
 
+                case GET_DATA_CONF_PARAM:
+                    MeetingMgr.getInstance().joinDataConf();
+                    break;
+
                 default:
                     break;
             }
@@ -173,6 +179,7 @@ public class ConfFunc implements IConfNotification
                 break;
 
             case JOIN_CONF_FAILED:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.JOIN_CONF_FAILED, params);
                 mHandler.sendEmptyMessage(JOIN_CONF_FAILED);
                 break;
 
@@ -274,6 +281,7 @@ public class ConfFunc implements IConfNotification
 
             case GET_DATA_CONF_PARAM_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT, params);
+                mHandler.sendEmptyMessage(GET_DATA_CONF_PARAM);
                 break;
 
             case UPGRADE_CONF_RESULT:

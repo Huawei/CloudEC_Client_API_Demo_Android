@@ -57,6 +57,7 @@ public interface IConfManagerContract
 
         void closeConf();
 
+        void updateSharingStatus(boolean isSharing);
     }
 
     interface ConfManagerPresenter
@@ -164,6 +165,5 @@ public interface IConfManagerContract
         void configIpResume();
 
         String getAttendeeName(List<Member> list);
-
     }
 }

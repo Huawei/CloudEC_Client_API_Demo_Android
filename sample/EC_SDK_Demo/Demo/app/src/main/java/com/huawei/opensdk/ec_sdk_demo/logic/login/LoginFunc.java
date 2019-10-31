@@ -16,6 +16,8 @@ import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
+import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
+import com.huawei.opensdk.ec_sdk_demo.ui.login.LoginActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.ILoginEventNotifyUI;
 import com.huawei.opensdk.loginmgr.LoginConstant;
@@ -199,6 +201,7 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.LOGOUT, null);
                 if (!isResumeAfterLogin)
                 {
+                    ActivityStack.getIns().popupAbove(LoginActivity.class);
                     Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                 }
                 break;

@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.conference.anonymous;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.SpannableString;
@@ -21,7 +22,6 @@ import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.anonymous.AnonymousPresenter;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.loginmgr.LoginConstant;
-import com.huawei.opensdk.loginmgr.LoginMgr;
 
 public class AnonymousJoinConfActivity extends BaseActivity {
 
@@ -31,14 +31,16 @@ public class AnonymousJoinConfActivity extends BaseActivity {
     private EditText mAnonymousConfPassword;
     private EditText mAnonymousAddress;
     private EditText mAnonymousPort;
-
+    private ProgressDialog mDialog;
 
     private SharedPreferences mSharedPreferences;
     private SharedPreferences mSettingPreferences;
     private AnonymousPresenter mAnonymousPresenter;
     private boolean isFirst = false;
 
-    private String[] mActions = new String[]{CustomBroadcastConstants.GET_TEMP_USER_RESULT};
+    private String[] mActions = new String[]{CustomBroadcastConstants.GET_TEMP_USER_RESULT,
+            CustomBroadcastConstants.CONF_CALL_CONNECTED,
+            CustomBroadcastConstants.JOIN_CONF_FAILED};
 
     @Override
     public void initializeComposition() {
@@ -131,8 +133,29 @@ public class AnonymousJoinConfActivity extends BaseActivity {
                 serviceAddress,
                 servicePort,
                 mSettingPreferences.getBoolean(LoginConstant.TUP_VPN, false));
+
         if(0 == result){
-            Toast.makeText(this, "joining ... ", Toast.LENGTH_SHORT).show();
+            showJoiningDialog();
+        }
+    }
+
+    private void showJoiningDialog()
+    {
+        if (null == mDialog)
+        {
+            mDialog = new ProgressDialog(this);
+        }
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setMessage("joining...");
+        mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mDialog.show();
+    }
+
+    private void dismissJoiningDialog()
+    {
+        if (null != mDialog && mDialog.isShowing())
+        {
+            mDialog.dismiss();
         }
     }
 
@@ -145,6 +168,7 @@ public class AnonymousJoinConfActivity extends BaseActivity {
                     if (obj instanceof TsdkCommonResult){
                         TsdkCommonResult result = (TsdkCommonResult)obj;
                         if(0 != result.getResult()){
+                            dismissJoiningDialog();
                             final String reason = "join conf failed ,reason:"+result.getReasonDescription();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -154,6 +178,10 @@ public class AnonymousJoinConfActivity extends BaseActivity {
                             });
                         }
                     }
+                    break;
+                case CustomBroadcastConstants.CONF_CALL_CONNECTED:
+                case CustomBroadcastConstants.JOIN_CONF_FAILED:
+                    dismissJoiningDialog();
                     break;
 
                 default:
@@ -173,6 +201,7 @@ public class AnonymousJoinConfActivity extends BaseActivity {
     protected void onDestroy()
     {
         super.onDestroy();
+        dismissJoiningDialog();
         LocBroadcast.getInstance().unRegisterBroadcast(receiver, mActions);
     }
 }

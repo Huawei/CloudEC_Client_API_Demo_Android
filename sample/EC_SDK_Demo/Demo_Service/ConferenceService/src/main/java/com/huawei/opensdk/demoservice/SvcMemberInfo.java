@@ -248,11 +248,14 @@ public class SvcMemberInfo {
                 tempWatch.setLabel(svcLabel.get(loop+1));
                 tempWatch.setWidth(160);
                 tempWatch.setHeight(90);
-                Member tempMember = watchableMemberList.get(startIndex++);
-                if (tempMember != null) {
-                    tempWatch.setNumber(tempMember.getNumber());
+                if (watchableMemberList.size() > 0)
+                {
+                    // 规避下标越界异常
+                    Member tempMember = watchableMemberList.get(startIndex++);
+                    if (tempMember != null) {
+                        tempWatch.setNumber(tempMember.getNumber());
+                    }
                 }
-
                 beWatchMemberList.add(tempWatch);
             }
 

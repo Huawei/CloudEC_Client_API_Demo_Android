@@ -100,6 +100,21 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         currentShowSmallWndCount = num;
                         getView().setSmallVideoVisible(currentShowSmallWndCount);
                     }
+
+                    // 处理是否有人正在共享
+                    for (Member member : memberList)
+                    {
+                        if (member.isSelf())
+                        {
+                            continue;
+                        }
+                        if (member.isShareOwner())
+                        {
+                            getView().updateSharingStatus(true);
+                            return;
+                        }
+                        getView().updateSharingStatus(false);
+                    }
                     break;
 
                 case CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT:
@@ -107,9 +122,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     if (result != 0)
                     {
                         getView().showCustomToast(R.string.get_data_conf_params_fail);
-                        return;
                     }
-                    MeetingMgr.getInstance().joinDataConf();
                     break;
 
                 case CustomBroadcastConstants.DATA_CONFERENCE_JOIN_RESULT:
@@ -424,7 +437,20 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                         CallMgr.getInstance().endCall(callID);
                     }
 
-                    getView().closeConf();
+                    if (MeetingMgr.getInstance().isExistConf())
+                    {
+                        MeetingMgr.getInstance().setExistConf(false);
+                        getView().closeConf();
+                    }
+                    break;
+
+                // 加入会议失败
+                case CustomBroadcastConstants.JOIN_CONF_FAILED:
+                    if (MeetingMgr.getInstance().isExistConf())
+                    {
+                        MeetingMgr.getInstance().setExistConf(false);
+                        getView().closeConf();
+                    }
                     break;
 
                 default:

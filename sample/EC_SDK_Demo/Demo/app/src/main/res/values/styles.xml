@@ -217,7 +217,7 @@
 
     <style name="center_content_title">
         <item name="android:padding">@dimen/dp10</item>
-        <item name="android:layout_height">@dimen/dp80</item>
+        <item name="android:layout_height">@dimen/dp100</item>
         <item name="android:layout_width">match_parent</item>
 
         <item name="android:gravity">center</item>
@@ -235,7 +235,7 @@
         <item name="android:lineSpacingExtra">@dimen/dp2</item>
     </style>
 
-    <style name="Theme.FloatActivity" parent="android:style/Theme.Dialog">
+    <style name="signal_dialog" parent="android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item><!--activity无黑边-->
         <item name="android:windowIsFloating">true</item><!--activity可滑动-->
         <item name="android:windowIsTranslucent">false</item><!--activity透明-->
