@@ -9,7 +9,6 @@ import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
-import com.huawei.opensdk.ec_sdk_demo.floatView.annotation.common.AnnotationConstants;
 import com.huawei.opensdk.ec_sdk_demo.floatView.util.LayoutUtil;
 
 
@@ -31,7 +30,7 @@ public class AnnotationDrawingView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.annot_drawing_layout, this);
         drawingLayout = (FrameLayout)findViewById(R.id.annot_drawing_view);
         initAnnotDrawingView(context);
-        penColor = AnnotationConstants.PEN_COLOR_RED;
+        penColor = MeetingMgr.getInstance().getCurrentPenColor();
         int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
         MeetingMgr.getInstance().setAnnotationPen(penColor, penWidth);
     }

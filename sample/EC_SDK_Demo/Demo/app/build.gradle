@@ -12,9 +12,9 @@ android {
         versionCode 1
         versionName "1.0"
 
-        jackOptions{
-            enabled = true
-        }
+//        jackOptions{
+//            enabled = true
+//        }
     }
     buildTypes {
         release {
@@ -28,19 +28,19 @@ android {
     }
 
     //gradle version 2.x
-    android.applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def file = output.outputFile
-            output.outputFile = new File(file.parent, "EC_SDK_Demo.apk")
-        }
-    }
-
-    //gradle version 3.x
 //    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            outputFileName = "EC_SDK_Demo.apk"
+//        variant.outputs.each { output ->
+//            def file = output.outputFile
+//            output.outputFile = new File(file.parent, "EC_SDK_Demo.apk")
 //        }
 //    }
+
+    //gradle version 3.x
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "EC_SDK_Demo.apk"
+        }
+    }
 
 
     compileOptions {

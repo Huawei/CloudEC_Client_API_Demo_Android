@@ -1266,6 +1266,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                ActivityStack.getIns().popup(DataConfActivity.class);
                 stopTimer();
                 finish();
             }

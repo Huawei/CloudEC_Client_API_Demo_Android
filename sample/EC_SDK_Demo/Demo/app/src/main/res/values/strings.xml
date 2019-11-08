@@ -2232,6 +2232,8 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="share_later">Others are sharing, you can initiate sharing after someone else ends sharing</string>
     <string name="you_are_sharing">You are sharing, please stop sharing and try again</string>
     <string name="grab_share">This operation will stop sharing, are you sure you want to continue?</string>
+    <string name="insufficient_permission">EC_SDK_Demo requires insufficient privileges, the program will exit.</string>
+    <string name="login_set">Login Setting</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>

@@ -122,10 +122,9 @@ public class AnnoToolBar extends LinearLayout implements View.OnClickListener {
         mErase.setText(R.string.anno_erase);
         mEmpty.setText(R.string.anno_empty);
 
+        updatePenColor();
         mEmpty.setIconBackgroundResource(R.drawable.float_anno_empty);
         mErase.setIconBackgroundResource(R.drawable.float_anno_erase);
-        mPen.setIconBackgroundResource(R.drawable.float_anno_pen_red);
-        mColor.setIconBackgroundResource(R.drawable.float_anno_color_red);
         mExit.setBackgroundResource(R.drawable.float_anno_exit);
 
         mEmpty.setOnClickListener(this);
@@ -241,18 +240,39 @@ public class AnnoToolBar extends LinearLayout implements View.OnClickListener {
         MeetingMgr.getInstance().setAnnotationPen(currentPenColor, penWidth);
     }
 
-    public void reset(boolean isNeedReset) {
-        if (mPen != null) {
-            if (isNeedReset) {
+    private void updatePenColor()
+    {
+        switch (MeetingMgr.getInstance().getCurrentPenColor())
+        {
+            case AnnotationConstants.PEN_COLOR_BLACK:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_black);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_black);
+                break;
+            case AnnotationConstants.PEN_COLOR_RED:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_red);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_red);
+                break;
+            case AnnotationConstants.PEN_COLOR_GREEN:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_green);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_green);
+                break;
+            case AnnotationConstants.PEN_COLOR_BLUE:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_blue);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_blue);
+                break;
+            default:
                 mPen.setIconBackgroundResource(R.drawable.anno_pen_red_selector);
+                mColor.setIconBackgroundResource(R.drawable.anno_color_red_selector);
+                break;
+        }
+    }
+
+    public void reset(boolean isNeedReset) {
+        if (mPen != null && mColor != null) {
+            if (isNeedReset) {
+                updatePenColor();
             }
             mPen.setSelected(true);
-        }
-
-        if (mColor != null) {
-            if (isNeedReset) {
-                mColor.setIconBackgroundResource(R.drawable.anno_color_red_selector);
-            }
         }
 
         if (mErase != null) {

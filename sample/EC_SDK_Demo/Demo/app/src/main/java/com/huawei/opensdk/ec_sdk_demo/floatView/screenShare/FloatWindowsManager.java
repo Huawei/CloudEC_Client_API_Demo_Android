@@ -199,7 +199,7 @@ public class FloatWindowsManager {
     }
 
     public void applyPermission(Context context) {
-        LogUtil.i(UIConstants.DEMO_TAG,"enter apply floatwindow permission ");
+        LogUtil.i(UIConstants.DEMO_TAG,"enter apply float window permission.");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             if (RomUtils.checkIsMiuiRom()) {
                 miuiROMPermissionApply(context);

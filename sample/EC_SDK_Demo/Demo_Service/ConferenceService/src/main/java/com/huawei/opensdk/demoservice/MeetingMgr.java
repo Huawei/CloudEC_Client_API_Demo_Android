@@ -371,6 +371,15 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
+     * This method is used to get the brush color.
+     * 获取当前画笔颜色
+     * @return
+     */
+    public int getCurrentPenColor() {
+        return currentConference.getLocalPenColor();
+    }
+
+    /**
      * This method is used to update conf info
      * 更新会议信息
      * @param conference 会议信息
@@ -451,6 +460,8 @@ public class MeetingMgr implements IMeetingMgr{
             watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
             int ret = watchAttendee(watchAttendeesInfo);
             if (ret != 0){
+                // 选看失败后清空被选看列表
+                svcConfInfo.getBeWatchMemberList().clear();
                 LogUtil.e(TAG, "watchAttendee is return failed.");
             }
         }
@@ -527,6 +538,8 @@ public class MeetingMgr implements IMeetingMgr{
         bookConfInfo.setSize(bookConferenceInfo.getSize());
         bookConfInfo.setIsAutoRecord(bookConferenceInfo.getIs_auto()? 1:0);
         bookConfInfo.setRecordMode(bookConferenceInfo.getRecordType());
+        // 创建会议时设置为多流视频会议
+        bookConfInfo.setIsMultiStreamConf(1);
 
         List<TsdkAttendeeBaseInfo> attendeeList = ConfConvertUtil.memberListToAttendeeList(bookConferenceInfo.getMemberList());
         bookConfInfo.setAttendeeList(attendeeList);

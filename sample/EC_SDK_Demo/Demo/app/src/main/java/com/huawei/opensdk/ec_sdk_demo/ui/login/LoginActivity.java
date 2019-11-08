@@ -3,10 +3,8 @@ package com.huawei.opensdk.ec_sdk_demo.ui.login;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -47,6 +45,7 @@ import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.PermissionDialog;
 import com.huawei.opensdk.ec_sdk_demo.util.ZipUtil;
+import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmSimpleDialog;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
@@ -83,6 +82,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
     private ImageView mLoginSettingBtn;
 
     private ProgressDialog mDialog;
+    private ConfirmSimpleDialog mSimpleDialog;
     private String[] mActions = new String[]{CustomBroadcastConstants.LOGIN_SUCCESS, CustomBroadcastConstants.LOGIN_FAILED,
             CustomBroadcastConstants.LOGOUT};
 
@@ -176,6 +176,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
         mSettingPresenter = new LoginModel(mSharedPreferences);
         mIdoProtocol = mSharedPreferences.getInt(LoginConstant.CONF_CTRL_PROTOCOL, 0);
         MeetingMgr.getInstance().setConfProtocol(ConfConvertUtil.convertConfctrlProtocol(mIdoProtocol));
+        LoginConstant.HAVE_WRITE_PERMISSION = mSharedPreferences.getBoolean(LoginConstant.WRITE_PERMISSION, false);
     }
 
     @Override
@@ -298,7 +299,6 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
      */
     private int mIdoProtocol = 0;
 
-
     /**
      * 权限判断和申请
      */
@@ -335,21 +335,30 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
         boolean hasPermissionDismiss = false;//有权限没有通过
         if (mRequestCode == requestCode) {
             for (int i = 0; i < grantResults.length; i++) {
+                if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permissions[i]) && 0 == grantResults[i])
+                {
+                    mSharedPreferences.edit().putBoolean(LoginConstant.WRITE_PERMISSION, true).commit();
+                    LoginConstant.HAVE_WRITE_PERMISSION = true;
+                    break;
+                }
+            }
+            for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] == -1) {
                     hasPermissionDismiss = true;
+                    break;
                 }
             }
             //如果有权限没有被允许
             if (hasPermissionDismiss) {
                 //跳转到系统设置权限页面，或者直接关闭页面，不让他继续访问
-                new AlertDialog.Builder(this)
-                        .setMessage("有权限没有被允许,程序退出")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                System.exit(0);
-                            }
-                        }).show();
+                mSimpleDialog = new ConfirmSimpleDialog(this, getString(R.string.insufficient_permission));
+                mSimpleDialog.setRightButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        System.exit(0);
+                    }
+                });
+                mSimpleDialog.show();
             }else{
                 //全部权限通过，进行EC资源的初始化
                 initResource();
@@ -361,7 +370,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
      * 权限申请弹框
      */
     private void showPermissionDialog(){
-        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, mRequestCode);
+//        ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, mRequestCode);
         PermissionDialog permissionDialog = new PermissionDialog(LoginActivity.this);
         permissionDialog.setOnCertainButtonClickListener(new PermissionDialog.OnCertainButtonClickListener() {
             @Override

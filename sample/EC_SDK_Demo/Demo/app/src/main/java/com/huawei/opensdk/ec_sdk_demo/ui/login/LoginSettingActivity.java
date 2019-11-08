@@ -62,8 +62,11 @@ public class LoginSettingActivity extends BaseActivity implements View.OnClickLi
         mPriorityGroup = (RadioGroup) findViewById(R.id.port_config_priority);
         mProtocolGroup = (RadioGroup) findViewById(R.id.conf_ctrl_protocol);
 
-        ImageView searchButton = (ImageView) findViewById(R.id.right_img);
         ImageView navImage = (ImageView) findViewById(R.id.nav_iv);
+        navImage.setImageResource(R.drawable.icon_back);
+        TextView titleButton = (TextView) findViewById(R.id.title_text);
+        titleButton.setText(R.string.login_set);
+        ImageView searchButton = (ImageView) findViewById(R.id.right_img);
         searchButton.setVisibility(View.GONE);
         TextView rightButton = (TextView) findViewById(R.id.right_btn);
         rightButton.setVisibility(View.VISIBLE);

@@ -39,6 +39,10 @@ public class LoginConstant {
     public static final String FIRSTSTART = "firststart";
 
     public static final String AUTO_LOGIN = "auto_login";
+    // 存储权限--写入权限
+    public static final String WRITE_PERMISSION = "write_permission";
+
+    public static boolean HAVE_WRITE_PERMISSION = false;
 
     /**
      * The constant of Thread pool Size

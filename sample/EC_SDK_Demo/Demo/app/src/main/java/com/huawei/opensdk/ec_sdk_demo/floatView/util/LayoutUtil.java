@@ -344,12 +344,13 @@ public final class LayoutUtil
      */
     public static int getFloatWinLayoutParamsType() {
         int type;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
-            type = WindowManager.LayoutParams.TYPE_TOAST;
+//            type = WindowManager.LayoutParams.TYPE_TOAST;
+            type =  WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         }
-
         return type;
     }
 

@@ -2,6 +2,7 @@ package com.huawei.opensdk.ec_sdk_demo;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.huawei.opensdk.callmgr.CallMgr;
@@ -34,11 +35,9 @@ public class ECApplication extends Application
             public void onActivityStarted(Activity activity) {
                 if (0 == appCount)
                 {
-                    String currentActivity = ActivityUtil.getCurrentActivity(LocContext.getContext());
-                    if (!currentActivity.equals("LoginActivity") && !currentActivity.equals("AnonymousJoinConfActivity"))
+                    if (null != LocContext.getContext())
                     {
-                        boolean isInCall = CallMgr.getInstance().isExistCall();
-                        LoginMgr.getInstance().reRegister(isInCall);
+                        isReRegister(LocContext.getContext());
                     }
                 }
                 appCount++;
@@ -87,6 +86,26 @@ public class ECApplication extends Application
 
     public static void setLastInfo(JSONObject lastInfo) {
         ECApplication.lastInfo = lastInfo;
+    }
+
+    private void isReRegister(Context context)
+    {
+        String currentActivity = ActivityUtil.getCurrentActivity(context);
+        if ("LoginActivity".equals(currentActivity))
+        {
+            return;
+        }
+        if ("AnonymousJoinConfActivity".equals(currentActivity))
+        {
+            return;
+        }
+        if ("LoginSettingActivity".equals(currentActivity))
+        {
+            return;
+        }
+
+        boolean isInCall = CallMgr.getInstance().isExistCall();
+        LoginMgr.getInstance().reRegister(isInCall);
     }
 
     @Override

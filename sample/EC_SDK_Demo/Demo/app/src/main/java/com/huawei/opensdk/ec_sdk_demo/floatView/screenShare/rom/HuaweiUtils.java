@@ -10,12 +10,11 @@ import android.os.Binder;
 import android.os.Build;
 
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 
 import java.lang.reflect.Method;
 
 public class HuaweiUtils {
-    private static final String TAG = "HuaweiUtils";
+    private static final String TAG = HuaweiUtils.class.getSimpleName();
 
     /**
      * 检测 Huawei 悬浮窗权限
@@ -55,7 +54,7 @@ public class HuaweiUtils {
 //      ComponentName comp = new ComponentName("com.huawei.systemmanager","com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity");//悬浮窗管理页面
             intent.setComponent(comp);
             context.startActivity(intent);
-            LogUtil.e(UIConstants.DEMO_TAG," applyPermission SecurityException ");
+            LogUtil.e(TAG," applyPermission SecurityException ");
         } catch (ActivityNotFoundException e) {
             /**
              * 手机管家版本较低 HUAWEI SC-UL10
@@ -65,10 +64,10 @@ public class HuaweiUtils {
             ComponentName comp = new ComponentName("com.Android.settings", "com.android.settings.permission.TabItem");//权限管理页面 android4.4
             intent.setComponent(comp);
             context.startActivity(intent);
-            LogUtil.e(UIConstants.DEMO_TAG," applyPermission ActivityNotFoundException ");
+            LogUtil.e(TAG," applyPermission ActivityNotFoundException ");
         } catch (Exception e) {
             //抛出异常时提示信息
-            LogUtil.e(UIConstants.DEMO_TAG,"applyPermission exception:" + e.getMessage());
+            LogUtil.e(TAG,"applyPermission exception:" + e.getMessage());
         }
     }
 
@@ -85,10 +84,10 @@ public class HuaweiUtils {
                 throw e;
             }
             catch (Exception e) {
-                LogUtil.e(UIConstants.DEMO_TAG," checkOp Exception ");
+                LogUtil.e(TAG," checkOp Exception ");
             }
         } else {
-            LogUtil.e(UIConstants.DEMO_TAG," Below API 19 cannot invoke ");
+            LogUtil.e(TAG," Below API 19 cannot invoke ");
         }
         return false;
     }

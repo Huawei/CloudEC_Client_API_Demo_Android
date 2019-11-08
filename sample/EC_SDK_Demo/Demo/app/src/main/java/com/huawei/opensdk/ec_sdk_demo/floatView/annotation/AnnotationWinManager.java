@@ -89,7 +89,7 @@ public class AnnotationWinManager implements View.OnClickListener {
 
     private int mScreenHeight;
 
-    private int currentPenColor = 0;
+    private int currentPenColor = MeetingMgr.getInstance().getCurrentPenColor();
 
 
     public AnnotationWinManager() {
@@ -169,10 +169,9 @@ public class AnnotationWinManager implements View.OnClickListener {
         mEmpty.setText(R.string.anno_empty);
         mPen.setSelected(true);
 
+        updatePenColor();
         mEmpty.setIconBackgroundResource(R.drawable.float_anno_empty);
         mErase.setIconBackgroundResource(R.drawable.float_anno_erase);
-        mPen.setIconBackgroundResource(R.drawable.float_anno_pen_red);
-        mColor.setIconBackgroundResource(R.drawable.float_anno_color_red);
         mExit.setBackgroundResource(R.drawable.float_anno_exit);
 
         mEmpty.setOnClickListener(this);
@@ -203,6 +202,32 @@ public class AnnotationWinManager implements View.OnClickListener {
         LogUtil.i(TAG," leave addAnnotationToolbarView ");
     }
 
+    private void updatePenColor()
+    {
+        switch (currentPenColor)
+        {
+            case AnnotationConstants.PEN_COLOR_BLACK:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_black);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_black);
+                break;
+            case AnnotationConstants.PEN_COLOR_RED:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_red);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_red);
+                break;
+            case AnnotationConstants.PEN_COLOR_GREEN:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_green);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_green);
+                break;
+            case AnnotationConstants.PEN_COLOR_BLUE:
+                mPen.setIconBackgroundResource(R.drawable.float_anno_pen_blue);
+                mColor.setIconBackgroundResource(R.drawable.float_anno_color_blue);
+                break;
+            default:
+                mPen.setIconBackgroundResource(R.drawable.anno_pen_red_selector);
+                mColor.setIconBackgroundResource(R.drawable.anno_color_red_selector);
+                break;
+        }
+    }
 
     private void addColorPickView() {
         LogUtil.i(TAG," enter addColorPickView ");

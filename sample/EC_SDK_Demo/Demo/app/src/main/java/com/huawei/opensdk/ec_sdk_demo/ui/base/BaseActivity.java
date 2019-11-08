@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.loginmgr.LoginConstant;
 
 
 public abstract class BaseActivity extends Activity
@@ -22,7 +23,10 @@ public abstract class BaseActivity extends Activity
         initializeData();
         initializeComposition();
         initBackView();
-        LogUtil.i(UIConstants.DEMO_TAG, "Activity onCreate: " + getClass().getSimpleName());
+        if (LoginConstant.HAVE_WRITE_PERMISSION)
+        {
+            LogUtil.i(UIConstants.DEMO_TAG, "Activity onCreate: " + getClass().getSimpleName());
+        }
     }
 
     public abstract void initializeComposition();
