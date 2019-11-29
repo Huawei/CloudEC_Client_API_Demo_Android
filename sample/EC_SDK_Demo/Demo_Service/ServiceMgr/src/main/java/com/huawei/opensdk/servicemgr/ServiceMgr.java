@@ -136,9 +136,7 @@ public class ServiceMgr
         /* Step 1, set log param */
         TsdkLogParam logParam = new TsdkLogParam();
         logParam.setFileCount(1);
-        // 使用debug模式在meeting组件中打印日志太多，容易覆盖前面的日志
-//        logParam.setLevel(TsdkLogLevel.TSDK_E_LOG_DEBUG);
-        logParam.setLevel(TsdkLogLevel.TSDK_E_LOG_INFO);
+        logParam.setLevel(TsdkLogLevel.TSDK_E_LOG_DEBUG);
         logParam.setMaxSizeKb(1024 * 4);
         logParam.setPath(Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo" + "/");
 

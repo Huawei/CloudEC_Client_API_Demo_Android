@@ -227,6 +227,7 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                         }
                     }
                 });
+                updateStatisticInfo();
                 break;
 
             default:
@@ -423,6 +424,23 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
         layoutParams.dimAmount = 0.0f;      //设置窗口外黑暗度
         window.setAttributes(layoutParams);
         mSignalDialog.show();
+    }
+
+    private void updateStatisticInfo()
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (null == mSignalDialog)
+                {
+                    return;
+                }
+                if (mSignalDialog.isShowing())
+                {
+                    mSignalDialog.updateCallInfo(mCallInfo);
+                }
+            }
+        });
     }
 
     private void addSurfaceView(ViewGroup container, SurfaceView child)

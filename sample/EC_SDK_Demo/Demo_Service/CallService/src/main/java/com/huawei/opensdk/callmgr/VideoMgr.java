@@ -353,9 +353,9 @@ public class VideoMgr {
                 TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
                 localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
-                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
 
-                //设置远端视频窗口
+                // 设置远端视频窗口
                 TsdkVideoWndInfo remoteWndInfo = new TsdkVideoWndInfo();
                 remoteWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
                 remoteWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteBigVideoView));
@@ -406,7 +406,7 @@ public class VideoMgr {
                 TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
                 localWndInfo.setVideoWndType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
                 localWndInfo.setRender(ViERenderer.getIndexOfSurface(localVideoView));
-                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+                localWndInfo.setDisplayMode(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
 
                 List<TsdkVideoWndInfo> list = new ArrayList<>();
                 list.add(localWndInfo);
@@ -972,26 +972,27 @@ public class VideoMgr {
                 return false;
             }
 
+            // 窗口镜像模式 0:不做镜像(默认值) 1:上下镜像(目前未支持) 2:左右镜像
+            // 本地视频前置摄像头做左右镜像，所以设置mirror type为 2
+            TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
+            videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+
             // 前置摄像头
-            if (1 == cameraIndex)
-            {
-                // 窗口镜像模式 0:不做镜像(默认值) 1:上下镜像(目前未支持) 2:左右镜像
-                // 本地视频前置摄像头做左右镜像，所以设置mirror type为 2
-                TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
-                videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+            if (1 == cameraIndex) {
                 videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_HORIZONTAL);
-                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
-
-                tsdkCall.setVideoRender(videoRenderInfo);
-            }
-            else{
-                TsdkVideoRenderInfo videoRenderInfo = new TsdkVideoRenderInfo();
-                videoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL);
+            } else {
                 videoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_DEFAULE);
-                videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
-
-                tsdkCall.setVideoRender(videoRenderInfo);
             }
+
+            videoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_FULL);
+
+            if (isLayoutPortrait()) {
+                videoRenderInfo.setIsLandscape(0);
+            } else {
+                videoRenderInfo.setIsLandscape(1);
+            }
+
+            tsdkCall.setVideoRender(videoRenderInfo);
 
             tsdkCall.setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_LOCAL, rotation);
 
@@ -1012,19 +1013,28 @@ public class VideoMgr {
                 return false;
             }
 
-            TsdkVideoRenderInfo remoteVideoRenderInfo = new TsdkVideoRenderInfo();
-
-            if (isLayoutPortrait()) {
-                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
-            } else {
-                remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_CUT);
+            // 呼叫中窗口显示模式为剪切模式，不用设置视频显示窗口属性
+            if (0 == tsdkCall.getCallInfo().getIsFocus())
+            {
+                tsdkCall.setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE, rotation);
+                return  true;
             }
 
+            TsdkVideoRenderInfo remoteVideoRenderInfo = new TsdkVideoRenderInfo();
             remoteVideoRenderInfo.setRenderType(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE);
             remoteVideoRenderInfo.setMirrorType(TsdkVideoWndMirrorType.TSDK_E_VIDEO_WND_MIRROR_DEFAULE);
+            remoteVideoRenderInfo.setDisplayType(TsdkVideoWndDisplayMode.TSDK_E_VIDEO_WND_DISPLAY_AUTO_ADAPT);
+
+            if (isLayoutPortrait())
+            {
+                remoteVideoRenderInfo.setIsLandscape(0);
+            }
+            else
+            {
+                remoteVideoRenderInfo.setIsLandscape(1);
+            }
 
             tsdkCall.setVideoRender(remoteVideoRenderInfo);
-
             tsdkCall.setDisplayRotation(TsdkVideoWndType.TSDK_E_VIDEO_WND_REMOTE, rotation);
 
             return true;

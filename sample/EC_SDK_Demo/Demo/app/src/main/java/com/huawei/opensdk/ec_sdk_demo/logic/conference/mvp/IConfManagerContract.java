@@ -49,6 +49,8 @@ public interface IConfManagerContract
 
         void updateSignal(long signalStrength);
 
+        void updateStatisticInfo();
+
         void refreshWatchMemberPage();
 
         void setSmallVideoVisible(int sum);

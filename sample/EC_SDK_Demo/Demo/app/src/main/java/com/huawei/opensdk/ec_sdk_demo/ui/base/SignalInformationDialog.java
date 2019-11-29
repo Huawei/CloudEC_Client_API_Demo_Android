@@ -399,12 +399,12 @@ public class SignalInformationDialog extends BaseDialog {
         }
         if (shareStatisticInfo.getStatus()==1){
             shareSendBandwidth.setText(shareStatisticInfo.getSendBitRate()+"");
-            shareSendDelay.setText("");
+            shareSendDelay.setText("--");
             shareSendResolution.setText(shareStatisticInfo.getSendFrameSizeHeight()+"*"+shareStatisticInfo.getSendFrameSizeHeight());
             shareSendFrame.setText(shareStatisticInfo.getSendFrameRate()+"");
         }else {
             shareReceiveBandwidth.setText(shareStatisticInfo.getRecvBitRate()+"");
-            shareReceiveDelay.setText("");
+            shareReceiveDelay.setText("--");
             shareReceiveResolution.setText(shareStatisticInfo.getRecvFrameSizeHeight()+"*"+shareStatisticInfo.getRecvFrameSizeWidth());
             shareReceiveFrame.setText(shareStatisticInfo.getRecvFrameRate()+"");
         }

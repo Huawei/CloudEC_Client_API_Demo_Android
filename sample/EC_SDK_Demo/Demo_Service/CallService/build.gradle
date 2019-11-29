@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(path: ':Demo_Service:CommonService')
-    compile project(path: ':Demo_Service:LoginService')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api project(path: ':Demo_Service:CommonService')
+    api project(path: ':Demo_Service:LoginService')
 }

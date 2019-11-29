@@ -14,6 +14,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -73,6 +74,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.ConfManagerView, ConfManagerBasePresenter>
@@ -312,6 +314,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mConfMore.setOnClickListener(this);
         mLeaveIV.setOnClickListener(this);
         mShareIV.setOnClickListener(this);
+
+        //createOrientationListener();
     }
 
     private void hideConfCtrlButton()
@@ -350,7 +354,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             startTimer();
         }
 
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (mOrientation == ORIENTATION_LANDSCAPE)
         {
             mConfSmallVideoWndLL.setOrientation(LinearLayout.VERTICAL);
             setConfVideoSize(false);
@@ -465,7 +469,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
         // 获取屏幕的宽和高
         int px = DisplayUtils.dp2px(this, 40);
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (mOrientation == ORIENTATION_LANDSCAPE)
         {
             mScreenWidth = DisplayUtils.getScreenHeightPixels(this) - px;
         }
@@ -749,7 +753,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             return;
         }
 
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (mOrientation == ORIENTATION_LANDSCAPE)
         {
             layoutParams.width = (int) ((mScreenWidth + 40) * (6.0 / 5.0));
             layoutParams.height = mScreenWidth - 20;
@@ -1375,7 +1379,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         {
             return;
         }
-        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (mOrientation == ORIENTATION_LANDSCAPE)
         {
             mConfSmallVideoWndLL.setOrientation(LinearLayout.VERTICAL);
             setConfVideoSize(false);
@@ -1475,6 +1479,23 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 }
             });
         }
+    }
+
+    @Override
+    public void updateStatisticInfo() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (null == dialog)
+                {
+                    return;
+                }
+                if (dialog.isShowing())
+                {
+                    dialog.updateCallInfo(mCallInfo);
+                }
+            }
+        });
     }
 
     private synchronized PopupWindow generatePopupWindow(View view, int width, int height)
@@ -1717,6 +1738,47 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         mPopupWindow.showAtLocation(findViewById(R.id.media_btn_group), Gravity.RIGHT | Gravity.BOTTOM, 0, mConfMediaLayout.getHeight());
     }
 
+    private OrientationEventListener orientationEventListener;
+    private int lastScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+
+    private int getOrientation(int orientation) {
+        if ((orientation < 45 && orientation >= 0) || (orientation >= 315 && orientation <= 360)) {
+            return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        } else if (orientation >= 45 && orientation < 135) {
+            return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        } else if (orientation >= 135 && orientation < 225) {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        } else if (orientation >= 225 && orientation < 315) {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        } else {
+            return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        }
+    }
+
+    /**
+     * 创建并启动设备旋转监听
+     */
+    private void createOrientationListener() {
+        // 启一个新的监听，监听设备旋转角度
+        orientationEventListener = new OrientationEventListener(LocContext.getContext()) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                int currentOrientation = getOrientation(orientation);
+                if (currentOrientation != lastScreenOrientation){
+                    if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {
+                        setRequestedOrientation(currentOrientation);
+                    } else {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                    }
+                    lastScreenOrientation = currentOrientation;
+                }
+            }
+        };
+
+        // 启动监听
+        orientationEventListener.enable();
+    }
+
     /**
      * 屏幕旋转时调用此方法
      * @param newConfig
@@ -1731,7 +1793,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-        if (newConfig.orientation == 2)
+        if (newConfig.orientation == ORIENTATION_LANDSCAPE)
         {
             mConfSmallVideoWndLL.setOrientation(LinearLayout.VERTICAL);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);

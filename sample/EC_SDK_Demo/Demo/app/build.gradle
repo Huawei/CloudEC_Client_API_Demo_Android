@@ -57,15 +57,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:support-v13:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile project(':Demo_Service:CallService')
-    compile project(':Demo_Service:LoginService')
-    compile project(':Demo_Service:ConferenceService')
-    compile project(':Demo_Service:ServiceMgr')
-    compile project(path: ':Demo_Service:ContactService')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api 'com.android.support:support-v4:25.3.1'
+    api 'com.android.support:support-v13:25.3.1'
+    api 'com.android.support:appcompat-v7:25.3.1'
+    api project(':Demo_Service:CallService')
+    api project(':Demo_Service:LoginService')
+    api project(':Demo_Service:ConferenceService')
+    api project(':Demo_Service:ServiceMgr')
+    api project(path: ':Demo_Service:ContactService')
 }
 
 

@@ -111,6 +111,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             case CustomBroadcastConstants.STATISTIC_LOCAL_QOS:
                 long signalStrength = (long) obj;
                 getView().updateSignal(signalStrength);
+                getView().updateStatisticInfo();
                 break;
 
             default:
