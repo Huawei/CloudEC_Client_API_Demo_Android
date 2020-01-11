@@ -163,7 +163,7 @@
     <string name="watch_contact">Watch Attendee</string>
     <string name="set_screen_share">Set Screen Owner</string>
     <string name="cancel_screen_share">Cancel Screen Owner</string>
-
+    <string name="rename_self">Rename Self</string>
 
     <string name="btn_sure">OK</string>
     <string name="info">Information</string>
@@ -2173,6 +2173,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="call_srtp_talking">Encrypted voice calling…</string>
     <string name="video_srtp_chatting">Encrypted video calling…</string>
     <string name="conference_srtp">Encrypted meeting…</string>
+    <string name="rename_self_success">Rename the display name success</string>
 
     <string name="conference_id">Conference ID:</string>
     <string name="conference_password">Conference Password:</string>
@@ -2234,6 +2235,11 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="grab_share">This operation will stop sharing, are you sure you want to continue?</string>
     <string name="insufficient_permission">EC_SDK_Demo requires insufficient privileges, the program will exit.</string>
     <string name="login_set">Login Setting</string>
+    <string name="input_new_name">Input new name</string>
+    <string name="double_watch_attendee">Are you sure you want to watch %1$s?</string>
+    <string name="double_cancel_watch_attendee">Are you sure you want to cancel the selection?</string>
+    <string name="broadcast_member">Broadcasting %1$s</string>
+    <string name="delete_participant">Whether to delete the participant?</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>
@@ -2259,6 +2265,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="set_input_failed">Set input status failed</string>
     <string name="modify_pwd_failed">Password modification failed</string>
     <string name="resume_join_failed">Rejoin the conference failed</string>
+    <string name="rename_self_failed">Rename the display name failed</string>
 
     <string name="agree_resquest_screen">Agree sharing</string>
     <string name="reject_resquest_screen">Reject sharing</string>

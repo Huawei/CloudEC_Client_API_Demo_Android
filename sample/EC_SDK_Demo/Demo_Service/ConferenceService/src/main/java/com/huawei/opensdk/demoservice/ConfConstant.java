@@ -126,6 +126,8 @@ public class ConfConstant {
 
         SVC_WATCH_INFO_IND(),//SVC(多流)会议下正在观看画面信息
 
+        RENAME_SELF(),
+
         BUTT()
     }
 

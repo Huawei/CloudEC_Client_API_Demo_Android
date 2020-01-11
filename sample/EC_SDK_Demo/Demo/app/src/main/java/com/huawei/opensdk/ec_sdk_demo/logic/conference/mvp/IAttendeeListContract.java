@@ -38,6 +38,8 @@ public interface IAttendeeListContract
         void showMessage(String message);
 
         void updateSpeaker(String[] speakers, boolean noSpeaker);
+
+        void showRenameDialog();
     }
 
     interface IAttendeeListPresenter
@@ -133,6 +135,8 @@ public interface IAttendeeListContract
         void setScreenShare(Member member);
 
         void cancelScreenShare(Member member);
+
+        void renameSelf(String displayName);
 
     }
 }

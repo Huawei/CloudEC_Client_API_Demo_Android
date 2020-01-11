@@ -109,7 +109,10 @@
     <string name="broadcast_contact">Broadcast Attendee</string>
     <string name="cancel_broadcast_contact">Cancel Broadcast</string>
     <string name="watch_contact">Watch Attendee</string>
-
+    <string name="rename_self">Rename Self</string>
+    <string name="broadcast_member">Broadcasting %1$s</string>
+    <string name="request_chairman_success">Request chairman success</string>
+    <string name="release_chairman_success">Release chairman success</string>
 
     <string name="btn_sure">OK</string>
     <string name="info">Information</string>
@@ -209,6 +212,7 @@
     <string name="update_chat_group_success">Update Chat Group Success</string>
     <string name="dis_chat_group_success">Dismiss Chat Group Success</string>
     <string name="leave_chat_group_success">Leave Chat Group Success</string>
+    <string name="rename_self_success">Rename the display name success</string>
 
     <string name="post">Title</string>
     <string name="user_number">Soft Tel</string>
@@ -323,6 +327,10 @@
     <string name="grab_share">This operation will stop the other party sharing, are you sure you want to continue?</string>
     <string name="insufficient_permission">EC_SDK_Demo requires insufficient privileges, the program will exit.</string>
     <string name="login_set">Login Setting</string>
+    <string name="input_new_name">Input new name</string>
+    <string name="double_watch_attendee">Are you sure you want to watch %1$s?</string>
+    <string name="double_cancel_watch_attendee">Are you sure you want to cancel the selection?</string>
+    <string name="delete_participant">Whether to delete the participant?</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>
@@ -350,6 +358,7 @@
     <string name="modify_pwd_failed">Password modification failed</string>
     <string name="login_resume_failed">The network connection is failed, please try again</string>
     <string name="resume_join_failed">Rejoin the conference failed</string>
+    <string name="rename_self_failed">Rename the display name failed</string>
 
     <string name="anno_color">颜色</string>
     <string name="anno_pen">画笔</string>

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -82,6 +83,9 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
     @Override
     public void initializeComposition()
     {
+        // keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.conf_member_list_activity);
         confButtonGroup = (LinearLayout) findViewById(R.id.media_btn_group);
         confListView = (ListView) findViewById(R.id.member_list);
@@ -576,6 +580,21 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                 }
             }
         });
+    }
+
+    @Override
+    public void showRenameDialog() {
+        final EditDialog dialog = new EditDialog(this, R.string.input_new_name);
+        dialog.setRightButtonListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                CommonUtil.hideSoftInput(ConfMemberListActivity.this);
+                mPresenter.renameSelf(dialog.getText());
+            }
+        });
+        dialog.show();
     }
 
     @Override

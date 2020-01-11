@@ -67,8 +67,13 @@ public abstract class BaseActivity extends Activity
         super.onDestroy();
     }
 
-    public void showToast(int resId)
+    public void showToast(final int resId)
     {
-        Toast.makeText(this, getString(resId), Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this, getString(resId), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -33,7 +33,9 @@
             android:ellipsize="middle"
             android:text="test"
             android:layout_marginBottom="2dp"
-            android:textSize="14sp"/>
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:maxEms="12"/>
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/member_number_tv"

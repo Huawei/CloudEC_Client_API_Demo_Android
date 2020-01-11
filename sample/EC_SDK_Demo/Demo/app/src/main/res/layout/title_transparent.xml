@@ -56,7 +56,8 @@
             android:layout_width="@dimen/dp50"
             android:layout_height="@dimen/dp50"
             android:src="@drawable/video_select_person"
-            android:padding="13dp" />
+            android:padding="13dp"
+            android:visibility="gone"/>
 
         <ImageView android:id="@+id/share_iv"
             android:padding="13dp"

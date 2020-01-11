@@ -396,6 +396,7 @@ public class MeetingMgr implements IMeetingMgr{
         confBaseInfo.setLock(conference.isLock());
         confBaseInfo.setRecord(conference.isRecord());
         confBaseInfo.setSupportRecord(conference.isSupportRecordBroadcast());
+        confBaseInfo.setBroadcastAttendee(conference.getBroadcastAttendee());
 
         if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == conference.getConfEnvType()){
             confBaseInfo.setMuteAll(conference.isAllMute());
@@ -975,6 +976,25 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
+     * This method is used to modify own display name by participant during the conference.
+     * 会议中与会者修改自己的显示名
+     * @param nickname 显示名
+     * @return
+     */
+    public int renameSelf(String nickname)
+    {
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "request chairman failed, currentConference is null ");
+            return -1;
+        }
+
+        int result =  currentConference.renameSelf(nickname);
+
+        return result;
+    }
+
+    /**
      * [en]This method is used to set conference presenter.
      * [cn]设置主讲人
      *
@@ -1231,6 +1251,41 @@ public class MeetingMgr implements IMeetingMgr{
     }
 
     /**
+     * This method is used to watch attendee by windows index
+     * 通过窗口下标选看与会者
+     * @param index 被选看的窗口下标
+     * @return
+     */
+    public int watchAttendeeByIndex(int index)
+    {
+        int result;
+        TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
+        List<TsdkWatchAttendees> watchAttendeeList = this.svcConfInfo.getBeWatchMemberList();
+
+        TsdkWatchAttendees bigWatchAttendee = watchAttendeeList.get(0);
+        if (bigWatchAttendee != null) {
+            // 选看主会场
+            if (0 == index)
+            {
+                bigWatchAttendee.setNumber("");
+            }
+            else
+            {
+                bigWatchAttendee.setNumber(watchAttendeeList.get(index).getNumber());
+            }
+        } else {
+            //有与会者列表后，这个不可能为空
+            LogUtil.e(TAG,  "watch big wnd attendee is failed.");
+            return -1;
+        }
+
+        watchAttendeesInfo.setWatchAttendeeList(watchAttendeeList);
+        watchAttendeesInfo.setWatchAttendeeNum(watchAttendeeList.size());
+        result = currentConference.watchAttendee(watchAttendeesInfo);
+        return result;
+    }
+
+    /**
      * This method is used to watch attendee
      * 观看与会者
      * @param attendee 与会者信息
@@ -1297,7 +1352,6 @@ public class MeetingMgr implements IMeetingMgr{
             LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
             return -1;
         }
-
 
         boolean reWatch = svcConfInfo.setBeWatchMemberList(watchPage);
         if (reWatch) {
@@ -1950,6 +2004,10 @@ public class MeetingMgr implements IMeetingMgr{
             //停止录制会议
             case TSDK_E_CONF_STOP_RECORD_BROADCAST:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.STOP_RECORD_RESULT, ret);
+                break;
+            //设置显示名结果
+            case TSDK_E_CONF_RENAME_SELF:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RENAME_SELF, ret);
                 break;
             default:
                 break;

@@ -8,7 +8,8 @@
 
     <include layout="@layout/dial_title"/>
 
-    <ScrollView android:layout_width="match_parent"
+    <ScrollView android:id="@+id/create_conf_scroll"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars= "none" >
 

@@ -83,7 +83,8 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
 
     private ProgressDialog mDialog;
     private ConfirmSimpleDialog mSimpleDialog;
-    private String[] mActions = new String[]{CustomBroadcastConstants.LOGIN_SUCCESS, CustomBroadcastConstants.LOGIN_FAILED,
+    private String[] mActions = new String[]{CustomBroadcastConstants.LOGIN_SUCCESS,
+            CustomBroadcastConstants.AUTH_FAILED,
             CustomBroadcastConstants.LOGOUT};
 
     private SharedPreferences mSharedPreferences;
@@ -250,7 +251,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
                 LogUtil.i(UIConstants.DEMO_TAG, "login success");
                 dismissLoginDialog();
                 break;
-            case CustomBroadcastConstants.LOGIN_FAILED:
+            case CustomBroadcastConstants.AUTH_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "login fail");
                 dismissLoginDialog();
                 break;

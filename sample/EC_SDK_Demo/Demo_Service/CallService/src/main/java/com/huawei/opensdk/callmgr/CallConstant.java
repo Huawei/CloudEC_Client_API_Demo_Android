@@ -25,6 +25,12 @@ public class CallConstant {
     public static final int BACK_CAMERA = 0;
 
     /**
+     * Big screen device camera
+     * Android大屏设备的摄像头
+     */
+    public static final int BIG_SCREEN_CAMERA = 0;
+
+    /**
      * front camera
      * 前置摄像头
      */

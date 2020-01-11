@@ -307,11 +307,15 @@ public class SignalInformationDialog extends BaseDialog {
         }else {
             //多流视频
             if (videoStreamInfoList.size()>0){
-                if (videoStreamInfoList.get(0).getSendFrameSize().equals("")||videoStreamInfoList.get(0).getSendFrameSize().equals("0*0")){
-                    sendTwo.setVisibility(View.GONE);
+                if (videoStreamInfoList.get(0).getSendFrameSize().equals("")){
+                    videoSendResolution.setText("--");
+                } else {
+                    videoSendResolution.setText(videoStreamInfoList.get(0).getSendFrameSize());
                 }
-                if(videoStreamInfoList.get(0).getRecvFrameSize().equals("")||videoStreamInfoList.get(0).getRecvFrameSize().equals("0*0")){
-                    receiveTwo.setVisibility(View.GONE);
+                if (videoStreamInfoList.get(0).getRecvFrameSize().equals("")){
+                    videoReceiveResolution.setText("--");
+                } else {
+                    videoReceiveResolution.setText(videoStreamInfoList.get(0).getRecvFrameSize());
                 }
                 localReceNameOne.setText(videoStreamInfoList.get(0).getRecvSsrcLabel()+"接收");
                 videoSendBandwidth.setText((videoStreamInfoList.get(0).getSendBitRate()/1000)+"");
@@ -322,16 +326,14 @@ public class SignalInformationDialog extends BaseDialog {
                 videoReceiveLost.setText(videoStreamInfoList.get(0).getRecvLossFraction()+"");
                 videoReceiveDelay.setText(videoStreamInfoList.get(0).getRecvDelay()+"");
                 videoReceiveJitter.setText(videoStreamInfoList.get(0).getRecvJitter()+"");
-                videoSendResolution.setText(videoStreamInfoList.get(0).getSendFrameSize());
                 videoSendFrame.setText(videoStreamInfoList.get(0).getSendFrameRate()+"");
-                videoReceiveResolution.setText(videoStreamInfoList.get(0).getRecvFrameSize());
                 videoReceiveFrame.setText(videoStreamInfoList.get(0).getRecvFrameRate()+"");
             }
             if (videoStreamInfoList.size()>1){
                 if (videoStreamInfoList.get(1).getSendFrameSize().equals("")||videoStreamInfoList.get(1).getSendFrameSize().equals("0*0")){
                     sendThree.setVisibility(View.GONE);
                 }
-                if(videoStreamInfoList.get(1).getRecvFrameSize().equals("")||videoStreamInfoList.get(1).getRecvFrameSize().equals("0*0")){
+                if (videoStreamInfoList.get(1).getRecvFrameSize().equals("")||videoStreamInfoList.get(1).getRecvFrameSize().equals("0*0")){
                     receiveThree.setVisibility(View.GONE);
                 }
                 localReceNameTwo.setText(videoStreamInfoList.get(1).getRecvSsrcLabel()+"接收");
@@ -400,12 +402,12 @@ public class SignalInformationDialog extends BaseDialog {
         if (shareStatisticInfo.getStatus()==1){
             shareSendBandwidth.setText(shareStatisticInfo.getSendBitRate()+"");
             shareSendDelay.setText("--");
-            shareSendResolution.setText(shareStatisticInfo.getSendFrameSizeHeight()+"*"+shareStatisticInfo.getSendFrameSizeHeight());
+            shareSendResolution.setText(shareStatisticInfo.getSendFrameSizeWidth()+"*"+shareStatisticInfo.getSendFrameSizeHeight());
             shareSendFrame.setText(shareStatisticInfo.getSendFrameRate()+"");
         }else {
             shareReceiveBandwidth.setText(shareStatisticInfo.getRecvBitRate()+"");
             shareReceiveDelay.setText("--");
-            shareReceiveResolution.setText(shareStatisticInfo.getRecvFrameSizeHeight()+"*"+shareStatisticInfo.getRecvFrameSizeWidth());
+            shareReceiveResolution.setText(shareStatisticInfo.getRecvFrameSizeWidth()+"*"+shareStatisticInfo.getRecvFrameSizeHeight());
             shareReceiveFrame.setText(shareStatisticInfo.getRecvFrameRate()+"");
         }
     }

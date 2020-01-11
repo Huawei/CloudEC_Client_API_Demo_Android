@@ -177,6 +177,7 @@ public class LoginMgr {
      */
     public int resetConfig(boolean isVpn)
     {
+        LogUtil.i(TAG, "resetConfig");
         int ret;
         String ipAddress = DeviceManager.getLocalIpAddress(isVpn);
         if ("".equals(ipAddress) || localIpAddress.equals(ipAddress))
@@ -248,7 +249,7 @@ public class LoginMgr {
     public void handleAuthFailed(int userId, TsdkCommonResult result) {
         LogUtil.e(TAG, "authorize failed: " + result.getReasonDescription());
         this.isLoginSuccess = false;
-        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.LOGIN_FAILED, (int)result.getResult(), result.getReasonDescription());
+        this.loginEventNotifyUI.onLoginEventNotify(LoginConstant.LoginUIEvent.AUTH_FAILED, (int)result.getResult(), result.getReasonDescription());
     }
 
     /**

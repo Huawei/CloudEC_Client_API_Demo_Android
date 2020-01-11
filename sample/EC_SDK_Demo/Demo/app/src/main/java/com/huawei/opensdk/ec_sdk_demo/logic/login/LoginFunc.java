@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
 {
     private static final int VOIP_LOGIN_SUCCESS = 100;
+    private static final int AUTH_FAILED = 101;
     private static final int LOGIN_FAILED = 102;
     private static final int LOGOUT = 103;
     private static final int FIREWALL_DETECT_FAILED = 104;
@@ -88,6 +89,10 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 LogUtil.i(UIConstants.DEMO_TAG, "voip login success");
                 ServiceMgr.getServiceMgr().setDisplayLocalInfo(LoginMgr.getInstance().getTerminal());
                 sendHandlerMessage(VOIP_LOGIN_SUCCESS, description);
+                break;
+            case AUTH_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "auth failed");
+                sendHandlerMessage(AUTH_FAILED, description);
                 break;
             case LOGIN_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "login fail");
@@ -190,6 +195,11 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                         }
                     });
                 }
+                break;
+            case AUTH_FAILED:
+                LogUtil.i(UIConstants.DEMO_TAG, "auth failed,notify UI!");
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.AUTH_FAILED, null);
+                Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                 break;
             case LOGIN_FAILED:
                 LogUtil.i(UIConstants.DEMO_TAG, "login failed,notify UI!");

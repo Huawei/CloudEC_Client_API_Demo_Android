@@ -48,6 +48,7 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
             CustomBroadcastConstants.DATA_CONFERENCE_GET_DEVICE_INFO_RESULT,
             CustomBroadcastConstants.DATA_CONFERENCE_EXTEND_DEVICE_INFO,
             CustomBroadcastConstants.DATA_CONFERENCE_CAMERA_STATUS_UPDATE,
+            CustomBroadcastConstants.RENAME_SELF_RESULT,
             CustomBroadcastConstants.GET_CONF_END};
 
     private LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -216,6 +217,19 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                         getView().showCustomToast(R.string.stop_record_fail);
                     } else {
                         getView().showCustomToast(R.string.stop_record_success);
+                    }
+                    break;
+
+                // 修改显示名称结果
+                case CustomBroadcastConstants.RENAME_SELF_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.rename_self_failed);
+                    }
+                    else
+                    {
+                        getView().showCustomToast(R.string.rename_self_success);
                     }
                     break;
 
@@ -546,6 +560,10 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
         else if (LocContext.getString(R.string.cancel_screen_share).equals(clickedItem)){
             cancelScreenShare(memberEntity);
         }
+        else if (LocContext.getContext().getString(R.string.rename_self).equals(clickedItem))
+        {
+            getView().showRenameDialog();
+        }
     }
 
     @Override
@@ -688,6 +706,15 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
     }
 
     @Override
+    public void renameSelf(String displayName) {
+        int result = MeetingMgr.getInstance().renameSelf(displayName);
+        if (0 != result)
+        {
+            getView().showCustomToast(R.string.rename_self_failed);
+        }
+    }
+
+    @Override
     public boolean isChairMan()
     {
         Member self = getSelf();
@@ -758,6 +785,11 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
             items.add(LocContext.getString(R.string.set_host));
         }
 
+        if (member.isSelf())
+        {
+            items.add(LocContext.getString(R.string.rename_self));
+        }
+
         if (!isChairMan())
         {
             return;
@@ -771,7 +803,7 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                     {
                         break;
                     }
-                    if (member.isBroadcastSelf())
+                    if (member.isBroadcast())
                     {
                         items.add(LocContext.getString(R.string.cancel_broadcast_contact));
                     }
@@ -803,7 +835,7 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
                 {
                     return;
                 }
-                if (member.isBroadcastSelf())
+                if (member.isBroadcast())
                 {
                     items.add(LocContext.getString(R.string.cancel_broadcast_contact));
                 }

@@ -1062,7 +1062,7 @@ public class CallMgr implements ICallMgr
         }
         CallInfo callInfo = getCallInfo(call);//audio --> video success
         LogUtil.i(TAG, "Upgrade To Video Call");
-        VideoMgr.getInstance().setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+        VideoMgr.getInstance().setVideoOrient(callId, VideoMgr.getInstance().getCurrentCameraIndex());
 
         callSession.setCallStatus(CallConstant.CallStatus.VIDEO_CALLING);
         mCallNotification.onCallEventNotify(CallConstant.CallEvent.OPEN_VIDEO, callInfo);

@@ -29,7 +29,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     private static final int ADD_LOCAL_VIEW = 101;
 
     private boolean is_refresh_view = false;
-    private int mCameraIndex = CallConstant.FRONT_CAMERA;
+    private int mCameraIndex = VideoMgr.getInstance().getCurrentCameraIndex();
 
     private Handler mHandler = new Handler()
     {
@@ -206,6 +206,15 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
     @Override
     public void watchAttendee(Member member) {
         int result = MeetingMgr.getInstance().watchAttendee(member);
+        if (0 != result)
+        {
+            getView().showCustomToast(R.string.watch_conf_fail);
+        }
+    }
+
+    @Override
+    public void watchAttendeeByIndex(int windowIndex) {
+        int result = MeetingMgr.getInstance().watchAttendeeByIndex(windowIndex);
         if (0 != result)
         {
             getView().showCustomToast(R.string.watch_conf_fail);

@@ -34,7 +34,7 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
     private String mOppositeName;
     private String mOppositeNumber;
 
-    private int mCameraIndex = CallConstant.FRONT_CAMERA;
+    private int mCameraIndex = VideoMgr.getInstance().getCurrentCameraIndex();
 
     private ScheduledExecutorService mService;
     private int mAutoTime = 0;

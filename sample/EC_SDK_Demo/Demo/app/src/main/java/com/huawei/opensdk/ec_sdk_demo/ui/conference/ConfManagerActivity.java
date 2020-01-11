@@ -56,6 +56,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.base.SignalInformationDialog;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.DisplayUtils;
+import com.huawei.opensdk.ec_sdk_demo.util.OnDoubleClickListener;
 import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmSimpleDialog;
@@ -78,7 +79,7 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static com.huawei.ecterminalsdk.base.TsdkConfEnvType.TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE;
 
 public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.ConfManagerView, ConfManagerBasePresenter>
-        implements IConfManagerContract.ConfManagerView, View.OnClickListener,NetworkConnectivityListener.OnNetWorkListener
+        implements IConfManagerContract.ConfManagerView, View.OnClickListener,NetworkConnectivityListener.OnNetWorkListener,OnDoubleClickListener.DoubleClickListenerNotify
 {
     private ConfManagerPresenter mPresenter;
     private RelativeLayout mVideoConfLayout;
@@ -143,11 +144,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private boolean isActiveShare = false;
 
     private int mScreenWidth;
-    private boolean isHideVideoWindow = false;
+    private boolean isHideVideoWindow = false; // svc会议的小窗口是否隐藏
     private boolean isOnlyLocal = true;
     private boolean isSetOnlyLocalWind = false;
     private boolean isSharing = false; // 是否有人正在共享
     private boolean isShareOwner = false; // 自己是否正在共享
+    private boolean isNeedCancelWatch = false; // 是否需要双击取消选看
     private SignalInformationDialog dialog;
     private ConfirmDialog confirmDialog;
     private String mCurrentActivity = ConfManagerActivity.class.getSimpleName();
@@ -262,14 +264,14 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
             if (!isSvcConf)
             {
+                //title
+                mRightIV.setVisibility(View.VISIBLE);
+
                 mConfVideoBackIV.setVisibility(View.INVISIBLE);
                 mConfVideoForwardIV.setVisibility(View.INVISIBLE);
                 mConfRemoteBigVideoText.setVisibility(View.INVISIBLE);
                 mConfLocalVideoText.setVisibility(View.INVISIBLE);
             }
-
-            //title
-            mRightIV.setVisibility(View.VISIBLE);
 
             mConfLocalVideoLayout.setVisibility(View.GONE);
             mConfRemoteSmallVideoLayout_01.setVisibility(View.GONE);
@@ -285,6 +287,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             mConfVideoBackIV.setOnClickListener(this);
             mConfVideoForwardIV.setOnClickListener(this);
             mSignalView.setOnClickListener(this);
+
+            mConfRemoteBigVideoLayout.setOnTouchListener(new OnDoubleClickListener(this, false));
+            mConfRemoteSmallVideoLayout_01.setOnTouchListener(new OnDoubleClickListener(this, true));
+            mConfRemoteSmallVideoLayout_02.setOnTouchListener(new OnDoubleClickListener(this, true));
+            mConfRemoteSmallVideoLayout_03.setOnTouchListener(new OnDoubleClickListener(this, true));
         }
         else
         {
@@ -376,7 +383,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             {
                 mPresenter.setSvcAllVideoContainer(this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
                         mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
-                mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
+                if (!isHideVideoWindow)
+                {
+                    mConfSmallVideoWndLL.setVisibility(View.VISIBLE);
+                }
                 isSetOnlyLocalWind = false;
             }
         } else {
@@ -1248,6 +1258,27 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         dialog.show();
     }
 
+    private void showWatchDialog(final int windowIndex, String message)
+    {
+        ConfirmDialog dialog = new ConfirmDialog(this, message);
+        dialog.setRightButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.watchAttendeeByIndex(windowIndex);
+            }
+        });
+        dialog.setLeftButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (0 == windowIndex)
+                {
+                    isNeedCancelWatch = true;
+                }
+            }
+        });
+        dialog.show();
+    }
+
     private void showLeaveConfDialog()
     {
         ConfirmDialog dialog = new ConfirmDialog(this, R.string.leave_conf);
@@ -1282,6 +1313,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         this.isSharing = isSharing;
     }
 
+    @Override
+    public void isWatchAfterBroadcast(String displayName) {
+        if (isSvcConf && isNeedCancelWatch)
+        {
+            mPresenter.watchAttendeeByIndex(0);
+            isNeedCancelWatch = false;
+        }
+        showMessage(getString(R.string.broadcast_member, displayName));
+    }
+
     private void showEndConfDialog()
     {
         TripleDialog dialog = new TripleDialog(this);
@@ -1293,6 +1334,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 mHandler.sendEmptyMessage(STOP_SCREEN_SHARE_HANDLE);
                 mPresenter.closeConf();
                 ActivityStack.getIns().popup(ConfMemberListActivity.class);
+                stopTimer();
                 finish();
             }
         });
@@ -1356,6 +1398,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void updateAttendeeButton(final Member member) {
         this.isShareOwner = member.isShareOwner();
+        mCallInfo.setVideoCall(member.isVideo());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1871,6 +1914,38 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     {
         timer = new Timer();
         myTimerTask = new MyTimerTask();
+    }
+
+    @Override
+    public void OnDoubleClick(View v) {
+        switch (v.getId())
+        {
+            case R.id.conf_remote_big_video_layout:
+                if (!isNeedCancelWatch)
+                {
+                    return;
+                }
+                if (mPresenter.getWatchMemberList().size() > 0)
+                {
+                    showWatchDialog(0, getString(R.string.double_cancel_watch_attendee));
+                    isNeedCancelWatch = false;
+                }
+                break;
+            case R.id.conf_remote_small_video_layout_01:
+                showWatchDialog(1, getString(R.string.double_watch_attendee, mConfRemoteSmallVideoText_01.getText().toString()));
+                isNeedCancelWatch = true;
+                break;
+            case R.id.conf_remote_small_video_layout_02:
+                showWatchDialog(2, getString(R.string.double_watch_attendee, mConfRemoteSmallVideoText_02.getText().toString()));
+                isNeedCancelWatch = true;
+                break;
+            case R.id.conf_remote_small_video_layout_03:
+                showWatchDialog(3, getString(R.string.double_watch_attendee, mConfRemoteSmallVideoText_03.getText().toString()));
+                isNeedCancelWatch = true;
+                break;
+            default:
+                break;
+        }
     }
 
     class MyTimerTask extends TimerTask {

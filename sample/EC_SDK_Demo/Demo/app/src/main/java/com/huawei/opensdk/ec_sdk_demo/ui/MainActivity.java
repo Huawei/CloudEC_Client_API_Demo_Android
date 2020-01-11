@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_RESULT,
             CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND,
             CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT,
-            CustomBroadcastConstants.LOGIN_FAILED,
+            CustomBroadcastConstants.AUTH_FAILED,
             CustomBroadcastConstants.LOGIN_SUCCESS
     };
     private String mMyAccount;
@@ -409,7 +409,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 Message resumeResult = handler.obtainMessage(UIConstants.LOGIN_RESUME_RESULT, obj);
                 handler.sendMessage(resumeResult);
                 break;
-            case CustomBroadcastConstants.LOGIN_FAILED:
+            case CustomBroadcastConstants.AUTH_FAILED:
                 handler.sendEmptyMessage(UIConstants.LOGIN_FAILED);
                 break;
             case CustomBroadcastConstants.LOGIN_SUCCESS:

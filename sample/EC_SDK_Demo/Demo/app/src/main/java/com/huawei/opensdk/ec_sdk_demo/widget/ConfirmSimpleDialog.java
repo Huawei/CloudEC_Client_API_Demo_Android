@@ -1,6 +1,8 @@
 package com.huawei.opensdk.ec_sdk_demo.widget;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
 
 import com.huawei.opensdk.ec_sdk_demo.R;
 
@@ -9,6 +11,8 @@ import com.huawei.opensdk.ec_sdk_demo.R;
  */
 public class ConfirmSimpleDialog extends BaseDialog {
 
+    private TextView leftTV;
+    private View view;
     public ConfirmSimpleDialog(Context context, String message)
     {
         super(context);
@@ -17,5 +21,14 @@ public class ConfirmSimpleDialog extends BaseDialog {
         setCanceledOnTouchOutside(false);
         setLeftButtonListener(null);
         setRightButtonListener(null);
+
+        leftTV = (TextView) findViewById(R.id.dialog_leftbutton);
+        view = (View) findViewById(R.id.dialog_divide);
+    }
+
+    public void setVisible()
+    {
+        leftTV.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
     }
 }

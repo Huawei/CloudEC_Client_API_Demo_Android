@@ -24,6 +24,7 @@
         android:maxLines="4"
         android:textColor="#333333"
         android:layout_weight="1"
+        android:imeOptions="flagNoExtractUi|flagNoFullscreen"
         android:textSize="@dimen/sp16"/>
 
     <ImageView android:id="@+id/chat_send_iv"

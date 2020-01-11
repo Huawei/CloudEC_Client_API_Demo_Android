@@ -60,6 +60,8 @@ public interface IConfManagerContract
         void closeConf();
 
         void updateSharingStatus(boolean isSharing);
+
+        void isWatchAfterBroadcast(String displayName);
     }
 
     interface ConfManagerPresenter
@@ -94,6 +96,8 @@ public interface IConfManagerContract
         void attachRemoteVideo(long userID, long deviceID);
 
         void watchAttendee(Member member);
+
+        void watchAttendeeByIndex(int windowIndex);
 
         void setConfMode(ConfConstant.ConfVideoMode confVideoMode);
 

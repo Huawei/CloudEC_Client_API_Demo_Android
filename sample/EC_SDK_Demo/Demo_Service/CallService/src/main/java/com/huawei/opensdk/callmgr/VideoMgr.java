@@ -92,6 +92,7 @@ public class VideoMgr {
         callManager = TsdkManager.getInstance().getCallManager();
 
         cameraList = callManager.getDevices(TsdkDeviceType.TSDK_E_DEVICE_CAMERA);
+        setCameraIndex(cameraList);
     }
 
     public static VideoMgr getInstance() {
@@ -99,6 +100,23 @@ public class VideoMgr {
             instance= new VideoMgr();
         }
         return instance;
+    }
+
+    public void setCameraIndex(List<TsdkDeviceInfo> cameraList)
+    {
+        if (null == cameraList || cameraList.isEmpty())
+        {
+            return;
+        }
+
+        if (1 == cameraList.size())
+        {
+            setCurrentCameraIndex(CallConstant.BIG_SCREEN_CAMERA);
+        }
+        else
+        {
+            setCurrentCameraIndex(CallConstant.FRONT_CAMERA);
+        }
     }
 
     /**
@@ -112,34 +130,40 @@ public class VideoMgr {
         // 创建本地视频窗口（本地窗口只能创建一个，底层可以直接获取到这个窗口）
         // 必须存在，否则远端视频无法显示
         if (localHideView == null) {
+//            localHideView = ViERenderer.createLocalRenderer(context);
             localHideView = callManager.createLocalRenderer(context);
             localHideView.setZOrderOnTop(false);
         }
 
         // 本端窗口显示
         if (localVideoView == null) {
+//            localVideoView = ViERenderer.createRenderer(context,true);
             localVideoView = callManager.createRemoteRenderer(context);
             localVideoView.setZOrderMediaOverlay(true);
         }
 
         // 创建远端视频窗口（可以创建多个）
         if (remoteBigVideoView == null) {
+//            remoteBigVideoView = ViERenderer.createRenderer(context,true);
             remoteBigVideoView = callManager.createRemoteRenderer(context);
             remoteBigVideoView.setZOrderMediaOverlay(false);
         }
 
         if (isSvcConf) {
             if (remoteSmallVideoView_01 == null) {
+//                remoteSmallVideoView_01 = ViERenderer.createRenderer(context,true);
                 remoteSmallVideoView_01 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_01.setZOrderMediaOverlay(true);
             }
 
             if (remoteSmallVideoView_02 == null) {
+//                remoteSmallVideoView_02 = ViERenderer.createRenderer(context,true);
                 remoteSmallVideoView_02 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_02.setZOrderMediaOverlay(true);
             }
 
             if (remoteSmallVideoView_03 == null) {
+//                remoteSmallVideoView_03 = ViERenderer.createRenderer(context,true);
                 remoteSmallVideoView_03 = callManager.createRemoteRenderer(context);
                 remoteSmallVideoView_03.setZOrderMediaOverlay(true);
             }
@@ -196,12 +220,10 @@ public class VideoMgr {
 
         if (isOpen) {
             //重新设置摄像头采集角度
-            result = call.setCaptureRotation(CallConstant.FRONT_CAMERA, 0);
+            setCameraIndex(cameraList);
+            result = call.setCaptureRotation(currentCameraIndex, 0);
             if (result != 0) {
                 LogUtil.e(TAG, "setCaptureRotation is failed, result -->" + result);
-            }
-            else {
-                setCurrentCameraIndex(CallConstant.FRONT_CAMERA);
             }
         } else {
             //采用发送默认图版本方式，替代关闭摄相头动作
@@ -347,7 +369,7 @@ public class VideoMgr {
                 setCurrentCallId(callId);
 
                 //设置视频窗口方向参数
-                setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+                setVideoOrient(callId, currentCameraIndex);
 
                 // 设置本地视频窗口
                 TsdkVideoWndInfo localWndInfo = new TsdkVideoWndInfo();
@@ -395,7 +417,7 @@ public class VideoMgr {
                 setCurrentCallId(callId);
 
                 //设置视频窗口方向参数
-                setVideoOrient(callId, CallConstant.FRONT_CAMERA);
+                setVideoOrient(callId, currentCameraIndex);
 
                 TsdkCall tsdkCall = callManager.getCallByCallId(callId);
                 if (tsdkCall == null) {

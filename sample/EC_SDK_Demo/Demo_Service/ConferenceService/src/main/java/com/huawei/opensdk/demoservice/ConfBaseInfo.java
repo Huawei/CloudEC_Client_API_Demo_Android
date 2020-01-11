@@ -1,6 +1,7 @@
 package com.huawei.opensdk.demoservice;
 
 
+import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 
 /**
@@ -101,6 +102,12 @@ public class ConfBaseInfo {
      * 是否加入会议
      */
     private boolean isJoin;
+
+    /**
+     * Broadcasting attendee
+     * 被广播的与会者
+     */
+    private TsdkAttendee broadcastAttendee;
 
     public int getSize() {
         return size;
@@ -246,4 +253,11 @@ public class ConfBaseInfo {
         isJoin = join;
     }
 
+    public TsdkAttendee getBroadcastAttendee() {
+        return broadcastAttendee;
+    }
+
+    public void setBroadcastAttendee(TsdkAttendee broadcastAttendee) {
+        this.broadcastAttendee = broadcastAttendee;
+    }
 }

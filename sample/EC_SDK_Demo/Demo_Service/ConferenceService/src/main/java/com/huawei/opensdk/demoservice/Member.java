@@ -97,9 +97,9 @@ public class Member {
     private boolean isAutoInvite;
 
     /**
-     * 是否广播自己
+     * 是否广播与会者
      */
-    private boolean isBroadcastSelf;
+    private boolean isBroadcast;
 
     /**
      * 是否正在共享
@@ -186,12 +186,12 @@ public class Member {
         isAutoInvite = autoInvite;
     }
 
-    public boolean isBroadcastSelf() {
-        return isBroadcastSelf;
+    public boolean isBroadcast() {
+        return isBroadcast;
     }
 
-    public void setBroadcastSelf(boolean broadcastSelf) {
-        isBroadcastSelf = broadcastSelf;
+    public void setBroadcast(boolean broadcast) {
+        isBroadcast = broadcast;
     }
 
     public TsdkConfRole getRole() {
@@ -346,7 +346,7 @@ public class Member {
         setHandUp(attendeeStatusInfo.getIsHandup() == 1? true : false);
         TsdkConfRole role = (TsdkConfRole.TSDK_E_CONF_ROLE_CHAIRMAN.enumOf(attendeeBaseInfo.getRole()));
         setRole(role);
-        setBroadcastSelf(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
+        setBroadcast(attendeeStatusInfo.getIsBroadcast() == 1 ? true : false);
         setShareOwner(attendeeStatusInfo.getIsShareOwner()== 1 ? true : false);
 
         TsdkConfParticipantStatus participantStatus = ConfConvertUtil.convertAttendStatus(attendeeStatusInfo.getState());

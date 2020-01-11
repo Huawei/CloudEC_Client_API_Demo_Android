@@ -1,6 +1,7 @@
 package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 
 
+import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
@@ -30,13 +31,19 @@ import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfManagerContract.ConfManagerView>
         implements IConfManagerContract.ConfManagerPresenter
 {
+    private static final int REMOTE_DISPLAY = 0;
+    private static final int SMALL_DISPLAY_01 = 1;
+    private static final int SMALL_DISPLAY_02 = 2;
+    private static final int SMALL_DISPLAY_03 = 3;
+
     private String confID;
     private int currentShowSmallWndCount = 0;
     private List<Long> svcLabel = MeetingMgr.getInstance().getSvcConfInfo().getSvcLabel();
@@ -46,6 +53,8 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
     private String smallDisplay_03 = "";
     private boolean isResuming = false; // 是否在重新login中
     private boolean isNeedConfigIp = false; // 是否需要重新配置本地ip
+    private String currentBroadcastNumber = ""; // 当前被广播的用户号码
+    private Map<String, Integer> watchMap = new IdentityHashMap<>();
 
     protected String[] broadcastNames;
     protected LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -93,12 +102,30 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     //SVC 会议时的处理
                     getView().refreshWatchMemberPage();
 
+                    //刷新选看窗口的显示名称
+                    refreshSvcWatchDisplayName(memberList);
+
                     //远端小窗口+本地窗口数
                     int num = MeetingMgr.getInstance().getCurrentWatchSmallCount() + 1;
                     if (currentShowSmallWndCount != num)
                     {
                         currentShowSmallWndCount = num;
                         getView().setSmallVideoVisible(currentShowSmallWndCount);
+                    }
+
+                    //广播与会者的处理
+                    TsdkAttendee broadcastAttendee = confBaseInfo.getBroadcastAttendee();
+                    if (null != broadcastAttendee)
+                    {
+                        if (!currentBroadcastNumber.equals(broadcastAttendee.getBaseInfo().getNumber()))
+                        {
+                            currentBroadcastNumber = broadcastAttendee.getBaseInfo().getNumber();
+                            getView().isWatchAfterBroadcast(broadcastAttendee.getBaseInfo().getDisplayName());
+                        }
+                    }
+                    else
+                    {
+                        currentBroadcastNumber = "";
                     }
 
                     // 处理是否有人正在共享
@@ -335,9 +362,12 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     if (result != 0)
                     {
                         getView().showCustomToast(R.string.request_chairman_fail);
-                        return;
                     }
-                    setSelfPresenter();
+                    else
+                    {
+                        getView().showCustomToast(R.string.request_chairman_success);
+                        setSelfPresenter();
+                    }
                     break;
 
                 // 释放主席结果
@@ -346,7 +376,10 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     if (result != 0)
                     {
                         getView().showCustomToast(R.string.release_chairman_fail);
-                        return;
+                    }
+                    else
+                    {
+                        getView().showCustomToast(R.string.release_chairman_success);
                     }
                     break;
 
@@ -431,7 +464,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                 // 会议中，sip注册超时结果(UI主动挂断通话并且离开会议)
                 case CustomBroadcastConstants.LOGIN_FAILED:
                     long callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
-                    LogUtil.i(UIConstants.DEMO_TAG, "exit during the conf, + callId:" + callID);
+                    LogUtil.i(UIConstants.DEMO_TAG, "exit during the conf, callId:" + callID);
                     if (0 != callID)
                     {
                         CallMgr.getInstance().endCall(callID);
@@ -590,23 +623,28 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
     @Override
     public void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees) {
+        watchMap.clear();
         for (TsdkConfSvcWatchAttendee watchAttendee : watchAttendees)
         {
             if (svcLabel.get(0) == watchAttendee.getLabel())
             {
                 remoteDisplay = watchAttendee.getBaseInfo().getDisplayName();
+                watchMap.put(watchAttendee.getBaseInfo().getNumber(), REMOTE_DISPLAY);
             }
             else if (svcLabel.get(1) == watchAttendee.getLabel())
             {
                 smallDisplay_01 = watchAttendee.getBaseInfo().getDisplayName();
+                watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_01);
             }
             else if (svcLabel.get(2) == watchAttendee.getLabel())
             {
                 smallDisplay_02 = watchAttendee.getBaseInfo().getDisplayName();
+                watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_02);
             }
             else if (svcLabel.get(3) == watchAttendee.getLabel())
             {
                 smallDisplay_03 = watchAttendee.getBaseInfo().getDisplayName();
+                watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_03);
             }
         }
         getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
@@ -666,5 +704,46 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         getView().showMessage(LocContext.getString(id));
         ActivityStack.getIns().popup(DataConfActivity.class);
         getView().finishActivity();
+    }
+
+    /**
+     * 刷新svc会场的显示信息
+     * @param list
+     */
+    private void refreshSvcWatchDisplayName(List<Member> list)
+    {
+        if (null == watchMap || watchMap.isEmpty())
+        {
+            return;
+        }
+
+        for (Member member : list)
+        {
+            for (String key : watchMap.keySet())
+            {
+                if (member.getNumber().equals(key))
+                {
+                    switch (watchMap.get(key))
+                    {
+                        case REMOTE_DISPLAY:
+                            remoteDisplay = member.getDisplayName();
+                            break;
+                        case SMALL_DISPLAY_01:
+                            smallDisplay_01 = member.getDisplayName();
+                            break;
+                        case SMALL_DISPLAY_02:
+                            smallDisplay_02 = member.getDisplayName();
+                            break;
+                        case SMALL_DISPLAY_03:
+                            smallDisplay_03 = member.getDisplayName();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
+        }
     }
 }

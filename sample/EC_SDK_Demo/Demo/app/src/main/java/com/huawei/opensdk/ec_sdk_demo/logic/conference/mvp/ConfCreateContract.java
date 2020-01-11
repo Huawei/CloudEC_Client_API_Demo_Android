@@ -39,6 +39,8 @@ public interface ConfCreateContract
 
         void addMember(Member member);
 
+        void delMember(int index);
+
         void createConference();
 
         void receiveBroadcast(String broadcastName, Object obj);

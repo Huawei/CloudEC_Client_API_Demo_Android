@@ -82,6 +82,20 @@ public class ConfCreatePresenter implements ConfCreateContract.IConfCreatePresen
     }
 
     @Override
+    public void delMember(int index) {
+        if (null == memberList || memberList.size() <= 0)
+        {
+            return;
+        }
+        if (memberList.size() <= index)
+        {
+            return;
+        }
+        memberList.remove(index);
+        confCreateView.refreshListView(memberList);
+    }
+
+    @Override
     public void createConference()
     {
         bookConferenceInfo.setMemberList(memberList);

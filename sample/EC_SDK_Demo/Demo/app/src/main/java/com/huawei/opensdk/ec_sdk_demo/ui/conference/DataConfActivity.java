@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -59,6 +60,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     private boolean isVideo;
     private MyTimerTask myTimerTask;
     private Timer timer;
+
     /**
      * 是否第一次执行计时器
      */
@@ -125,6 +127,9 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
     @Override
     public void initializeComposition()
     {
+        // keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.data_conf_activity);
 
         // data layout
@@ -327,6 +332,7 @@ public class DataConfActivity extends MVPBaseActivity<IDataConfContract.DataConf
                     tvMsg.setTextColor(Color.BLACK);
                 }
                 tvMsg.setText(msg);
+                tvMsg.setMaxEms(12);
                 tvMsg.setTextSize(17);
                 tvMsg.setBackgroundResource(R.drawable.conf_msg_bg_normal);
                 mBarrageLayout.addView(tvMsg);

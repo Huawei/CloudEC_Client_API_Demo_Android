@@ -4,7 +4,9 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -12,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -26,6 +29,7 @@ import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfCreateContract;
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfCreatePresenter;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
+import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmSimpleDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.TripleDialog;
@@ -57,6 +61,7 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
     private TextView recordTypeText;
     private DateEntity dateEntity;
     private LinearLayout rightButtonLL;
+    private ScrollView createConfScroll;
 
     private CreateConfAdapter adapter;
 
@@ -79,7 +84,7 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         recordTypeText = (TextView) findViewById(R.id.tv_recode_mode_type);
         accessNumberRL = (RelativeLayout) findViewById(R.id.conference_end_time_view);
         rightButtonLL = (LinearLayout) findViewById(R.id.right_img_layout);
-
+        createConfScroll = (ScrollView) findViewById(R.id.create_conf_scroll);
 
         rightTV.setText(R.string.create_conf);
         rightButtonLL.setOnClickListener(this);
@@ -91,6 +96,39 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         accessNumberRL.setOnClickListener(this);
 
         listView.setAdapter(adapter);
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN)
+                {
+                    createConfScroll.requestDisallowInterceptTouchEvent(true);
+                }
+                return false;
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                if (0 == position)
+                {
+                    return true;
+                }
+                else
+                {
+                    ConfirmSimpleDialog simpleDialog = new ConfirmSimpleDialog(parent.getContext(),
+                            getString(R.string.delete_participant));
+                    simpleDialog.setVisible();
+                    simpleDialog.setRightButtonListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mPresenter.delMember(position);
+                        }
+                    });
+                    simpleDialog.show();
+                }
+                return false;
+            }
+        });
 
         //Set default subject
         String defaultSubject = LoginMgr.getInstance().getAccount() + "'s Meeting";
@@ -220,9 +258,6 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
         typePickerDialog.setThirdText(R.string.conference_voice_data);
         typePickerDialog.setFourText(R.string.conference_video_data);
 
-        //pbx  Temporarily reserved
-        //typePickerDialog.setRightText(R.string.conference_voice_data);
-
         typePickerDialog.setLeftButtonListener(new View.OnClickListener()
         {
             @Override
@@ -240,10 +275,6 @@ public class CreateConfActivity extends BaseActivity implements View.OnClickList
                 //EC
                 mPresenter.setMediaType(TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO);
                 updateTypeView(TsdkConfMediaType.TSDK_E_CONF_MEDIA_VIDEO);
-
-                //pbx  Temporarily reserved
-                //mPresenter.setMediaType(TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA);
-                //updateTypeView(TsdkConfMediaType.TSDK_E_CONF_MEDIA_VOICE_DATA);
             }
         });
         typePickerDialog.setThirdButtonListener(new View.OnClickListener()

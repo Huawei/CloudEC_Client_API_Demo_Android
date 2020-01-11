@@ -279,6 +279,10 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.STOP_RECORD_RESULT, params);
                 break;
 
+            case RENAME_SELF:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.RENAME_SELF_RESULT, params);
+                break;
+
             case GET_DATA_CONF_PARAM_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.GET_DATA_CONF_PARAM_RESULT, params);
                 mHandler.sendEmptyMessage(GET_DATA_CONF_PARAM);

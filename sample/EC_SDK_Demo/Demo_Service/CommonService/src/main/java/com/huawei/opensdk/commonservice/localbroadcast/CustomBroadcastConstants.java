@@ -29,6 +29,7 @@ public interface CustomBroadcastConstants
     String CONF_CALL_ANSWERED = "com.huawei.opensdk.conf.confcallanswered";
     String LOGIN_SUCCESS = "com.huawei.opensdk.login.success";
     String LOGIN_FAILED = "com.huawei.opensdk.login.failed";
+    String AUTH_FAILED = "com.huawei.opensdk.auth.failed";
     String LOGOUT = "com.huawei.opensdk.login.logout";
     String MODIFY_PWD_SUCCESS = "com.huawei.opensdk.modifypwd.success";
     String LOGIN_STATUS_RESUME_IND = "com.huawei.opensdk.loginstatusresumeind";
@@ -50,6 +51,7 @@ public interface CustomBroadcastConstants
     String POSTPONE_CONF_RESULT = "com.huawei.opensdk.conf.postponeconfresult";
     String SPEAKER_LIST_IND = "com.huawei.opensdk.conf.speakerlistind";
     String STATISTIC_LOCAL_QOS = "com.huawei.opensdk.conf.statisticlocalqos";
+    String RENAME_SELF_RESULT = "com.huawei.opensdk.conf.renameselfresult";
 
     String SET_CONF_MODE_RESULT = "com.huawei.opensdk.conf.setconfmoderesult";
     String HOLD_CALL_RESULT = "com.huawei.opensdk.conf.holdcallresult";

@@ -68,7 +68,7 @@ public class LoginConstant {
 
         PASSWORD_INFO(),
 
-        IM_LOGIN_SUCCESS(),
+        AUTH_FAILED(),
 
         LOGIN_FAILED(),
 
