@@ -432,44 +432,64 @@ public class VideoMgr {
 
                 List<TsdkVideoWndInfo> list = new ArrayList<>();
                 list.add(localWndInfo);
-
                 tsdkCall.setVideoWindow(list);
-
-                //设置SVC远端视频窗口
-                TsdkSvcVideoWndInfo bigSvcVideoWndInfo = new TsdkSvcVideoWndInfo();
-                bigSvcVideoWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteBigVideoView));
-                bigSvcVideoWndInfo.setLabel(currentSvcLabel.get(0));
-                bigSvcVideoWndInfo.setWidth(960); // (960*540) usBandWidth[1300] (320*180) usBandWidth[195] (640*360) usBandWidth[620]
-                bigSvcVideoWndInfo.setHeight(540);
-
-                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_01 = new TsdkSvcVideoWndInfo();
-                smallSvcVideoWndInfo_01.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_01));
-                smallSvcVideoWndInfo_01.setLabel(currentSvcLabel.get(1));
-                smallSvcVideoWndInfo_01.setWidth(160); //320
-                smallSvcVideoWndInfo_01.setHeight(90);//180
-
-                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_02 = new TsdkSvcVideoWndInfo();
-                smallSvcVideoWndInfo_02.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_02));
-                smallSvcVideoWndInfo_02.setLabel(currentSvcLabel.get(2));
-                smallSvcVideoWndInfo_02.setWidth(160); //320
-                smallSvcVideoWndInfo_02.setHeight(90);//180
-
-                TsdkSvcVideoWndInfo smallSvcVideoWndInfo_03 = new TsdkSvcVideoWndInfo();
-                smallSvcVideoWndInfo_03.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_03));
-                smallSvcVideoWndInfo_03.setLabel(currentSvcLabel.get(3));
-                smallSvcVideoWndInfo_03.setWidth(160); //320
-                smallSvcVideoWndInfo_03.setHeight(90);//180
-
-                List<TsdkSvcVideoWndInfo> svcWndInfoList = new ArrayList<>();
-                svcWndInfoList.add(bigSvcVideoWndInfo);
-                svcWndInfoList.add(smallSvcVideoWndInfo_01);
-                svcWndInfoList.add(smallSvcVideoWndInfo_02);
-                svcWndInfoList.add(smallSvcVideoWndInfo_03);
-
-                tsdkCall.setSvcVideoWindow(svcWndInfoList);
             }
         });
 
+    }
+
+    /**
+     * 设置SVC远端视频窗口
+     * @param beginLabel
+     * @return
+     */
+    public int setSvcVideoWindow(int beginLabel)
+    {
+        LogUtil.i(TAG, "setSvcVideoWindow() enter, callID: " + currentCallId);
+
+        TsdkCall tsdkCall = callManager.getCallByCallId(currentCallId);
+        if (tsdkCall == null) {
+            return -1;
+        }
+
+        //设置SVC远端视频窗口
+        TsdkSvcVideoWndInfo bigSvcVideoWndInfo = new TsdkSvcVideoWndInfo();
+        bigSvcVideoWndInfo.setRender(ViERenderer.getIndexOfSurface(remoteBigVideoView));
+        bigSvcVideoWndInfo.setLabel(currentSvcLabel.get(0));
+        bigSvcVideoWndInfo.setWidth(960); // (960*540) usBandWidth[1300] (320*180) usBandWidth[195] (640*360) usBandWidth[620]
+        bigSvcVideoWndInfo.setHeight(540);
+
+        TsdkSvcVideoWndInfo smallSvcVideoWndInfo_01 = new TsdkSvcVideoWndInfo();
+        smallSvcVideoWndInfo_01.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_01));
+        smallSvcVideoWndInfo_01.setLabel(currentSvcLabel.get(beginLabel + 1));
+        smallSvcVideoWndInfo_01.setWidth(160); //320
+        smallSvcVideoWndInfo_01.setHeight(90);//180
+
+        TsdkSvcVideoWndInfo smallSvcVideoWndInfo_02 = new TsdkSvcVideoWndInfo();
+        smallSvcVideoWndInfo_02.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_02));
+        smallSvcVideoWndInfo_02.setLabel(currentSvcLabel.get(beginLabel + 2));
+        smallSvcVideoWndInfo_02.setWidth(160); //320
+        smallSvcVideoWndInfo_02.setHeight(90);//180
+
+        TsdkSvcVideoWndInfo smallSvcVideoWndInfo_03 = new TsdkSvcVideoWndInfo();
+        smallSvcVideoWndInfo_03.setRender(ViERenderer.getIndexOfSurface(remoteSmallVideoView_03));
+        smallSvcVideoWndInfo_03.setLabel(currentSvcLabel.get(beginLabel + 3));
+        smallSvcVideoWndInfo_03.setWidth(160); //320
+        smallSvcVideoWndInfo_03.setHeight(90);//180
+
+        List<TsdkSvcVideoWndInfo> svcVideoWndInfoList = new ArrayList<>();
+        svcVideoWndInfoList.add(bigSvcVideoWndInfo);
+        svcVideoWndInfoList.add(smallSvcVideoWndInfo_01);
+        svcVideoWndInfoList.add(smallSvcVideoWndInfo_02);
+        svcVideoWndInfoList.add(smallSvcVideoWndInfo_03);
+
+        int result = tsdkCall.setSvcVideoWindow(svcVideoWndInfoList);
+
+        if (0 != result)
+        {
+            return -1;
+        }
+        return 0;
     }
 
     /**

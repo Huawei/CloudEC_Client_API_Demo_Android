@@ -62,6 +62,8 @@ public interface IConfManagerContract
         void updateSharingStatus(boolean isSharing);
 
         void isWatchAfterBroadcast(String displayName);
+
+        void setIsCallByPhone(boolean isCallByPhone);
     }
 
     interface ConfManagerPresenter

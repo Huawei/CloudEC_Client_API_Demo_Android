@@ -37,6 +37,7 @@ import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkLeaveChatGroupResult;
 import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
+import com.huawei.ecterminalsdk.base.TsdkMediaErrorInfo;
 import com.huawei.ecterminalsdk.base.TsdkMsgReadIndInfo;
 import com.huawei.ecterminalsdk.base.TsdkReqJoinChatGroupMsg;
 import com.huawei.ecterminalsdk.base.TsdkResumeConfIndInfo;
@@ -612,6 +613,11 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtStatisticInfo(TsdkCall call, long signalStrength, TsdkCallStatisticInfo statisticInfo) {
         CallMgr.getInstance().handleUpDateCallStatisticInfo(signalStrength, statisticInfo);
+    }
+
+    @Override
+    public void onEvtMediaErrorInfo(TsdkCall tsdkCall, TsdkMediaErrorInfo tsdkMediaErrorInfo) {
+
     }
 
     @Override

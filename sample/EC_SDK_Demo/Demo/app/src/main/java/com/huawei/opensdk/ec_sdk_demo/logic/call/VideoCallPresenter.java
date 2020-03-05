@@ -211,6 +211,11 @@ public class VideoCallPresenter extends MVPBasePresenter<IVideoCallContract.Vide
         VideoMgr.getInstance().setAutoRotation(object, isOpen, 1);
     }
 
+    @Override
+    public void muteSpeaker(boolean isMute) {
+        CallMgr.getInstance().muteSpeak(mCallID, isMute);
+    }
+
     /**
      * startTimer
      */

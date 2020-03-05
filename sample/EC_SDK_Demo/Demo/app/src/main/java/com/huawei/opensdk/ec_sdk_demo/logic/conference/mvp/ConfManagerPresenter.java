@@ -85,7 +85,10 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.LOGIN_STATUS_RESUME_IND,
                 CustomBroadcastConstants.LOGIN_STATUS_RESUME_RESULT,
                 CustomBroadcastConstants.LOGIN_FAILED,
-                CustomBroadcastConstants.JOIN_CONF_FAILED
+                CustomBroadcastConstants.JOIN_CONF_FAILED,
+                CustomBroadcastConstants.ACTION_CALL_STATE_IDLE,
+                CustomBroadcastConstants.ACTION_CALL_STATE_RINGING,
+                CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK
         };
     }
 

@@ -171,7 +171,7 @@ public class CallMgr implements ICallMgr
 
         if (isVideoCall)
         {
-            //如果当前是听筒，则切换默认设备为杨声器
+            //如果当前是听筒，则切换默认设备为扬声器
             if (currentAudioRoute == TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_EARPIECE)
             {
                 //This method is used to set mobile audio route
@@ -223,7 +223,7 @@ public class CallMgr implements ICallMgr
 
             //设置扬声器输出音量大小
             //set speaker output Volume size
-            int setMediaSpeakVolumeResult = TsdkManager.getInstance().getCallManager().setSpeakVolume( 60);
+            int setMediaSpeakVolumeResult = TsdkManager.getInstance().getCallManager().setSpeakVolume(60);
             LogUtil.i(TAG, "setMediaSpeakVolumeResult" + setMediaSpeakVolumeResult);
             return TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_LOUDSPEAKER.getIndex();
         }
@@ -756,7 +756,10 @@ public class CallMgr implements ICallMgr
 
         //回铃音使用默认设备播放
         //Ring tone Use default device playback
-        TsdkManager.getInstance().getCallManager().setMobileAudioRoute(TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_DEFAULT);
+        if (!isSupportVideo())
+        {
+            TsdkManager.getInstance().getCallManager().setMobileAudioRoute(TsdkMobileAuidoRoute.TSDK_E_MOBILE_AUDIO_ROUTE_DEFAULT);
+        }
 
         //播放指定回铃音
         //Play the specified ring tone

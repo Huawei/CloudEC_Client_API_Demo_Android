@@ -55,7 +55,7 @@ public class ConfListPresenter extends MVPBasePresenter<IConfListContract.ConfLi
     @Override
     public void joinReserveConf(String confID, String accessCode, String password)
     {
-        if (TextUtils.isEmpty(confID) || TextUtils.isEmpty(accessCode) || TextUtils.isEmpty(password))
+        if (TextUtils.isEmpty(confID) || TextUtils.isEmpty(accessCode))
         {
             getView().showCustomToast(R.string.empty_input);
             return;

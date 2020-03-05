@@ -23,6 +23,7 @@ public class SvcMemberInfo {
 
     private int totalWatchablePage;
 
+    private int currentBeginLabel = 0; // 当前起始的label值
 
     public SvcMemberInfo() {
         this.svcLabel = new ArrayList<>();
@@ -79,6 +80,21 @@ public class SvcMemberInfo {
 
     public void setTotalWatchablePage(int totalWatchablePage) {
         this.totalWatchablePage = totalWatchablePage;
+    }
+
+    public int getCurrentBeginLabel() {
+        return currentBeginLabel;
+    }
+
+    public void switchCurrentBeginLabel() {
+        if (0 == this.currentBeginLabel)
+        {
+            this.currentBeginLabel = 4;
+        }
+        else
+        {
+            this.currentBeginLabel = 0;
+        }
     }
 
     public int getCurrentWatchSmallCount(){
@@ -158,6 +174,15 @@ public class SvcMemberInfo {
             }
 
             if ((currentWatchPage != this.currentWatchPage) || (totalWatchablePage != this.totalWatchablePage)) {
+                for (int i = 0; i < beWatchMemberList.size(); i++)
+                {
+                    if (0 == i)
+                    {
+                        beWatchMemberList.get(0).setLabel(svcLabel.get(0));
+                        continue;
+                    }
+                    beWatchMemberList.get(i).setLabel(svcLabel.get(this.currentBeginLabel + i));
+                }
                 return true;
             }
 
@@ -227,7 +252,6 @@ public class SvcMemberInfo {
             }
         }
 
-
         int startIndex= 0;
         if (update_small_wnd) {
 
@@ -245,7 +269,7 @@ public class SvcMemberInfo {
             startIndex = (currentWatchPage - 1) * MAX_SMALL_WIND_NUM;
             for (loop = 0; loop < needSmallWatchCount; loop++) {
                 tempWatch = new TsdkWatchAttendees();
-                tempWatch.setLabel(svcLabel.get(loop+1));
+                tempWatch.setLabel(svcLabel.get(loop + (this.currentBeginLabel + 1)));
                 tempWatch.setWidth(160);
                 tempWatch.setHeight(90);
                 if (watchableMemberList.size() > 0)
@@ -258,7 +282,6 @@ public class SvcMemberInfo {
                 }
                 beWatchMemberList.add(tempWatch);
             }
-
         }
 
         return (update_big_wnd || update_small_wnd);

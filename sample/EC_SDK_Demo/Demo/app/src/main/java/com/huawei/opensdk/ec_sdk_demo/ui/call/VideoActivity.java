@@ -37,6 +37,9 @@ import com.huawei.opensdk.ec_sdk_demo.util.PopupWindowUtil;
 
 import org.json.JSONObject;
 
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.CANCEL_MUTE_MIC;
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.MUTE_MIC_AND_SPEAK;
+
 /**
  * This class is about video call activity.
  */
@@ -78,7 +81,10 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
             CustomBroadcastConstants.DEL_LOCAL_VIEW,
             CustomBroadcastConstants.CONF_CALL_CONNECTED,
             CustomBroadcastConstants.ACTION_CALL_END_FAILED,
-            CustomBroadcastConstants.STATISTIC_LOCAL_QOS};
+            CustomBroadcastConstants.STATISTIC_LOCAL_QOS,
+            CustomBroadcastConstants.ACTION_CALL_STATE_IDLE,
+            CustomBroadcastConstants.ACTION_CALL_STATE_RINGING,
+            CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK};
 
     private static final int NOT_ALPHA = 255;
     private static final int HALF_ALPHA = 127;
@@ -88,6 +94,9 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     private Object thisVideoActivity = this;
     private boolean mIsConfCall = false;
     private int mScreenWidth;
+
+    private boolean mNeedUnMuteVideo; // 收到第三方电话呼叫，挂断后判断是否需要解除静音状态
+    private boolean mCallByPhoneVideo; // 是否处于第三方电话呼叫中，若是则静音、扬声器功能暂不可用
 
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
@@ -102,7 +111,28 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                     addSurfaceView(true);
                     mPresenter.setAutoRotation(thisVideoActivity, true);
                     break;
-
+                case MUTE_MIC_AND_SPEAK:
+                    mPresenter.muteSpeaker(true);
+                    if (mPresenter.getIsMuteMic())
+                    {
+                        return;
+                    }
+                    mNeedUnMuteVideo = true;
+                    mPresenter.muteCall();
+                    break;
+                case CANCEL_MUTE_MIC:
+                    mPresenter.muteSpeaker(false);
+                    if (!mNeedUnMuteVideo)
+                    {
+                        return;
+                    }
+                    if (!mPresenter.getIsMuteMic())
+                    {
+                        return;
+                    }
+                    mNeedUnMuteVideo = false;
+                    mPresenter.muteCall();
+                    break;
                 default:
                     break;
             }
@@ -229,7 +259,15 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
                 });
                 updateStatisticInfo();
                 break;
-
+            case CustomBroadcastConstants.ACTION_CALL_STATE_RINGING:
+            case CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK:
+                mCallByPhoneVideo = true;
+                mHandler.sendEmptyMessage(MUTE_MIC_AND_SPEAK);
+                break;
+            case CustomBroadcastConstants.ACTION_CALL_STATE_IDLE:
+                mCallByPhoneVideo = false;
+                mHandler.sendEmptyMessage(CANCEL_MUTE_MIC);
+                break;
             default:
                 break;
         }
@@ -312,6 +350,13 @@ public class VideoActivity extends MVPBaseActivity<IVideoCallContract.VideoCallB
     @Override
     public void onClick(View view)
     {
+        if (mCallByPhoneVideo)
+        {
+            if (R.id.video_mute_area == view.getId() || R.id.video_speaker_area == view.getId())
+            {
+                return;
+            }
+        }
         switch (view.getId())
         {
             case R.id.video_hangup_area:

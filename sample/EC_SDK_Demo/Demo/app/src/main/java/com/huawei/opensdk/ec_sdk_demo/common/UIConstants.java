@@ -98,4 +98,10 @@ public final class UIConstants
     public static final int IM_REFRESH_GROUP_INFO = 50;
     public static final int IM_USER_STATUS_UPDATE = 60;
 
+    /**
+     * Call constants
+     */
+    public static final int MUTE_MIC_AND_SPEAK = 301;
+    public static final int CANCEL_MUTE_MIC = 302;
+
 }

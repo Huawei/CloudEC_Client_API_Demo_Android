@@ -13,6 +13,7 @@ import com.huawei.opensdk.contactservice.eaddr.EntAddressBookInfo;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook.EnterpriseAddrTools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,22 +23,20 @@ import java.util.List;
 public class EnterpriseListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<EntAddressBookInfo> data;
+    private List<EntAddressBookInfo> data = new ArrayList<>();
     private EntAddressBookInfo entAddressBookInfo = new EntAddressBookInfo();
 
-    public EnterpriseListAdapter(Context context, List<EntAddressBookInfo> data) {
+    public EnterpriseListAdapter(Context context) {
         this.context = context;
-        this.data = data;
     }
 
     /**
-     * Refresh the date(Contacts list).
+     * Set the date(Contacts list).
      * @param adapterData the contacts list
      */
-    public void notifyDataSetChanged(List<EntAddressBookInfo> adapterData)
+    public void setData(List<EntAddressBookInfo> adapterData)
     {
         this.data = adapterData;
-        notifyDataSetChanged();
     }
 
 	/**

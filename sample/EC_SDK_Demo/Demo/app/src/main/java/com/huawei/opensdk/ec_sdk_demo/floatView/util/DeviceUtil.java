@@ -43,7 +43,7 @@ public class DeviceUtil {
     }
 
     /**
-     * 判断当前是否在前台 ture:前台  false：后台
+     * 判断当前是否在前台 true:前台  false:后台
      */
     public static boolean isAppForeground() {
         return ECApplication.getAppCount() > 0;

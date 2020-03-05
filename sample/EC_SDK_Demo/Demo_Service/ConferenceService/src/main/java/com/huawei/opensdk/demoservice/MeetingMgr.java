@@ -158,6 +158,16 @@ public class MeetingMgr implements IMeetingMgr{
 
     private TsdkShareStatisticInfo currentShareStatisticInfo;
 
+    /**
+     * 呼叫id，主要用于绑定窗口
+     */
+    private long currentCallId;
+
+    /**
+     * 是否需要刷新远端小窗口
+     */
+    private boolean isNeedRefreshWindow = false;
+
     private MeetingMgr()
     {
         this.confBaseInfo = new ConfBaseInfo();
@@ -194,14 +204,6 @@ public class MeetingMgr implements IMeetingMgr{
         }
     }
 
-//    public void setCurrentConferenceCallID(int callID) {
-//        if (null == currentConference)
-//        {
-//            return;
-//        }
-//        //currentConference.setCallID(callID);
-//    }
-
     public List<Member> getCurrentConferenceMemberList() {
         if (null == currentConference)
         {
@@ -234,32 +236,6 @@ public class MeetingMgr implements IMeetingMgr{
         }
         return this.getConfBaseInfo();
     }
-
-//
-//    public void updateCurrentConferenceBaseInfo(ConfDetailInfo confDetailInfo) {
-//        if (null == currentConference)
-//        {
-//            return;
-//        }
-//
-//        if (getCurrentConferenceBaseInfo().getConfID().equals(confDetailInfo.getConfID()))
-//        {
-//            //currentConference.updateConfInfo(confDetailInfo);
-//        }
-//    }
-//
-
-
-
-//    public boolean isInDataConf()
-//    {
-//        if (null == currentConference)
-//        {
-//            return false;
-//        }
-//
-//        return true;
-//    }
 
     public Member getSelf() {
         return self;
@@ -302,7 +278,6 @@ public class MeetingMgr implements IMeetingMgr{
     public void setConfBaseInfo(ConfBaseInfo confBaseInfo) {
         this.confBaseInfo = confBaseInfo;
     }
-
 
     private boolean judgeMemberWhetherOnline(Member member, List<TsdkAttendee> attendeeList) {
         for (TsdkAttendee attendeeInfo : attendeeList) {
@@ -368,6 +343,14 @@ public class MeetingMgr implements IMeetingMgr{
         }
 
         return new String[0];
+    }
+
+    public boolean isNeedRefreshWindow() {
+        return isNeedRefreshWindow;
+    }
+
+    public void setNeedRefreshWindow(boolean needRefreshWindow) {
+        isNeedRefreshWindow = needRefreshWindow;
     }
 
     /**
@@ -456,6 +439,7 @@ public class MeetingMgr implements IMeetingMgr{
 
         boolean reWatch = svcConfInfo.svcMemberListUpdateHandle(memberList);
         if (reWatch) {
+            VideoMgr.getInstance().setSvcVideoWindow(svcConfInfo.getCurrentBeginLabel());
             TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
             watchAttendeesInfo.setWatchAttendeeList(svcConfInfo.getBeWatchMemberList());
             watchAttendeesInfo.setWatchAttendeeNum(svcConfInfo.getBeWatchMemberList().size());
@@ -554,7 +538,7 @@ public class MeetingMgr implements IMeetingMgr{
         if (result != 0)
         {
             LogUtil.e(TAG, "bookReservedConf result ->" + result);
-            return  result;
+            return result;
         }
 
         return 0;
@@ -1287,7 +1271,7 @@ public class MeetingMgr implements IMeetingMgr{
 
     /**
      * This method is used to watch attendee
-     * 观看与会者
+     * 选看与会者
      * @param attendee 与会者信息
      * @return
      */
@@ -1333,19 +1317,12 @@ public class MeetingMgr implements IMeetingMgr{
         return result;
     }
 
-    public int watchAttendee(TsdkWatchAttendeesInfo watchAttendeesInfo) {
-        if (null == currentConference)
-        {
-            LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
-            return -1;
-        }
-
-        int result = currentConference.watchAttendee(watchAttendeesInfo);
-
-        return result;
-    }
-
-
+    /**
+     * This method is used to watch attendee by turning pages.
+     * 通过翻页选看与会者
+     * @param watchPage
+     * @return
+     */
     public int watchAttendee(int watchPage) {
         if (null == currentConference)
         {
@@ -1353,6 +1330,7 @@ public class MeetingMgr implements IMeetingMgr{
             return -1;
         }
 
+        VideoMgr.getInstance().setSvcVideoWindow(svcConfInfo.getCurrentBeginLabel());
         boolean reWatch = svcConfInfo.setBeWatchMemberList(watchPage);
         if (reWatch) {
             TsdkWatchAttendeesInfo watchAttendeesInfo = new TsdkWatchAttendeesInfo();
@@ -1367,6 +1345,23 @@ public class MeetingMgr implements IMeetingMgr{
         }
 
         return 0;
+    }
+
+    private int watchAttendee(TsdkWatchAttendeesInfo watchAttendeesInfo) {
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "watch attendee failed, currentConference is null ");
+            return -1;
+        }
+
+        int result = currentConference.watchAttendee(watchAttendeesInfo);
+        if (0 == result)
+        {
+            svcConfInfo.switchCurrentBeginLabel();
+            setNeedRefreshWindow(true);
+        }
+
+        return result;
     }
 
     /**
@@ -1824,12 +1819,13 @@ public class MeetingMgr implements IMeetingMgr{
                 }
 
                 if (tsdkCall.getCallInfo().getIsVideoCall() == 1) {
+                    currentCallId = tsdkCall.getCallInfo().getCallId();
                     if (tsdkJoinConfIndInfo.getIsSvcConf() == 0) {
                         /* AVC Conf */
-                        VideoMgr.getInstance().initVideoWindow(tsdkCall.getCallInfo().getCallId());
+                        VideoMgr.getInstance().initVideoWindow(currentCallId);
                     } else {
                         /* SVC Conf */
-                        VideoMgr.getInstance().initSvcVideoWindow(tsdkCall.getCallInfo().getCallId(), tsdkJoinConfIndInfo.getSvcLabel());
+                        VideoMgr.getInstance().initSvcVideoWindow(currentCallId, tsdkJoinConfIndInfo.getSvcLabel());
                         this.svcConfInfo.setSvcLabel(tsdkJoinConfIndInfo.getSvcLabel());
                     }
                 }

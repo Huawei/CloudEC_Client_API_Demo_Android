@@ -316,7 +316,12 @@ public class Session {
      */
     public boolean muteSpeak(boolean mute)
     {
-
+        int result = tsdkCall.muteSpeaker(mute);
+        if (result != 0)
+        {
+            LogUtil.e(TAG, "mediaMuteSpeaker return failed, result = " + result);
+            return false;
+        }
         return true;
     }
 

@@ -56,5 +56,7 @@ public interface IVideoCallContract
         SurfaceView getRemoteVideoView();
 
         void setAutoRotation(Object object, boolean isOpen);
+
+        void muteSpeaker(boolean isMute);
     }
 }

@@ -78,7 +78,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
         eaddrSearch = (ImageView)findViewById(R.id.book_right);
         eaddrList = (ListView)findViewById(R.id.search_list);
 
-        enterpriseListAdapter = new EnterpriseListAdapter(this, list);
+        enterpriseListAdapter = new EnterpriseListAdapter(this);
         eaddrList.setAdapter(enterpriseListAdapter);
 
         eaddrBack.setOnClickListener(this);
@@ -118,6 +118,20 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
         {
             toast.cancel();
         }
+    }
+
+    /**
+     * This method is used to the date(Contacts list).
+     */
+    public void refreshEnterpriseList(final List<EntAddressBookInfo> list)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                enterpriseListAdapter.setData(list);
+                enterpriseListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -192,7 +206,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                     {
                         list = contactsInfoResult.getList();
                     }
-                    enterpriseListAdapter.notifyDataSetChanged(list);
+                    refreshEnterpriseList(list);
                     if (null == list || list.size() == 0)
                     {
                         return;
@@ -203,7 +217,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                     break;
                 case UIConstants.ENTERPRISE_SEARCH_NULL:
                     list.clear();
-                    enterpriseListAdapter.notifyDataSetChanged(list);
+                    refreshEnterpriseList(list);
                     waitSearch = true;
                     showToast("There is no inquiry to the contact!");
                     eaddrKeys.setText("");
@@ -230,7 +244,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                         {
                             EnterpriseAddressBookMgr.getInstance().getUserIcon(list.get(++stopFlag).getEaddrAccount()); //查询用户头像
                         }
-                        enterpriseListAdapter.notifyDataSetChanged(list);
+                        refreshEnterpriseList(list);
                     }
                     break;
                 case UIConstants.ENTERPRISE_HEAD_DEF:
@@ -252,7 +266,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                         {
                             EnterpriseAddressBookMgr.getInstance().getUserIcon(list.get(++stopFlag).getEaddrAccount()); //查询用户头像
                         }
-                        enterpriseListAdapter.notifyDataSetChanged(list);
+                        refreshEnterpriseList(list);
                     }
                     break;
                 case UIConstants.ENTERPRISE_HEAD_NULL:
@@ -268,7 +282,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                         {
                             EnterpriseAddressBookMgr.getInstance().getUserIcon(list.get(++stopFlag).getEaddrAccount()); //查询用户头像
                         }
-                        enterpriseListAdapter.notifyDataSetChanged(list);
+                        refreshEnterpriseList(list);
                     }
                     break;
                 default:

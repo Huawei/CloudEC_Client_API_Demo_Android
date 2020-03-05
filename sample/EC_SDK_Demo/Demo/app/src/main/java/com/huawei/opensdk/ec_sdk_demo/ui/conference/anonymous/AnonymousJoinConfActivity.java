@@ -114,12 +114,6 @@ public class AnonymousJoinConfActivity extends BaseActivity {
             return;
         }
 
-        if (TextUtils.isEmpty(confPassword))
-        {
-            Toast.makeText(this, "conference Password cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         if (TextUtils.isEmpty(serviceAddress) || TextUtils.isEmpty(servicePort))
         {
             Toast.makeText(this, "Server address cannot be empty", Toast.LENGTH_SHORT).show();

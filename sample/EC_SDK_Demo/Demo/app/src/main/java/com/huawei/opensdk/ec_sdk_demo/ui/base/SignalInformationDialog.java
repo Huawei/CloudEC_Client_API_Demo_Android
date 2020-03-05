@@ -306,6 +306,10 @@ public class SignalInformationDialog extends BaseDialog {
 
         }else {
             //多流视频
+            if (null == videoStreamInfoList || videoStreamInfoList.size() == 0)
+            {
+                return;
+            }
             if (videoStreamInfoList.size()>0){
                 if (videoStreamInfoList.get(0).getSendFrameSize().equals("")){
                     videoSendResolution.setText("--");

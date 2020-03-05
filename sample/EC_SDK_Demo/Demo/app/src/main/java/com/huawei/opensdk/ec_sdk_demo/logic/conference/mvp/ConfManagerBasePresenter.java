@@ -35,6 +35,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.CANCEL_MUTE_MIC;
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.MUTE_MIC_AND_SPEAK;
+
 
 public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfManagerContract.ConfManagerView>
         implements IConfManagerContract.ConfManagerPresenter
@@ -55,6 +58,8 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
     private boolean isNeedConfigIp = false; // 是否需要重新配置本地ip
     private String currentBroadcastNumber = ""; // 当前被广播的用户号码
     private Map<String, Integer> watchMap = new IdentityHashMap<>();
+
+    private boolean mNeedUnMuteConf; // 收到第三方电话呼叫，挂断后判断是否需要解除静音状态
 
     protected String[] broadcastNames;
     protected LocBroadcastReceiver receiver = new LocBroadcastReceiver()
@@ -463,7 +468,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
                 // 会议中，sip注册超时结果(UI主动挂断通话并且离开会议)
                 case CustomBroadcastConstants.LOGIN_FAILED:
-                    long callID = MeetingMgr.getInstance().getCurrentConferenceCallID();
+                    long callID = getCallId();
                     LogUtil.i(UIConstants.DEMO_TAG, "exit during the conf, callId:" + callID);
                     if (0 != callID)
                     {
@@ -486,6 +491,18 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     }
                     break;
 
+                // 第三方来电和接听
+                case CustomBroadcastConstants.ACTION_CALL_STATE_RINGING:
+                case CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK:
+                    getView().setIsCallByPhone(true);
+                    isMuteMicAndSpeaker();
+                    break;
+
+                //  挂断第三方来电
+                case CustomBroadcastConstants.ACTION_CALL_STATE_IDLE:
+                    getView().setIsCallByPhone(false);
+                    isCancelMuteMicAndSpeaker();
+                    break;
                 default:
                     break;
             }
@@ -745,5 +762,64 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
             getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
         }
+    }
+
+    private boolean isMuteMicAndSpeaker()
+    {
+        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+
+        if (self == null)
+        {
+            return false;
+        }
+
+        CallMgr.getInstance().muteSpeak(getCallId(), true);
+
+        if (self.isMute())
+        {
+            return false;
+        }
+        mNeedUnMuteConf = true;
+        int result = MeetingMgr.getInstance().muteAttendee(self, true);
+        if (result != 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private long getCallId()
+    {
+        return MeetingMgr.getInstance().getCurrentConferenceCallID();
+    }
+
+    private boolean isCancelMuteMicAndSpeaker()
+    {
+        Member self = MeetingMgr.getInstance().getCurrentConferenceSelf();
+
+        if (self == null)
+        {
+            return false;
+        }
+
+        CallMgr.getInstance().muteSpeak(getCallId(), false);
+
+        if (!mNeedUnMuteConf)
+        {
+            return false;
+        }
+        if (!self.isMute())
+        {
+            return false;
+        }
+
+        mNeedUnMuteConf = false;
+
+        int result = MeetingMgr.getInstance().muteAttendee(self, false);
+        if (result != 0)
+        {
+            return false;
+        }
+        return true;
     }
 }

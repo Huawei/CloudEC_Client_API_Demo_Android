@@ -40,6 +40,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.CANCEL_MUTE_MIC;
+import static com.huawei.opensdk.ec_sdk_demo.common.UIConstants.MUTE_MIC_AND_SPEAK;
+
 /**
  * This class is about base media activity.
  */
@@ -91,13 +94,18 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
             CustomBroadcastConstants.CALL_UPGRADE_ACTION,
             CustomBroadcastConstants.HOLD_CALL_RESULT,
             CustomBroadcastConstants.BLD_TRANSFER_RESULT,
-            CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE};
+            CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE,
+            CustomBroadcastConstants.ACTION_CALL_STATE_IDLE,
+            CustomBroadcastConstants.ACTION_CALL_STATE_RINGING,
+            CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK};
     private LinearLayout mSpeakerButton;
     private LinearLayout mUpgradeVideoArea;
 
     private CallFunc mCallFunc;
 
     private boolean mMuteStatus;
+    private boolean mNeedUnMuteAudio; // 收到第三方电话呼叫，挂断后判断是否需要解除静音状态
+    private boolean mCallByPhoneAudio; // 是否处于第三方电话呼叫中，若是则静音、扬声器功能暂不可用
 
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
@@ -180,6 +188,34 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                     break;
                 case BLD_TRANSFER_FAILED:
                     Toast.makeText(BaseMediaActivity.this, "Blind transfer failed", Toast.LENGTH_SHORT).show();
+                    break;
+                case MUTE_MIC_AND_SPEAK:
+                    CallMgr.getInstance().muteSpeak(mCallID, true);
+                    if (mMuteStatus)
+                    {
+                        return;
+                    }
+                    mNeedUnMuteAudio = true;
+                    if (CallMgr.getInstance().muteMic(mCallID, true)) {
+                        mCallFunc.setMuteStatus(true);
+                        refreshMuteStatus();
+                    }
+                    break;
+                case CANCEL_MUTE_MIC:
+                    CallMgr.getInstance().muteSpeak(mCallID, false);
+                    if (!mNeedUnMuteAudio)
+                    {
+                        return;
+                    }
+                    if (!mMuteStatus)
+                    {
+                        return;
+                    }
+                    mNeedUnMuteAudio = false;
+                    if (CallMgr.getInstance().muteMic(mCallID, false)) {
+                        mCallFunc.setMuteStatus(false);
+                        refreshMuteStatus();
+                    }
                     break;
                 default:
                     break;
@@ -323,6 +359,13 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        if (mCallByPhoneAudio)
+        {
+            if (R.id.mute_btn == v.getId() || R.id.speaker_btn == v.getId())
+            {
+                return;
+            }
+        }
         switch (v.getId()) {
             case R.id.plate_btn:
                 mPlateControl.showDialPlate();
@@ -412,8 +455,6 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                 break;
 
             case CustomBroadcastConstants.CONF_CALL_CONNECTED:
-                finish();
-                break;
             case CustomBroadcastConstants.ACTION_CALL_END:
                 finish();
                 break;
@@ -454,6 +495,16 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                         }
                     }
                 },20000);
+                break;
+
+            case CustomBroadcastConstants.ACTION_CALL_STATE_RINGING:
+            case CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK:
+                mCallByPhoneAudio = true;
+                mHandler.sendEmptyMessage(MUTE_MIC_AND_SPEAK);
+                break;
+            case CustomBroadcastConstants.ACTION_CALL_STATE_IDLE:
+                mCallByPhoneAudio = false;
+                mHandler.sendEmptyMessage(CANCEL_MUTE_MIC);
                 break;
             default:
                 break;

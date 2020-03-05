@@ -145,4 +145,8 @@ public interface CustomBroadcastConstants
 
     //conference to call
     String CONF_INCOMING_TO_CALL_INCOMING = "com.huawei.opensdk.conf.conftocall";
+
+    String ACTION_CALL_STATE_IDLE = "com.huawei.opensdk.callstateidle";
+    String ACTION_CALL_STATE_RINGING = "com.huawei.opensdk.callstatering";
+    String ACTION_CALL_STATE_OFF_HOOK = "com.huawei.opensdk.callstateoffhook";
 }

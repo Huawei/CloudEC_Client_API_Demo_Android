@@ -155,6 +155,8 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private String mCurrentActivity = ConfManagerActivity.class.getSimpleName();
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
+    private boolean mCallByPhoneConf; // 是否处于第三方电话呼叫中，若是则静音、扬声器功能暂不可用
+
     private static final int START_SCREEN_SHARE_HANDLE = 666;
     private static final int STOP_SCREEN_SHARE_HANDLE = 888;
     private static final int ROB_STOP_SCREEN_SHARE_HANDLE = 222;
@@ -544,6 +546,13 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void onClick(View v)
     {
+        if (mCallByPhoneConf)
+        {
+            if (R.id.conf_mute == v.getId() || R.id.conf_loud_speaker == v.getId())
+            {
+                return;
+            }
+        }
         switch (v.getId())
         {
             case R.id.conference_video_layout:
@@ -969,16 +978,16 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         final int currentPage = MeetingMgr.getInstance().getCurrentWatchPage();
         final int totalPage = MeetingMgr.getInstance().getTotalWatchablePage();
         final int watchSum = MeetingMgr.getInstance().getWatchSum();
-
+        
         if (0 == watchSum)
         {
             isOnlyLocal = true;
         }
         else
         {
+            updateLocalVideo();
             isOnlyLocal = false;
         }
-        updateLocalVideo();
 
         if (isHideVideoWindow)
         {
@@ -1323,6 +1332,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         showMessage(getString(R.string.broadcast_member, displayName));
     }
 
+    @Override
+    public void setIsCallByPhone(boolean isCallByPhone) {
+        mCallByPhoneConf = isCallByPhone;
+    }
+
     private void showEndConfDialog()
     {
         TripleDialog dialog = new TripleDialog(this);
@@ -1452,6 +1466,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                     {
                         if (!isSetOnlyLocalWind)
                         {
+                            if (MeetingMgr.getInstance().isNeedRefreshWindow())
+                            {
+                                mPresenter.setSvcAllVideoContainer(ConfManagerActivity.this, null, null, null,
+                                        mConfRemoteSmallVideoLayout_01, mConfRemoteSmallVideoLayout_02, mConfRemoteSmallVideoLayout_03);
+                                MeetingMgr.getInstance().setNeedRefreshWindow(false);
+                            }
                             return;
                         }
                         mPresenter.setSvcAllVideoContainer(ConfManagerActivity.this, mConfLocalVideoLayout, mConfRemoteBigVideoLayout, mHideVideoLayout,
@@ -1465,7 +1485,6 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 }
             }
         });
-
 
     }
 

@@ -274,6 +274,15 @@
 
         <!--声明最大屏幕纵横比即应用程序适配全面屏手机，若在手机上旋转屏幕显示不全，请在应用设置中选择全面屏显示-->
         <meta-data android:name="android.max_aspect" android:value="2.1" />
+
+        <!--注册广播:广播接实现电话的监听-->
+        <receiver android:name=".ui.receiver.PhoneStateReceiver">
+            <intent-filter
+                android:priority="1000">
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
