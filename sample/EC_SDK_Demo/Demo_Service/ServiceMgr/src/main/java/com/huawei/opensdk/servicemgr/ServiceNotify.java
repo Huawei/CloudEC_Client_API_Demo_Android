@@ -643,4 +643,9 @@ public class ServiceNotify implements TsdkNotify{
         LogUtil.i(TAG, "onEvtConfResumeResult notify.");
         MeetingMgr.getInstance().handleConfResumeResult(conference, result, info);
     }
+
+    @Override
+    public void onEvtConfEndResult(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
+        LogUtil.i(TAG, "onEvtConfEndResult notify. result-> " + tsdkCommonResult.getResult());
+    }
 }

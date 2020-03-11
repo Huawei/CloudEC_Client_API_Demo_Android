@@ -82,12 +82,12 @@ public class CallMgr implements ICallMgr
         this.resumeHold = resumeHold;
     }
 
-    public long getOriginal_CallId() {
+    public long getOriginalCallId() {
         return originalCallId;
     }
 
-    public void setOriginal_CallId(long original_CallId) {
-        this.originalCallId = original_CallId;
+    public void setOriginalCallId(long originalCallId) {
+        this.originalCallId = originalCallId;
     }
 
     public TsdkCallStatisticInfo getCurrentCallStatisticInfo() {

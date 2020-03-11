@@ -491,7 +491,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         if(CallMgr.getInstance().isResumeHold()){
-                            CallMgr.getInstance().unHoldCall(CallMgr.getInstance().getOriginal_CallId());
+                            CallMgr.getInstance().unHoldCall(CallMgr.getInstance().getOriginalCallId());
                         }
                     }
                 },20000);

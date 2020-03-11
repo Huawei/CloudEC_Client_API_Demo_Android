@@ -1124,7 +1124,7 @@ public class MeetingMgr implements IMeetingMgr{
             return -1;
         }
         //用于转会议失败之后，恢复原通话。
-        CallMgr.getInstance().setOriginal_CallId(call_id);
+        CallMgr.getInstance().setOriginalCallId(call_id);
         callTransferToConference = true;
 
         TsdkCall tsdkCall =  callSession.getTsdkCall();
@@ -1649,11 +1649,11 @@ public class MeetingMgr implements IMeetingMgr{
      */
     public void handleBookConfResult(TsdkCommonResult result, TsdkConfBaseInfo confBaseInfo){
         LogUtil.i(TAG, "onBookReservedConfResult");
-        if ((result == null) || (confBaseInfo == null))
+        if (result == null)
         {
             LogUtil.e(TAG, "book conference is failed, unknown error.");
             if (callTransferToConference){
-                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginalCallId());
                 if (callSession != null)
                 {
                     callSession.unHoldCall();
@@ -1667,7 +1667,7 @@ public class MeetingMgr implements IMeetingMgr{
         {
             LogUtil.e(TAG, "book conference is failed, return ->" + result.getResult());
             if (callTransferToConference){
-                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginalCallId());
                 if (callSession != null)
                 {
                     callSession.unHoldCall();
@@ -1844,7 +1844,7 @@ public class MeetingMgr implements IMeetingMgr{
         else
         {
             if(callTransferToConference){
-                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginal_CallId());
+                Session callSession = CallMgr.getInstance().getCallSessionByCallID(CallMgr.getInstance().getOriginalCallId());
                 if (callSession != null)
                 {
                     callSession.unHoldCall();
