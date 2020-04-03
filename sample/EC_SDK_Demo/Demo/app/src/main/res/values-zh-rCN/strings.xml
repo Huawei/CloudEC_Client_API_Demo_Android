@@ -83,6 +83,7 @@
     <string name="subscribe_fail">Subscribe conference failed</string>
     <string name="add_attendee_fail">Add attendee failed</string>
     <string name="del_attendee_fail">Del attendee failed</string>
+    <string name="hangup_attendee_fail">Hangup attendee failed</string>
     <string name="mute_attendee_fail">Mute attendee failed</string>
     <string name="un_mute_attendee_fail">UnMute attendee failed</string>
     <string name="permit">Grant Talk Right</string>
@@ -331,6 +332,14 @@
     <string name="double_watch_attendee">Are you sure you want to watch %1$s?</string>
     <string name="double_cancel_watch_attendee">Are you sure you want to cancel the selection?</string>
     <string name="delete_participant">Whether to delete the participant?</string>
+    <string name="stop_conf_hangup">The meeting has ended.</string>
+    <string name="chair_hangup">You have been removed from the meeting by the host.</string>
+    <string name="session_timer_timeout">The call disconnected due to network interruption.</string>
+    <string name="nostream_hangup">The call disconnected due to abnormal network connection.</string>
+    <string name="corp_conference_resource_has_been_run_out">The max meeting resources (number of participants) purchased by the enterprise reached. Contact the administrator.</string>
+    <string name="conf_allow_unmute">Unmute Allowed</string>
+    <string name="conf_all_mute_tip">All participants will be muted</string>
+    <string name="conf_not_allow_unmute_tip">The current meeting Host did not allow the participants to unmute themselves.</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>
@@ -359,6 +368,8 @@
     <string name="login_resume_failed">The network connection is failed, please try again</string>
     <string name="resume_join_failed">Rejoin the conference failed</string>
     <string name="rename_self_failed">Rename the display name failed</string>
+    <string name="allow_unmute_failed">Allow attendee unmute failed</string>
+    <string name="not_allow_unmute_failed">Do not allow attendee unmute failed</string>
 
     <string name="anno_color">颜色</string>
     <string name="anno_pen">画笔</string>

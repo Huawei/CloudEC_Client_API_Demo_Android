@@ -226,6 +226,37 @@
         <item name="android:lineSpacingExtra">@dimen/dp2</item>
     </style>
 
+    <style name="content_title">
+        <item name="android:padding">@dimen/dp10</item>
+        <item name="android:layout_height">@dimen/dp80</item>
+        <item name="android:layout_width">match_parent</item>
+
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/sp17</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingExtra">@dimen/dp2</item>
+    </style>
+
+    <style name="left_content_title">
+        <item name="android:layout_height">@dimen/dp50</item>
+        <item name="android:layout_width">match_parent</item>
+
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/sp17</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:lineSpacingExtra">@dimen/dp2</item>
+    </style>
+
+    <style name="left_content_msg">
+        <item name="android:layout_height">@dimen/dp30</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">@dimen/dp10</item>
+        <item name="android:layout_marginStart">@dimen/dp3</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/sp15</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
     <style name="center_confirm">
         <item name="android:layout_height">@dimen/dp50</item>
         <item name="android:layout_width">0dp</item>

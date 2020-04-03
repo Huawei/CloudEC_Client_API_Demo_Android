@@ -936,6 +936,21 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         dialog.show();
     }
 
+    private void showAllowAttendeeUnMute(String message)
+    {
+        final ConfirmSimpleDialog dialog = new ConfirmSimpleDialog(this, null);
+        dialog.showAllowTitle(message);
+        dialog.setVisible();
+        dialog.setRightButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.isAllowUnMute(dialog.isSelected());
+                mPresenter.muteConf(true);
+            }
+        });
+        dialog.show();
+    }
+
     private void showConfMode()
     {
         final SimpleListDialog dialog = new SimpleListDialog(this, items);
@@ -981,7 +996,23 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         
         if (0 == watchSum)
         {
+            if (!isVideo)
+            {
+                return;
+            }
             isOnlyLocal = true;
+            if (isSetOnlyLocalWind)
+            {
+                return;
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mPresenter.setOnlyLocalVideoContainer(ConfManagerActivity.this, mConfRemoteBigVideoLayout, mHideVideoLayout);
+                    mConfSmallVideoWndLL.setVisibility(View.GONE);
+                }
+            });
+            isSetOnlyLocalWind = true;
         }
         else
         {
@@ -1335,6 +1366,12 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     public void setIsCallByPhone(boolean isCallByPhone) {
         mCallByPhoneConf = isCallByPhone;
+    }
+
+    @Override
+    public void showNotAllowUnmute() {
+        ConfirmSimpleDialog dialog = new ConfirmSimpleDialog(this, getString(R.string.conf_not_allow_unmute_tip));
+        dialog.show();
     }
 
     private void showEndConfDialog()
@@ -1937,6 +1974,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
     @Override
     public void OnDoubleClick(View v) {
+        if (null == mPresenter.getWatchMemberList() || 0 == mPresenter.getWatchMemberList().size())
+        {
+            return;
+        }
+
         switch (v.getId())
         {
             case R.id.conf_remote_big_video_layout:

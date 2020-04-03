@@ -33,6 +33,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.MediaUtil;
 
 import org.json.JSONObject;
 
@@ -84,6 +85,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
     protected boolean mIsConfCall;
 
     protected int mConfToCallHandle;
+    protected boolean mUseSdkMethod = CallConstant.playFileBySDK;
 
     protected SecondDialPlateControl mPlateControl;
 
@@ -97,7 +99,8 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
             CustomBroadcastConstants.CALL_TRANSFER_TO_CONFERENCE,
             CustomBroadcastConstants.ACTION_CALL_STATE_IDLE,
             CustomBroadcastConstants.ACTION_CALL_STATE_RINGING,
-            CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK};
+            CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK,
+            CustomBroadcastConstants.GET_CONF_END};
     private LinearLayout mSpeakerButton;
     private LinearLayout mUpgradeVideoArea;
 
@@ -321,7 +324,7 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
         mMuteArea.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mPlateButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
-        mSpeakerButton.setVisibility(View.VISIBLE);
+        mSpeakerButton.setVisibility(mUseSdkMethod ? View.VISIBLE : View.GONE);
         mUpgradeVideoArea.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mBlindTransferButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
         mHoldCallButton.setVisibility(isCall ? View.VISIBLE : View.GONE);
@@ -456,6 +459,19 @@ public class BaseMediaActivity extends BaseActivity implements View.OnClickListe
 
             case CustomBroadcastConstants.CONF_CALL_CONNECTED:
             case CustomBroadcastConstants.ACTION_CALL_END:
+                finish();
+                break;
+            // 会议中呼叫用户，在用户接听前挂断UI层处理
+            case CustomBroadcastConstants.GET_CONF_END:
+                if (mUseSdkMethod)
+                {
+                    CallMgr.getInstance().stopPlayRingingTone();
+                    CallMgr.getInstance().stopPlayRingBackTone();
+                }
+                else
+                {
+                    MediaUtil.getInstance().stopPlayFromRawFile();
+                }
                 finish();
                 break;
             case CustomBroadcastConstants.CALL_UPGRADE_ACTION:

@@ -2,56 +2,38 @@ package com.huawei.opensdk.servicemgr;
 
 
 import com.huawei.ecterminalsdk.base.TsdkAttendee;
-import com.huawei.ecterminalsdk.base.TsdkBatchChatMsgInfo;
-import com.huawei.ecterminalsdk.base.TsdkBeAddedFriendInfo;
-import com.huawei.ecterminalsdk.base.TsdkBeAddedToChatGroupInfo;
 import com.huawei.ecterminalsdk.base.TsdkCallStatisticInfo;
-import com.huawei.ecterminalsdk.base.TsdkChatGroupInfoUpdateType;
-import com.huawei.ecterminalsdk.base.TsdkChatGroupUpdateInfo;
-import com.huawei.ecterminalsdk.base.TsdkChatMsgInfo;
-import com.huawei.ecterminalsdk.base.TsdkChatMsgUndeliverInfo;
-import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawInfo;
-import com.huawei.ecterminalsdk.base.TsdkChatMsgWithdrawResult;
 import com.huawei.ecterminalsdk.base.TsdkConfAppShareType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfDetailInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfEndReason;
 import com.huawei.ecterminalsdk.base.TsdkConfListInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfOperationResult;
 import com.huawei.ecterminalsdk.base.TsdkConfSpeakerInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfSvcWatchInfo;
 import com.huawei.ecterminalsdk.base.TsdkCtdCallStatus;
-import com.huawei.ecterminalsdk.base.TsdkDelChatGroupMemberResult;
 import com.huawei.ecterminalsdk.base.TsdkDocBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkDocShareDelDocInfo;
 import com.huawei.ecterminalsdk.base.TsdkForceLogoutInfo;
 import com.huawei.ecterminalsdk.base.TsdkGetIconResult;
 import com.huawei.ecterminalsdk.base.TsdkImLoginParam;
-import com.huawei.ecterminalsdk.base.TsdkImUserInfo;
-import com.huawei.ecterminalsdk.base.TsdkImUserStatusUpdateInfo;
-import com.huawei.ecterminalsdk.base.TsdkInputtingStatusInfo;
 import com.huawei.ecterminalsdk.base.TsdkIptServiceInfoSet;
 import com.huawei.ecterminalsdk.base.TsdkJoinConfIndInfo;
-import com.huawei.ecterminalsdk.base.TsdkLeaveChatGroupResult;
 import com.huawei.ecterminalsdk.base.TsdkLoginFailedInfo;
 import com.huawei.ecterminalsdk.base.TsdkLoginSuccessInfo;
 import com.huawei.ecterminalsdk.base.TsdkMediaErrorInfo;
-import com.huawei.ecterminalsdk.base.TsdkMsgReadIndInfo;
-import com.huawei.ecterminalsdk.base.TsdkReqJoinChatGroupMsg;
 import com.huawei.ecterminalsdk.base.TsdkResumeConfIndInfo;
-import com.huawei.ecterminalsdk.base.TsdkRspJoinChatGroupMsg;
 import com.huawei.ecterminalsdk.base.TsdkSearchContactsResult;
 import com.huawei.ecterminalsdk.base.TsdkSearchDepartmentResult;
 import com.huawei.ecterminalsdk.base.TsdkSecurityTunnelInfo;
-import com.huawei.ecterminalsdk.base.TsdkSendChatMsgResult;
 import com.huawei.ecterminalsdk.base.TsdkServiceAccountType;
 import com.huawei.ecterminalsdk.base.TsdkSessionCodec;
 import com.huawei.ecterminalsdk.base.TsdkSessionModified;
 import com.huawei.ecterminalsdk.base.TsdkSetIptServiceResult;
 import com.huawei.ecterminalsdk.base.TsdkShareStatisticInfo;
-import com.huawei.ecterminalsdk.base.TsdkSmsInfo;
 import com.huawei.ecterminalsdk.base.TsdkVideoOrientation;
 import com.huawei.ecterminalsdk.base.TsdkVideoViewRefresh;
 import com.huawei.ecterminalsdk.base.TsdkVoipAccountInfo;
@@ -60,7 +42,6 @@ import com.huawei.ecterminalsdk.models.TsdkCommonResult;
 import com.huawei.ecterminalsdk.models.TsdkNotify;
 import com.huawei.ecterminalsdk.models.call.TsdkCall;
 import com.huawei.ecterminalsdk.models.conference.TsdkConference;
-import com.huawei.ecterminalsdk.models.im.TsdkChatGroup;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.callmgr.ctdservice.CtdMgr;
 import com.huawei.opensdk.callmgr.iptService.IptMgr;
@@ -68,8 +49,6 @@ import com.huawei.opensdk.commonservice.util.LogUtil;
 import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.loginmgr.LoginMgr;
-
-import java.util.List;
 
 
 public class ServiceNotify implements TsdkNotify{
@@ -422,9 +401,9 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtConfEndInd(TsdkConference conference) {
+    public void onEvtConfEndInd(TsdkConference conference, TsdkConfEndReason reasonCode) {
         LogUtil.i(TAG, "onEvtConfEndInd notify.");
-        MeetingMgr.getInstance().handleConfEndInd(conference);
+        MeetingMgr.getInstance().handleConfEndInd(conference, reasonCode);
     }
 
     @Override
@@ -510,102 +489,6 @@ public class ServiceNotify implements TsdkNotify{
     }
 
     @Override
-    public void onEvtAddFriendInd(TsdkBeAddedFriendInfo beAddedFriendInfo) {
-
-    }
-
-    @Override
-    public void onEvtUserStatusUpdate(List<TsdkImUserStatusUpdateInfo> userStatusInfoList) {
-        LogUtil.i(TAG, "onEvtUserStatusUpdate notify.");
-    }
-
-    @Override
-    public void onEvtUserInfoUpdate(List<TsdkImUserInfo> userInfoList) {
-        LogUtil.i(TAG, "onEvtUserInfoUpdate notify.");
-    }
-
-    @Override
-    public void onEvtJoinChatGroupReq(TsdkChatGroup chatGroup, TsdkReqJoinChatGroupMsg reqJoinChatGroupMsg) {
-        LogUtil.i(TAG, "onEvtJoinChatGroupReq notify.");
-    }
-
-    @Override
-    public void onEvtJoinChatGroupRsp(TsdkChatGroup chatGroup, TsdkRspJoinChatGroupMsg rspJoinChatGroupMsg) {
-        LogUtil.i(TAG, "onEvtJoinChatGroupRsp notify.");
-    }
-
-    @Override
-    public void onEvtJoinChatGroupInd(TsdkChatGroup chatGroup, TsdkBeAddedToChatGroupInfo beAddedToChatGroupInfo) {
-        LogUtil.i(TAG, "onEvtJoinChatGroupInd notify.");
-    }
-
-    @Override
-    public void onEvtDelChatGroupMemberResult(TsdkChatGroup chatGroup, TsdkDelChatGroupMemberResult delChatGroupMemberResult) {
-        LogUtil.i(TAG, "onEvtDelChatGroupMemberResult notify.");
-    }
-
-    @Override
-    public void onEvtLeaveChatGroupResult(TsdkChatGroup chatGroup, TsdkLeaveChatGroupResult leaveChatGroupResult) {
-        LogUtil.i(TAG, "onEvtLeaveChatGroupResult notify.");
-    }
-
-    @Override
-    public void onEvtChatGroupInfoUpdate(TsdkChatGroup chatGroup, TsdkChatGroupUpdateInfo chatGroupUpdateInfo, TsdkChatGroupInfoUpdateType updateType) {
-        LogUtil.i(TAG, "onEvtChatGroupInfoUpdate notify.");
-    }
-
-
-    @Override
-    public void onEvtInputtingStatusInd(TsdkInputtingStatusInfo inputtingStatusInfo) {
-        LogUtil.i(TAG, "onEvtInputtingStatusInd notify.");
-    }
-
-    @Override
-    public void onEvtChatMsg(TsdkChatMsgInfo chatMsgInfo) {
-        LogUtil.i(TAG, "onEvtChatMsg notify.");
-    }
-
-    @Override
-    public void onEvtBatchChatMsg(TsdkBatchChatMsgInfo batchChatMsgInfo) {
-        LogUtil.i(TAG, "onEvtBatchChatMsg notify.");
-    }
-
-    @Override
-    public void onEvtSystemBulletin(TsdkChatMsgInfo chatMsgInfo) {
-
-    }
-
-    @Override
-    public void onEvtSms(TsdkSmsInfo smsInfo) {
-
-    }
-
-    @Override
-    public void onEvtUndeliverInd(TsdkChatMsgUndeliverInfo chatMsgUndeliverInfo) {
-
-    }
-
-    @Override
-    public void onEvtMsgReadInd(TsdkMsgReadIndInfo msgReadIndInfo) {
-
-    }
-
-    @Override
-    public void onEvtMsgSendResult(TsdkSendChatMsgResult sendChatMsgResult) {
-        LogUtil.i(TAG, "onEvtMsgSendResult notify.");
-    }
-
-    @Override
-    public void onEvtMsgWithdrawResult(TsdkChatMsgWithdrawResult chatMsgWithdrawResult) {
-        LogUtil.i(TAG, "onEvtMsgWithdrawResult notify.");
-    }
-
-    @Override
-    public void onEvtMsgWithdrawInd(TsdkChatMsgWithdrawInfo chatMsgWithdrawInfo) {
-        LogUtil.i(TAG, "onEvtMsgWithdrawInd notify.");
-    }
-
-    @Override
     public void onEvtTransToConfResult(TsdkCall call, TsdkCommonResult result) {
 
     }
@@ -647,5 +530,15 @@ public class ServiceNotify implements TsdkNotify{
     @Override
     public void onEvtConfEndResult(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
         LogUtil.i(TAG, "onEvtConfEndResult notify. result-> " + tsdkCommonResult.getResult());
+    }
+
+    @Override
+    public void onEvtConfSetShareOwnerFailed(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
+
+    }
+
+    @Override
+    public void onEvtConfStartShareFailed(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
+
     }
 }

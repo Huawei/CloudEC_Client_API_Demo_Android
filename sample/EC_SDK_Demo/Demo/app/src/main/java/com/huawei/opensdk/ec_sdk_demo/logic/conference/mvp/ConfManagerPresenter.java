@@ -65,6 +65,7 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.UN_LOCK_CONF_RESULT,
                 CustomBroadcastConstants.ADD_ATTENDEE_RESULT,
                 CustomBroadcastConstants.DEL_ATTENDEE_RESULT,
+                CustomBroadcastConstants.HANG_UP_ATTENDEE_RESULT,
                 CustomBroadcastConstants.MUTE_ATTENDEE_RESULT,
                 CustomBroadcastConstants.UN_MUTE_ATTENDEE_RESULT,
                 CustomBroadcastConstants.HAND_UP_RESULT,
@@ -365,6 +366,19 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 getView().showCustomToast(R.string.mute_conf_fail);
             } else {
                 getView().showCustomToast(R.string.un_mute_conf_fail);
+            }
+        }
+    }
+
+    @Override
+    public void isAllowUnMute(boolean isAllow) {
+        int result = MeetingMgr.getInstance().allowAttendeeUnmute(isAllow);
+        if (result != 0)
+        {
+            if (isAllow) {
+                getView().showCustomToast(R.string.allow_unmute_failed);
+            } else {
+                getView().showCustomToast(R.string.not_allow_unmute_failed);
             }
         }
     }

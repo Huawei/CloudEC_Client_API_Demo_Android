@@ -175,7 +175,7 @@ public class AnnoToolBar extends LinearLayout implements View.OnClickListener {
                 if (currentPenColor == 0){
                     currentPenColor = AnnotationConstants.PEN_COLOR_RED;
                 }
-                int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+                int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_3) * 1440 / LayoutUtil.getScreenDensityDpi());
                 MeetingMgr.getInstance().setAnnotationPen(currentPenColor, penWidth);
 
             }
@@ -235,7 +235,7 @@ public class AnnoToolBar extends LinearLayout implements View.OnClickListener {
         if (mErase != null) {
             mErase.setSelected(false);
         }
-        penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+        penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_3) * 1440 / LayoutUtil.getScreenDensityDpi());
         // 共享类型的切换
         MeetingMgr.getInstance().setAnnotationPen(currentPenColor, penWidth);
     }

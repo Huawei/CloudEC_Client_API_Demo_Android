@@ -401,7 +401,7 @@ public class AnnotationWinManager implements View.OnClickListener {
             //默认颜色红色
             penColorInt = AnnotationConstants.PEN_COLOR_RED;
         }
-        int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+        int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_3) * 1440 / LayoutUtil.getScreenDensityDpi());
         currentPenColor  = penColorInt;
 
         // 选择颜色后，默认设置为笔
@@ -462,7 +462,7 @@ public class AnnotationWinManager implements View.OnClickListener {
                 mErase.setSelected(false);
                 mPen.setSelected(true);
                 mSelectedButton = mPen;
-                int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+                int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_3) * 1440 / LayoutUtil.getScreenDensityDpi());
                 if (currentPenColor == 0){
                     currentPenColor = AnnotationConstants.PEN_COLOR_RED;
                 }

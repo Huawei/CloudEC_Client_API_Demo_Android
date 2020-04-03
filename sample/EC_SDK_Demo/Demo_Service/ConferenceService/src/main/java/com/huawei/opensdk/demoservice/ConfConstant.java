@@ -71,6 +71,7 @@ public class ConfConstant {
         ADD_YOURSELF_FAILED(),
         ADD_ATTENDEE_RESULT(),
         DEL_ATTENDEE_RESULT(),
+        HANG_UP_ATTENDEE_RESULT(),
 
         MUTE_ATTENDEE_RESULT(),
         UN_MUTE_ATTENDEE_RESULT(),

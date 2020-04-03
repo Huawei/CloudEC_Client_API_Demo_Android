@@ -26,6 +26,7 @@ import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.util.FileUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.MediaUtil;
 
 import java.io.File;
 
@@ -40,6 +41,7 @@ public class CallFunc implements ICallNotification, ICtdNotification
 
     private boolean mMuteStatus;
     private String mFilePath;
+    private boolean mUseSdkMethod = CallConstant.playFileBySDK;
 
     private static CallFunc mInstance = new CallFunc();
     private String[] broadcastNames = new String[]{CustomBroadcastConstants.CONF_INCOMING_TO_CALL_INCOMING};
@@ -77,8 +79,15 @@ public class CallFunc implements ICallNotification, ICtdNotification
                         callInfo.setVideoCall(tsdkcallInfo.getIsVideoCall() == 0 ? false : true);
                         callInfo.setConfID(tsdkConference.getHandle()+"");
 
-                        mFilePath = Environment.getExternalStorageDirectory() + File.separator + RINGING_FILE;
-                        CallMgr.getInstance().startPlayRingingTone(mFilePath);
+                        if (mUseSdkMethod)
+                        {
+                            mFilePath = Environment.getExternalStorageDirectory() + File.separator + RINGING_FILE;
+                            CallMgr.getInstance().startPlayRingingTone(mFilePath);
+                        }
+                        else
+                        {
+                            MediaUtil.getInstance().playFromRawFile(R.raw.ringing);
+                        }
 
                         Intent intent = new Intent(IntentConstant.CALL_IN_ACTIVITY_ACTION);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -151,8 +160,15 @@ public class CallFunc implements ICallNotification, ICtdNotification
                         }
                     }
 
-                    mFilePath = Environment.getExternalStorageDirectory() + File.separator + RINGING_FILE;
-                    CallMgr.getInstance().startPlayRingingTone(mFilePath);
+                    if (mUseSdkMethod)
+                    {
+                        mFilePath = Environment.getExternalStorageDirectory() + File.separator + RINGING_FILE;
+                        CallMgr.getInstance().startPlayRingingTone(mFilePath);
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().playFromRawFile(R.raw.ringing);
+                    }
 
                     Intent intent = new Intent(IntentConstant.CALL_IN_ACTIVITY_ACTION);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -186,18 +202,33 @@ public class CallFunc implements ICallNotification, ICtdNotification
             case PLAY_RING_BACK_TONE:
                 LogUtil.i(UIConstants.DEMO_TAG, "play ring back!");
 
-                if (FileUtil.isSdCardExist()){
-                    mFilePath = Environment.getExternalStorageDirectory() + File.separator + RING_BACK_FILE;
-                    CallMgr.getInstance().startPlayRingBackTone(mFilePath);
+                if (mUseSdkMethod)
+                {
+                    if (FileUtil.isSdCardExist()){
+                        mFilePath = Environment.getExternalStorageDirectory() + File.separator + RING_BACK_FILE;
+                        CallMgr.getInstance().startPlayRingBackTone(mFilePath);
+                    }
                 }
+                else
+                {
+                    MediaUtil.getInstance().playFromRawFile(R.raw.ring_back);
+                }
+
                 break;
 
             //媒体通道建立
             case RTP_CREATED:
                 if (obj instanceof CallInfo)
                 {
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
                     LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CALL_MEDIA_CONNECTED, obj);
                 }
 
@@ -209,26 +240,19 @@ public class CallFunc implements ICallNotification, ICtdNotification
 
                 if (obj instanceof CallInfo)
                 {
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
 
                     CallInfo callInfo = (CallInfo) obj;
 
                     LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_CONNECTED, callInfo);
-                    //stopMedia();
-//                    if (callInfo.isFocus())
-//                    {
-//                        if (MeetingMgr.getInstance().isInConference()) {
-//                            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.CONF_CALL_CONNECTED, callInfo);
-//                        } else {
-//                            //TODO
-//                            LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_CONNECTED, callInfo);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_CONNECTED, callInfo);
-//                    }
                 }
                 break;
 
@@ -239,8 +263,15 @@ public class CallFunc implements ICallNotification, ICtdNotification
                 if (obj instanceof CallInfo)
                 {
                     //呼叫可能没有接通，结束时停止可能存在的振铃音和回铃音
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
 
                     CallInfo params = (CallInfo) obj;
                     LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_CALL_END, params);

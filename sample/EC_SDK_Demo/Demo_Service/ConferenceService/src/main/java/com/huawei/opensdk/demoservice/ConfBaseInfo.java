@@ -109,6 +109,12 @@ public class ConfBaseInfo {
      */
     private TsdkAttendee broadcastAttendee;
 
+    /**
+     * Allow un mute
+     * 是否允许解除静音
+     */
+    private boolean isAllowUnMute;
+
     public int getSize() {
         return size;
     }
@@ -259,5 +265,13 @@ public class ConfBaseInfo {
 
     public void setBroadcastAttendee(TsdkAttendee broadcastAttendee) {
         this.broadcastAttendee = broadcastAttendee;
+    }
+
+    public boolean isAllowUnMute() {
+        return isAllowUnMute;
+    }
+
+    public void setAllowUnMute(boolean allowUnMute) {
+        isAllowUnMute = allowUnMute;
     }
 }

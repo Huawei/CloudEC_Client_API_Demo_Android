@@ -12,6 +12,7 @@ import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.demoservice.MeetingMgr;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.util.DialogUtil;
+import com.huawei.opensdk.ec_sdk_demo.util.MediaUtil;
 
 
 public class CallInActivity extends BaseMediaActivity
@@ -84,10 +85,16 @@ public class CallInActivity extends BaseMediaActivity
                 if(0 == mConfToCallHandle){
                     CallMgr.getInstance().endCall(mCallID);
                 }else {
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
 
-                    //TsdkConference tsdkConference = TsdkManager.getInstance().getConferenceManager().getConferenceByConfHandle(mConfToCallHandle);
                     MeetingMgr.getInstance().rejectConf();
                 }
 
@@ -97,11 +104,16 @@ public class CallInActivity extends BaseMediaActivity
                 if(0 == mConfToCallHandle){
                     CallMgr.getInstance().answerCall(mCallID, false);
                 }else {
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
 
-                    //TsdkConference tsdkConference = TsdkManager.getInstance().getConferenceManager().getConferenceByConfHandle(mConfToCallHandle);
-                    //tsdkConference.acceptConference(mConfToCallVideo);
                     MeetingMgr.getInstance().acceptConf(false);
                     finish();
                 }
@@ -114,8 +126,15 @@ public class CallInActivity extends BaseMediaActivity
                 }
                 else
                 {
-                    CallMgr.getInstance().stopPlayRingingTone();
-                    CallMgr.getInstance().stopPlayRingBackTone();
+                    if (mUseSdkMethod)
+                    {
+                        CallMgr.getInstance().stopPlayRingingTone();
+                        CallMgr.getInstance().stopPlayRingBackTone();
+                    }
+                    else
+                    {
+                        MediaUtil.getInstance().stopPlayFromRawFile();
+                    }
 
                     MeetingMgr.getInstance().acceptConf(mIsVideoCall);
                     finish();

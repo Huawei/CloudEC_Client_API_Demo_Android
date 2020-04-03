@@ -64,6 +64,8 @@ public interface IConfManagerContract
         void isWatchAfterBroadcast(String displayName);
 
         void setIsCallByPhone(boolean isCallByPhone);
+
+        void showNotAllowUnmute();
     }
 
     interface ConfManagerPresenter
@@ -141,6 +143,8 @@ public interface IConfManagerContract
         void releaseChairman();
 
         void muteConf(boolean isMute);
+
+        void isAllowUnMute(boolean isAllow);
 
         void lockConf(boolean isLock);
 

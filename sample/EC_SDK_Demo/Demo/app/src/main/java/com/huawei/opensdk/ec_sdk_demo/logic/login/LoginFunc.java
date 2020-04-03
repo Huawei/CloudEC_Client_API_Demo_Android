@@ -87,7 +87,7 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
         {
             case VOIP_LOGIN_SUCCESS:
                 LogUtil.i(UIConstants.DEMO_TAG, "voip login success");
-                ServiceMgr.getServiceMgr().setDisplayLocalInfo(LoginMgr.getInstance().getTerminal());
+                ServiceMgr.getServiceMgr().setDisplayLocalInfo(LoginMgr.getInstance().getAccount());
                 sendHandlerMessage(VOIP_LOGIN_SUCCESS, description);
                 break;
             case AUTH_FAILED:

@@ -203,6 +203,10 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.DEL_ATTENDEE_RESULT, params);
                 break;
 
+            case HANG_UP_ATTENDEE_RESULT:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.HANG_UP_ATTENDEE_RESULT, params);
+                break;
+
             case MUTE_ATTENDEE_RESULT:
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.MUTE_ATTENDEE_RESULT, params);
                 break;

@@ -4,6 +4,7 @@ package com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp;
 import com.huawei.ecterminalsdk.base.TsdkAttendee;
 import com.huawei.ecterminalsdk.base.TsdkConfAsActionType;
 import com.huawei.ecterminalsdk.base.TsdkConfAsStateInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfEndReason;
 import com.huawei.ecterminalsdk.base.TsdkConfMediaType;
 import com.huawei.ecterminalsdk.base.TsdkConfRole;
 import com.huawei.ecterminalsdk.base.TsdkConfShareSubState;
@@ -166,6 +167,8 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     break;
 
                 case CustomBroadcastConstants.GET_CONF_END:
+                    TsdkConfEndReason reasonCode = (TsdkConfEndReason) obj;
+                    getView().showMessage(getReasonDescription(reasonCode));
                     getView().finishActivity();
                     break;
 
@@ -277,6 +280,16 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     if (result != 0)
                     {
                         getView().showCustomToast(R.string.del_attendee_fail);
+                        return;
+                    }
+                    break;
+
+                // 挂断与会者结果
+                case CustomBroadcastConstants.HANG_UP_ATTENDEE_RESULT:
+                    result = (int)obj;
+                    if (result != 0)
+                    {
+                        getView().showCustomToast(R.string.hangup_attendee_fail);
                         return;
                     }
                     break;
@@ -448,6 +461,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     }
                     else
                     {
+                        setConfID(String.valueOf(MeetingMgr.getInstance().getConfHandle()));
                         svcLabel = MeetingMgr.getInstance().getSvcConfInfo().getSvcLabel();
                     }
                     break;
@@ -575,6 +589,14 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         {
             return false;
         }
+
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (!confBaseInfo.isAllowUnMute() && self.isMute())
+        {
+            getView().showNotAllowUnmute();
+            return false;
+        }
+
         int result = MeetingMgr.getInstance().muteAttendee(self, !self.isMute());
         if (result != 0)
         {
@@ -648,17 +670,17 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                 remoteDisplay = watchAttendee.getBaseInfo().getDisplayName();
                 watchMap.put(watchAttendee.getBaseInfo().getNumber(), REMOTE_DISPLAY);
             }
-            else if (svcLabel.get(1) == watchAttendee.getLabel())
+            else if (svcLabel.get(1) == watchAttendee.getLabel() || svcLabel.get(5) == watchAttendee.getLabel())
             {
                 smallDisplay_01 = watchAttendee.getBaseInfo().getDisplayName();
                 watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_01);
             }
-            else if (svcLabel.get(2) == watchAttendee.getLabel())
+            else if (svcLabel.get(2) == watchAttendee.getLabel() || svcLabel.get(6) == watchAttendee.getLabel())
             {
                 smallDisplay_02 = watchAttendee.getBaseInfo().getDisplayName();
                 watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_02);
             }
-            else if (svcLabel.get(3) == watchAttendee.getLabel())
+            else if (svcLabel.get(3) == watchAttendee.getLabel() || svcLabel.get(7) == watchAttendee.getLabel())
             {
                 smallDisplay_03 = watchAttendee.getBaseInfo().getDisplayName();
                 watchMap.put(watchAttendee.getBaseInfo().getNumber(), SMALL_DISPLAY_03);
@@ -821,5 +843,31 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
             return false;
         }
         return true;
+    }
+
+    private String getReasonDescription(TsdkConfEndReason reasonCode)
+    {
+        String reasonDescription = LocContext.getString(R.string.unknown);
+        switch (reasonCode)
+        {
+            case TSDK_E_CONF_END_REASON_STOP_CONF_HANGUP:
+                reasonDescription = LocContext.getString(R.string.stop_conf_hangup);
+                break;
+            case TSDK_E_CONF_END_REASON_CHAIR_HANGUP:
+                reasonDescription = LocContext.getString(R.string.chair_hangup);
+                break;
+            case TSDK_E_CONF_END_REASON_SESSION_TIMER_TIMEOUT:
+                reasonDescription = LocContext.getString(R.string.session_timer_timeout);
+                break;
+            case TSDK_E_CONF_END_REASON_NOSTREAM_HANGUP:
+                reasonDescription = LocContext.getString(R.string.nostream_hangup);
+                break;
+            case TSDK_E_CONF_END_REASON_CORP_CONFERENCE_RESOURCE_HAS_BEEN_RUN_OUT:
+                reasonDescription = LocContext.getString(R.string.corp_conference_resource_has_been_run_out);
+                break;
+            default:
+                break;
+        }
+        return reasonDescription;
     }
 }

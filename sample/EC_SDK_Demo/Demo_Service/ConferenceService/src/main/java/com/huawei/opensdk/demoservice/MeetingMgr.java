@@ -16,6 +16,7 @@ import com.huawei.ecterminalsdk.base.TsdkConfBaseInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfChatMsgInfo;
 import com.huawei.ecterminalsdk.base.TsdkConfChatType;
 import com.huawei.ecterminalsdk.base.TsdkConfDetailInfo;
+import com.huawei.ecterminalsdk.base.TsdkConfEndReason;
 import com.huawei.ecterminalsdk.base.TsdkConfEnvType;
 import com.huawei.ecterminalsdk.base.TsdkConfJoinParam;
 import com.huawei.ecterminalsdk.base.TsdkConfLanguage;
@@ -168,6 +169,11 @@ public class MeetingMgr implements IMeetingMgr{
      */
     private boolean isNeedRefreshWindow = false;
 
+    /**
+     * 断网重连后，重新入会成功后handle会刷新
+     */
+    private long confHandle;
+
     private MeetingMgr()
     {
         this.confBaseInfo = new ConfBaseInfo();
@@ -214,6 +220,11 @@ public class MeetingMgr implements IMeetingMgr{
 
     public Member getCurrentConferenceSelf() {
         if (null == currentConference)
+        {
+            return null;
+        }
+
+        if (null == getCurrentConferenceMemberList() || getCurrentConferenceMemberList().size() == 0)
         {
             return null;
         }
@@ -353,6 +364,14 @@ public class MeetingMgr implements IMeetingMgr{
         isNeedRefreshWindow = needRefreshWindow;
     }
 
+    public long getConfHandle() {
+        return confHandle;
+    }
+
+    public void setConfHandle(long confHandle) {
+        this.confHandle = confHandle;
+    }
+
     /**
      * This method is used to get the brush color.
      * 获取当前画笔颜色
@@ -380,6 +399,7 @@ public class MeetingMgr implements IMeetingMgr{
         confBaseInfo.setRecord(conference.isRecord());
         confBaseInfo.setSupportRecord(conference.isSupportRecordBroadcast());
         confBaseInfo.setBroadcastAttendee(conference.getBroadcastAttendee());
+        confBaseInfo.setAllowUnMute(conference.isAllowUnmute());
 
         if (TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE == conference.getConfEnvType()){
             confBaseInfo.setMuteAll(conference.isAllMute());
@@ -969,11 +989,30 @@ public class MeetingMgr implements IMeetingMgr{
     {
         if (null == currentConference)
         {
-            LogUtil.e(TAG,  "request chairman failed, currentConference is null ");
+            LogUtil.e(TAG,  "rename self failed, currentConference is null ");
             return -1;
         }
 
-        int result =  currentConference.renameSelf(nickname);
+        int result = currentConference.renameSelf(nickname);
+
+        return result;
+    }
+
+    /**
+     * This method is used to set whether to allow participants to unmute themselves.
+     * 设置是否允许与会者自己解除静音
+     * @param allowUnmute 允许与会者自己解除静音
+     * @return
+     */
+    public int allowAttendeeUnmute(boolean allowUnmute)
+    {
+        if (null == currentConference)
+        {
+            LogUtil.e(TAG,  "allow attendee un mute failed, currentConference is null ");
+            return -1;
+        }
+
+        int result = currentConference.allowAttendeeUnmute(allowUnmute);
 
         return result;
     }
@@ -1147,10 +1186,12 @@ public class MeetingMgr implements IMeetingMgr{
         }
 
         bookConfInfo.setSize(2);
+        // 设置为多流视频会议
+        bookConfInfo.setIsMultiStreamConf(1);
 
         List<TsdkAttendeeBaseInfo> attendeeList = new ArrayList<>();
 //        TsdkAttendeeBaseInfo confctrlAttendee = new TsdkAttendeeBaseInfo();
-        //confctrlAttendee.setNumber(callInfo.getPeerNumber());
+//        confctrlAttendee.setNumber(callInfo.getPeerNumber());
 //        confctrlAttendee.setRole(TsdkConfRole.TSDK_E_CONF_ROLE_ATTENDEE);
 //        attendeeList.add(confctrlAttendee);
 
@@ -1953,6 +1994,10 @@ public class MeetingMgr implements IMeetingMgr{
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.DEL_ATTENDEE_RESULT, ret);
                 break;
 
+            //挂断与会者
+            case TSDK_E_CONF_HANG_UP_ATTENDEE:
+                mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.HANG_UP_ATTENDEE_RESULT, ret);
+                break;
             //闭音与会者
             case TSDK_E_CONF_MUTE_ATTENDEE:
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.MUTE_ATTENDEE_RESULT, ret);
@@ -2016,13 +2061,15 @@ public class MeetingMgr implements IMeetingMgr{
      *
      * @param conference    Indicates conference info.
      *                      会议信息
+     * @param reasonCode    Indicates end reason code.
+     *                      结束原因码
      */
-    public void handleConfEndInd(TsdkConference conference)
+    public void handleConfEndInd(TsdkConference conference, TsdkConfEndReason reasonCode)
     {
         LogUtil.i(TAG, "handleConfEndInd, handle-->" + conference.getHandle());
         currentConference = null;
 
-        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LEAVE_CONF, conference.getHandle());
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.LEAVE_CONF, reasonCode);
     }
 
     /**
@@ -2380,6 +2427,8 @@ public class MeetingMgr implements IMeetingMgr{
                     }
                 }
             }
+
+            setConfHandle(this.currentConference.getHandle());
 
             // 清空与会者
             memberList.clear();

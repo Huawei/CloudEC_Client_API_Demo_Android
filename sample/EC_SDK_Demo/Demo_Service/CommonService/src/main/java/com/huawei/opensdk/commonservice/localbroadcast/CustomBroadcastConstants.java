@@ -19,6 +19,7 @@ public interface CustomBroadcastConstants
     String ADD_SELF_RESULT = "com.huawei.opensdk.conf.addselfresult";
     String ADD_ATTENDEE_RESULT = "com.huawei.opensdk.conf.addattendeeresult";
     String DEL_ATTENDEE_RESULT = "com.huawei.opensdk.conf.delattendeeresult";
+    String HANG_UP_ATTENDEE_RESULT = "com.huawei.opensdk.conf.hangupattendeeresult";
     //String GET_CONF_COMING = "com.huawei.opensdk.conf.getconfcoming";
     String GET_CONF_CONNECTED = "com.huawei.opensdk.conf.getconfconnected";
     String GET_CONF_END = "com.huawei.opensdk.conf.getconfend";

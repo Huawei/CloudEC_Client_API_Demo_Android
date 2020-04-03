@@ -37,6 +37,12 @@ public class CallConstant {
     public static final int FRONT_CAMERA = 1;
 
     /**
+     * Whether to use the SDK to provide methods to play.
+     * 是否使用SDK提供播放媒体方法来播放铃声
+     */
+    public static boolean playFileBySDK = false;
+
+    /**
      * This class is about call event enumeration
      * 呼叫事件枚举类
      */

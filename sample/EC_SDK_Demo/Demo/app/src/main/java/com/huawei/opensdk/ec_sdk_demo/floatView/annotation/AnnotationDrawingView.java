@@ -31,7 +31,8 @@ public class AnnotationDrawingView extends LinearLayout {
         drawingLayout = (FrameLayout)findViewById(R.id.annot_drawing_view);
         initAnnotDrawingView(context);
         penColor = MeetingMgr.getInstance().getCurrentPenColor();
-        int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+        //int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_6) * 1440 / LayoutUtil.getScreenDensityDpi());
+        int penWidth = (getResources().getDimensionPixelSize(R.dimen.dp_3) * 1440 / LayoutUtil.getScreenDensityDpi());
         MeetingMgr.getInstance().setAnnotationPen(penColor, penWidth);
     }
 
