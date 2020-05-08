@@ -140,7 +140,7 @@ public class DataConfPresenter extends MVPBasePresenter<IDataConfContract.DataCo
     }
 
     @Override
-    public int startAnnotation( ) {
+    public int startAnnotation() {
         return MeetingMgr.getInstance().startAnnotation();
     }
 

@@ -40,6 +40,8 @@ public interface IAttendeeListContract
         void updateSpeaker(String[] speakers, boolean noSpeaker);
 
         void showRenameDialog();
+
+        void showNotAllowUnmute();
     }
 
     interface IAttendeeListPresenter

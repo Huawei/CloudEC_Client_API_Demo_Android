@@ -1,12 +1,20 @@
 package com.huawei.opensdk.ec_sdk_demo.ui;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -25,15 +33,17 @@ import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.ec_sdk_demo.ECApplication;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.floatView.screenShare.rom.RomUtils;
+import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadIconTools;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.NetworkConnectivityListener;
 import com.huawei.opensdk.ec_sdk_demo.ui.call.CallFragment;
 import com.huawei.opensdk.ec_sdk_demo.ui.discover.DiscoverFragment;
-import com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook.EnterpriseAddrTools;
 import com.huawei.opensdk.ec_sdk_demo.ui.login.LoginActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.ec_sdk_demo.widget.BaseDialog;
+import com.huawei.opensdk.ec_sdk_demo.widget.CircleView;
 import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmDialog;
 import com.huawei.opensdk.loginmgr.LoginConstant;
 import com.huawei.opensdk.loginmgr.LoginMgr;
@@ -62,10 +72,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private TextView sipNumber;
     private BaseDialog mLogoutDialog;
     private ImageView mSearchBtn;
-    private ImageView mHeadIv;
+    private CircleView mCircleView;
     private LinearLayout mNetworkStatusLL;
     private ImageView mNetworkAlarmIV;
     private TextView mNetworkStatusTV;
+    private Bitmap mBitmap;
 
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_IM_SET_HEAD_PHOTO,
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED,
@@ -77,18 +88,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             CustomBroadcastConstants.LOGIN_SUCCESS
     };
     private String mMyAccount;
-
     private String mIconPath;
     private int mIconId;
-    private static int[] mSystemIcon = EnterpriseAddrTools.getSystemIcon();
     private NetworkConnectivityListener mNetworkConnectivityListener = new NetworkConnectivityListener();
     private boolean mIsResuming = false;
+    private String mCurrentWifiInfo = "";
+    private boolean mIsFocus = false;
 
     @Override
     public void initializeComposition()
     {
         setContentView(R.layout.activity_main);
-        mHeadIv = (ImageView) findViewById(R.id.blog_head_iv);
+        mCircleView = (CircleView) findViewById(R.id.blog_head_iv);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mCallTab = (ImageView) findViewById(R.id.call_tab);
         mDiscoverTab = (ImageView) findViewById(R.id.discover_tab);
@@ -112,18 +123,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         settingButton.setOnClickListener(this);
         logoutButton.setOnClickListener(this);
         mDrawerBtn.setOnClickListener(this);
-        mHeadIv.setOnClickListener(this);
         mSearchBtn.setOnClickListener(this);
 
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
         mNetworkConnectivityListener.registerListener(this);
         mNetworkConnectivityListener.startListening(this);
-        updateHeadPhoto();
     }
 
     private void initDrawerShow()
     {
-
         String name = LoginMgr.getInstance().getAccount();
         String number = LoginMgr.getInstance().getTerminal();
 
@@ -225,10 +233,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 showLogoutDialog();
                 break;
             case R.id.nav_iv:
-                if (isLoginSuccess())
-                {
-                    EnterpriseAddressBookMgr.getInstance().searchSelfInfo(mMyAccount);
-                }
+                initDrawerShow();
                 mDrawerLayout.openDrawer(Gravity.LEFT);
                 break;
             case R.id.iv_setting:
@@ -245,15 +250,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume()
     {
+        initDrawerShow();
         refreshNetworkStatus(LoginMgr.getInstance().getConnectedStatus());
-        mHeadIv.postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                updateHeadPhoto();
-            }
-        }, 1500);
         super.onResume();
     }
 
@@ -342,18 +340,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         if (defIcon.isEmpty())
                         {
                             mIconId = iconInfo.getIconId();
-                            mHeadIv.setImageResource(mSystemIcon[mIconId]);
+                            mBitmap = HeadIconTools.getBitmapByIconId(mIconId);
                         }
                         else
                         {
                             mIconPath = Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo" + File.separator + "icon" + File.separator + defIcon;
-                            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(mIconPath);
-                            mHeadIv.setImageBitmap(headIcon);
+                            mBitmap = HeadIconTools.getBitmapByPath(mIconPath);
                         }
                     }
+                    showMyHeadPhone(mBitmap);
                     break;
                 case UIConstants.ENTERPRISE_HEAD_NULL:
-                    mHeadIv.setBackgroundResource(R.drawable.default_head_local);
+                    mBitmap = HeadIconTools.getBitmapByIconId(10);
+                    showMyHeadPhone(mBitmap);
                     break;
                 case UIConstants.ENTERPRISE_SELF_TERMINAL:
                     initDrawerShow();
@@ -428,6 +427,72 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+    private String getConnectWifiSSID()
+    {
+        String ssid = "";
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O || Build.VERSION.SDK_INT == Build.VERSION_CODES.P)
+        {
+            WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (null != wifiManager)
+            {
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+                {
+                    ssid = wifiInfo.getSSID();
+                }
+                else
+                {
+                    if (RomUtils.checkIsHuaweiRom() && Build.VERSION.SDK_INT == Build.VERSION_CODES.P)
+                    {
+                        // 9.0华为手机无法获取解决方案
+                        int networkId = wifiInfo.getNetworkId();
+                        List<WifiConfiguration> configurationList = wifiManager.getConfiguredNetworks();
+                        for (WifiConfiguration configuration : configurationList)
+                        {
+                            if (networkId == configuration.networkId)
+                            {
+                                ssid = configuration.SSID;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ssid = wifiInfo.getSSID().replace("\"", "");
+                    }
+                }
+            }
+        }
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1)
+        {
+            ConnectivityManager connectivityManager = (ConnectivityManager) this.getApplicationContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (null != connectivityManager)
+            {
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                if (networkInfo.isConnected())
+                {
+                    if (null != networkInfo)
+                    {
+                        ssid = networkInfo.getExtraInfo().replace("\"", "");
+                    }
+                }
+            }
+        }
+        Log.i("onNetWorkChange", ssid + "" + " Build.VERSION.SDK_INT->" + Build.VERSION.SDK_INT);
+        return ssid;
+    }
+
+    private void showMyHeadPhone(final Bitmap bitmap)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCircleView.setBitmapParams(bitmap);
+                mCircleView.invalidate();
+            }
+        });
+    }
+
     @Override
     public void onNetWorkChange(JSONObject nwd) {
         ECApplication.setLastInfo(nwd);
@@ -445,11 +510,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         LoginMgr.getInstance().setConnectedStatus(LoginConstant.NO_NETWORK);
                         refreshNetworkStatus(LoginConstant.NO_NETWORK);
                     }
+                    else
+                    {
+                        // 获取连接状态的WiFi名称
+                        String wifiSSID = getConnectWifiSSID();
+                        if (!TextUtils.isEmpty(wifiSSID))
+                        {
+                            if (!mCurrentWifiInfo.equals(wifiSSID))
+                            {
+                                mCurrentWifiInfo = wifiSSID;
+                                mIsFocus = true;
+                            }
+                        }
+                    }
 
                     // 如果收到重新登录通知还没有收到重新登录结果则不进行配置本地ip
                     if (!mIsResuming)
                     {
-                        LoginMgr.getInstance().resetConfig(false);
+                        LoginMgr.getInstance().resetConfig(false, mIsFocus);
+                        mIsFocus = false;
                     }
                 } catch (JSONException e) {
                     LogUtil.e("onNetWorkChange","JSONException: " + e.toString());

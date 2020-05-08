@@ -433,7 +433,6 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_item_selector"
                         android:orientation="vertical">
-                        <!-- -->
                     </LinearLayout>
 
                     <!-- 分组的图标 -->
@@ -444,14 +443,16 @@
                         android:layout_marginRight="18dp"
                         android:layout_marginTop="15dp"
                         android:scaleType="fitCenter"
+                        android:visibility="gone"
                         android:src="@drawable/contact_detail_group_info"/>
                 </RelativeLayout>
 
-                <!---->
+                <!--添加/删除联系人-->
                 <LinearLayout android:id="@+id/bottom_buttons_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="10dp"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <!--底部线-->

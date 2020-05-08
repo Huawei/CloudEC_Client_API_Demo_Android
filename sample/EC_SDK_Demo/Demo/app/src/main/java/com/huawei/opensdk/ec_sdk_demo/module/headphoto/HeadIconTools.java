@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HeadIconTools
 {
+    private static final String TAG = HeadIconTools.class.getSimpleName();
+
     private static HeadIconTools instance = new HeadIconTools();
     /**
      * The constant LARGE_PICTURE_DEFAULT_NAME.
@@ -70,7 +72,7 @@ public class HeadIconTools
      * The System head icons.
      */
     protected static int[] systemHeadIcons = {R.drawable.head0, R.drawable.head1, R.drawable.head2, R.drawable.head3, R.drawable.head4, R.drawable.head5,
-            R.drawable.head6, R.drawable.head7, R.drawable.head8, R.drawable.head9};
+            R.drawable.head6, R.drawable.head7, R.drawable.head8, R.drawable.head9, R.drawable.default_head};
     private static final String ECSDKDemo = "/ECSDKDemo";
     private static final String AVATAR_PATH = "/avatarPath";
 
@@ -102,7 +104,7 @@ public class HeadIconTools
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                LogUtil.e(TAG, e.getMessage());
             }
         }
         return bitmap;

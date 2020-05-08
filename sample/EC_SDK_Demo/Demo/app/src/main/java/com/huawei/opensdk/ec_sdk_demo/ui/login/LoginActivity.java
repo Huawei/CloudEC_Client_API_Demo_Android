@@ -279,7 +279,8 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR,
             Manifest.permission.READ_CONTACTS,
-            Manifest.permission.CALL_PHONE};
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.ACCESS_FINE_LOCATION};
 
     /**
      * 创建一个mPermissionList，逐个判断哪些权限未授予，未授予的权限存储到mPerrrmissionList中

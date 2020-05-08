@@ -3,6 +3,7 @@ package com.huawei.opensdk.ec_sdk_demo.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -10,7 +11,7 @@ import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadCache;
 //import com.huawei.utils.img.BitmapUtil;
 
-public class RoundCornerPhotoView extends ImageView
+public class RoundCornerPhotoView extends AppCompatImageView
 {
     // 套在遮罩形状外的一层
     private boolean useBigMaskBg = false;

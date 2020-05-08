@@ -18,16 +18,14 @@
         android:paddingRight="20dp"
         android:paddingTop="35dp">
 
-        <ImageView
+        <com.huawei.opensdk.ec_sdk_demo.widget.CircleView
             android:id="@+id/blog_head_iv"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/self_icon_bg"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_head" />
+            android:background="@drawable/shape_bg_head_big"/>
 
         <LinearLayout
             android:id="@+id/name_sex_area"
@@ -58,9 +56,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="8dp"
                 android:singleLine="true"
-                android:text="Number"
+                android:text="@string/number"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:layout_below="@+id/name_sex_area" />
@@ -70,13 +68,14 @@
                 android:id="@+id/contact_signature_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/blog_head_iv"
                 android:layout_marginRight="15dp"
                 android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
                 android:singleLine="true"
                 android:text="@string/signature"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
+                android:layout_below="@+id/name_sex_area"
                 android:visibility="gone"/>
         </LinearLayout>
 

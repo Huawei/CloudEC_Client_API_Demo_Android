@@ -351,13 +351,16 @@ public class CallFunc implements ICallNotification, ICtdNotification
                 {
                     CallInfo callInfo = (CallInfo)obj;
 
-                    Intent intent = new Intent(IntentConstant.VIDEO_ACTIVITY_ACTION);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.addCategory(IntentConstant.DEFAULT_CATEGORY);
-                    intent.putExtra(UIConstants.CALL_INFO, callInfo);
+                    if (!callInfo.isFocus())
+                    {
+                        Intent intent = new Intent(IntentConstant.VIDEO_ACTIVITY_ACTION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addCategory(IntentConstant.DEFAULT_CATEGORY);
+                        intent.putExtra(UIConstants.CALL_INFO, callInfo);
 
-                    ActivityStack.getIns().popup(ActivityStack.getIns().getCurActivity());
-                    ActivityUtil.startActivity(LocContext.getContext(), intent);
+                        ActivityStack.getIns().popup(ActivityStack.getIns().getCurActivity());
+                        ActivityUtil.startActivity(LocContext.getContext(), intent);
+                    }
                 }
                 break;
 

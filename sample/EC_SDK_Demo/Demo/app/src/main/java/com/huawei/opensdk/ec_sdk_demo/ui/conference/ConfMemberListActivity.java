@@ -30,6 +30,7 @@ import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.ConfMemberListPresent
 import com.huawei.opensdk.ec_sdk_demo.logic.conference.mvp.IAttendeeListContract;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.MVPBaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.CommonUtil;
+import com.huawei.opensdk.ec_sdk_demo.widget.ConfirmSimpleDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.EditDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.ec_sdk_demo.widget.ThreeInputDialog;
@@ -594,6 +595,12 @@ public class ConfMemberListActivity extends MVPBaseActivity<IAttendeeListContrac
                 mPresenter.renameSelf(dialog.getText());
             }
         });
+        dialog.show();
+    }
+
+    @Override
+    public void showNotAllowUnmute() {
+        ConfirmSimpleDialog dialog = new ConfirmSimpleDialog(this, getString(R.string.conf_not_allow_unmute_tip));
         dialog.show();
     }
 

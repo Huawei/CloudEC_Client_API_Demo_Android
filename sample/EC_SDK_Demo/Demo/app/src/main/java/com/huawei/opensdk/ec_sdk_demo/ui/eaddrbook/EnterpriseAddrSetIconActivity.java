@@ -5,12 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
@@ -25,7 +22,7 @@ import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadIconTools;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
-import com.huawei.opensdk.ec_sdk_demo.widget.RoundCornerPhotoView;
+import com.huawei.opensdk.ec_sdk_demo.widget.CircleView;
 import com.huawei.opensdk.ec_sdk_demo.widget.SimpleListDialog;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 
@@ -39,77 +36,23 @@ import java.util.List;
 public class EnterpriseAddrSetIconActivity extends BaseActivity implements LocBroadcastReceiver
 {
     private RelativeLayout personalHeadLayout;
-//    private RoundCornerPhotoView headImg;//头像
-    private ImageView headImg;//头像
+    private CircleView circleView; // 头像
+    private Bitmap mBitmap;
 
     private SimpleListDialog mPhotoDialog;
     private String mMyAccount;
 
     private String mIconPath;
     private int mIconId;
-    private static int[] mSystemIcon = EnterpriseAddrTools.getSystemIcon();
     private String[] mActions = new String[]{CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED,
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_PHOTO_RESULT};
-
-    private Handler mHandler = new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg)
-        {
-            switch (msg.what)
-            {
-                case UIConstants.LOAD_ALL_HEAD_ICON:
-                    Bitmap myHeadIcon = HeadIconTools.getInstance().getHeadImage(mMyAccount);
-                    headImg.setImageBitmap(myHeadIcon);
-                    break;
-                case UIConstants.PRO_LOAD_HEADICON:
-//                    mContacts.clear();
-//                    mContacts.add(mSelfContact);
-                    break;
-                case UIConstants.LOAD_SELF_HEADIMAGE:
-//                    mContacts.clear();
-//                    mContacts.add(mSelfContact);
-//                    LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.ACTION_IM_SET_HEAD_PHOTO, null);
-//                    Log.i(UIConstants.DEMO_TAG, "Set Defined HeadPhoto Success");
-                    break;
-                case UIConstants.ENTERPRISE_HEAD_SELF:
-                    if (msg.obj instanceof EntAddressBookIconInfo)
-                    {
-                        EntAddressBookIconInfo iconInfo = (EntAddressBookIconInfo) msg.obj;
-                        String defIcon = iconInfo.getIconFile();
-                        if (defIcon.isEmpty())
-                        {
-                            mIconId = iconInfo.getIconId();
-                            headImg.setImageResource(mSystemIcon[mIconId]);
-                        }
-                        else
-                        {
-                            mIconPath = Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo" + File.separator + "icon" + File.separator + defIcon;
-                            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(mIconPath);
-                            headImg.setImageBitmap(headIcon);
-                        }
-                    }
-                    break;
-                case UIConstants.ENTERPRISE_HEAD_NULL:
-                    headImg.setBackgroundResource(R.drawable.default_head_local);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     @Override
     public void initializeComposition()
     {
         setContentView(R.layout.setting_more);
         personalHeadLayout = (RelativeLayout) findViewById(R.id.personal_head_layout);
-//        headImg = (RoundCornerPhotoView) findViewById(R.id.headImg);
-        headImg = (ImageView) findViewById(R.id.headImg);
-
-//        mHandler.sendEmptyMessageDelayed(UIConstants.PRO_LOAD_HEADICON, 1000);
-
-        updateMyHeadPhoto();
+        circleView = (CircleView) findViewById(R.id.headImgCircle);
 
         personalHeadLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,11 +60,8 @@ public class EnterpriseAddrSetIconActivity extends BaseActivity implements LocBr
                 showPhotoOptionsDialog();
             }
         });
-    }
 
-    private void updateMyHeadPhoto()
-    {
-        EnterpriseAddressBookMgr.getInstance().getSelfIcon(mMyAccount);
+        updateMyHeadPhoto();
     }
 
     @Override
@@ -129,6 +69,22 @@ public class EnterpriseAddrSetIconActivity extends BaseActivity implements LocBr
     {
         LocBroadcast.getInstance().registerBroadcast(this, mActions);
         mMyAccount = LoginMgr.getInstance().getAccount();
+    }
+
+    private void updateMyHeadPhoto()
+    {
+        EnterpriseAddressBookMgr.getInstance().getSelfIcon(mMyAccount);
+    }
+
+    private void showMyHeadPhone(final Bitmap bitmap)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                circleView.setBitmapParams(bitmap);
+                circleView.invalidate();
+            }
+        });
     }
 
     @Override
@@ -203,12 +159,25 @@ public class EnterpriseAddrSetIconActivity extends BaseActivity implements LocBr
         switch (broadcastName)
         {
             case CustomBroadcastConstants.ACTION_ENTERPRISE_GET_SELF_PHOTO_RESULT:
-                Message msgSelfInfo = mHandler.obtainMessage(UIConstants.ENTERPRISE_HEAD_SELF, obj);
-                mHandler.sendMessage(msgSelfInfo);
+                if (obj instanceof EntAddressBookIconInfo)
+                {
+                    EntAddressBookIconInfo iconInfo = (EntAddressBookIconInfo) obj;
+                    String defIcon = iconInfo.getIconFile();
+                    if (defIcon.isEmpty())
+                    {
+                        mIconId = iconInfo.getIconId();
+                        mBitmap = HeadIconTools.getBitmapByIconId(mIconId);
+                    }
+                    else
+                    {
+                        mIconPath = Environment.getExternalStorageDirectory() + File.separator + "ECSDKDemo" + File.separator + "icon" + File.separator + defIcon;
+                        mBitmap = HeadIconTools.getBitmapByPath(mIconPath);
+                    }
+                    showMyHeadPhone(mBitmap);
+                }
                 break;
             case CustomBroadcastConstants.ACTION_ENTERPRISE_GET_HEAD_PHOTO_FAILED:
-                Message msgFailed = mHandler.obtainMessage(UIConstants.ENTERPRISE_HEAD_NULL, obj);
-                mHandler.sendMessage(msgFailed);
+                showMyHeadPhone(HeadIconTools.getBitmapByIconId(10));
                 break;
             default:
                 break;
@@ -261,11 +230,10 @@ public class EnterpriseAddrSetIconActivity extends BaseActivity implements LocBr
                 break;
             case UIConstants.SET_SYSTEM_HEAD_PHOTO_CODE:
                 int position = resultCode;
-                Log.e("position", "" + position);
-                Bitmap bitmap = HeadIconTools.getBitmapByIconId(position);
-                if (bitmap != null)
+                mBitmap = HeadIconTools.getBitmapByIconId(position);
+                if (mBitmap != null)
                 {
-                    headImg.setImageBitmap(bitmap);
+                    showMyHeadPhone(mBitmap);
                     updateMyHeadPhoto();
                 }
                 break;

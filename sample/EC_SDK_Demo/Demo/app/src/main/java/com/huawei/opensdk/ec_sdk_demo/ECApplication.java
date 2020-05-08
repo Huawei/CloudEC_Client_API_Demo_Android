@@ -3,10 +3,14 @@ package com.huawei.opensdk.ec_sdk_demo;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
+import com.huawei.AudioDeviceAndroid;
 import com.huawei.opensdk.callmgr.CallMgr;
 import com.huawei.opensdk.commonservice.common.LocContext;
+import com.huawei.opensdk.ec_sdk_demo.ui.call.AudioRouterManager;
 import com.huawei.opensdk.ec_sdk_demo.util.ActivityUtil;
 import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
@@ -20,12 +24,14 @@ public class ECApplication extends Application
     private static Application app = null;
     private static JSONObject lastInfo = null;
 
+    private AudioDeviceAndroid audioDeviceAndroid;
+
     @Override
     public void onCreate()
     {
         super.onCreate();
         setApp(this);
-        //Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -66,6 +72,8 @@ public class ECApplication extends Application
 
             }
         });
+
+        registerHeadsetBluetoothListener();
     }
 
     public static int getAppCount() {
@@ -108,10 +116,65 @@ public class ECApplication extends Application
         LoginMgr.getInstance().reRegister(isInCall);
     }
 
+    /**
+     * 注册耳机(蓝牙和有线)的监听事件
+     */
+    public void registerHeadsetBluetoothListener()
+    {
+        registerBlueToothToHme();
+
+        AudioRouterManager.getInstance().registerOutputDevicesChangeObserver(getApp());
+    }
+
+    /**
+     * 去注册耳机(蓝牙和有线)的监听事件
+     */
+    public void unregisterHeadsetBluetoothListener()
+    {
+        unregisterBlueToothToHme();
+
+        AudioRouterManager.getInstance().unregisterOutputDevicesChangeObserver(getApp());
+    }
+
+    /**
+     * 注册耳机插拔事件到HME
+     */
+    private void registerBlueToothToHme()
+    {
+        if (null == audioDeviceAndroid)
+        {
+            audioDeviceAndroid = new AudioDeviceAndroid();
+        }
+
+        IntentFilter intentFilter = new IntentFilter();
+        // 蓝牙SCO使用事件
+        intentFilter.addAction("android.media.SCO_AUDIO_STATE_CHANGED");
+        // 耳机插拔事件
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        // 蓝牙断开连接事件
+        intentFilter.addAction("android.bluetooth.headset.action.STATE_CHANGED"); // OS2.0后支持
+        intentFilter.addAction("android.bluetooth.headset.profile.action.CONNECTION_STATE_CHANGED"); // OS3.0后支持
+
+        getApp().registerReceiver(audioDeviceAndroid.broadcastReceiver, intentFilter);
+    }
+
+    /**
+     * 去注册蓝牙耳机插拔事件到HME
+     */
+    private void unregisterBlueToothToHme()
+    {
+        if (null != audioDeviceAndroid)
+        {
+            getApp().unregisterReceiver(audioDeviceAndroid.broadcastReceiver);
+        }
+    }
+
     @Override
     public void onTerminate()
     {
         super.onTerminate();
+
+        unregisterHeadsetBluetoothListener();
 
         ServiceMgr.getServiceMgr().stopService();
     }

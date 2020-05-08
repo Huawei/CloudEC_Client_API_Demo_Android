@@ -347,6 +347,18 @@ public class ConfFunc implements IConfNotification
                 LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.RESUME_JOIN_CONF_IND, null);
                 break;
 
+            case SET_SHARE_OWNER_FAILED:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.SET_SHARE_OWNER_FAILED, params);
+                break;
+
+            case START_SHARE_FAILED:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.START_SHARE_FAILED, params);
+                break;
+
+            case NO_STREAM_IND:
+                LocBroadcast.getInstance().sendBroadcast(CustomBroadcastConstants.NO_STREAM_IND, params);
+                break;
+
             default:
                 break;
         }

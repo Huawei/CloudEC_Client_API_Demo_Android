@@ -673,7 +673,7 @@ public class CallMgr implements ICallMgr
     }
 
     /**
-     * [en] This interface is used to get call statistic infomation
+     * [en] This interface is used to get call statistic information
      * [cn] 获取呼叫统计信息
      *
      * @param callID
@@ -699,7 +699,6 @@ public class CallMgr implements ICallMgr
     @Override
     public void startPlayRingingTone(String ringingFile) {
         int result;
-//        TupCallManager callManager = TupMgr.getInstance().getCallManagerIns();
 
         //处理可能的异常
         if (ringingToneHandle != -1) {

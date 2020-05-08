@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60sp">
+    android:layout_height="60dp">
 
-    <ImageView
-        android:layout_width="40sp"
-        android:layout_height="40sp"
+    <com.huawei.opensdk.ec_sdk_demo.widget.CircleView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:id="@+id/head"
-        android:src="@drawable/default_head"
-        android:layout_marginLeft="15sp"
-        android:layout_marginRight="15sp"
-        android:layout_centerVertical="true" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/shape_bg_head_small"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         android:layout_toRightOf="@id/head"
         android:layout_alignTop="@id/head"
         android:gravity="top"
-        android:textSize="15dp"/>
+        android:textSize="15sp"/>
 
     <TextView
         android:id="@+id/dept"
@@ -29,13 +29,13 @@
         android:layout_alignBottom="@id/head"
         android:gravity="bottom"
         android:textColor="@android:color/darker_gray"
-        android:textSize="11dp" />
+        android:textSize="11sp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@id/dept"
         android:background="@color/divider"
-        android:layout_height="1sp" />
+        android:layout_height="1dp" />
 
 </RelativeLayout>

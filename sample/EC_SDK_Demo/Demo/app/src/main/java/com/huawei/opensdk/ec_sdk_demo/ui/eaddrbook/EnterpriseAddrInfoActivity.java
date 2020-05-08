@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,7 +22,9 @@ import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.contactservice.eaddr.QueryDepartmentResult;
 import com.huawei.opensdk.ec_sdk_demo.R;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
+import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadIconTools;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.BaseActivity;
+import com.huawei.opensdk.ec_sdk_demo.widget.CircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +35,7 @@ import java.util.List;
 public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnClickListener, LocBroadcastReceiver {
 
     private Toast toast;
-    private ImageView userAvatar = null;
+    private CircleView circleAvatar = null;
     private TextView name = null;
     private TextView number = null;
     private TextView signature = null;
@@ -49,6 +52,7 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
     private TextView zip = null;
     private Button deleteFriend = null;
     private ImageView opContact = null;
+    private Bitmap headIcon = null;
 
     private List<TsdkDepartmentInfo> list = new ArrayList<>();
     private int deptSeq;
@@ -67,7 +71,7 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
         setContentView(R.layout.activity_enterprise_info);
 
         opContact = (ImageView) findViewById(R.id.right_iv);
-        userAvatar = (ImageView)findViewById(R.id.blog_head_iv);
+        circleAvatar = (CircleView) findViewById(R.id.blog_head_iv);
         name = (TextView)findViewById(R.id.blog_name_tv);
         number = (TextView)findViewById(R.id.blog_number_tv);
         signature = (TextView) findViewById(R.id.contact_signature_tv);
@@ -98,36 +102,30 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
     {
         if (!entAddressBookInfo.getHeadIconPath().isEmpty())
         {
-            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(entAddressBookInfo.getHeadIconPath());
-            userAvatar.setImageBitmap(headIcon);
+            headIcon = HeadIconTools.getBitmapByPath(entAddressBookInfo.getHeadIconPath());
         }
         else
         {
-            if (10 == entAddressBookInfo.getSysIconID())
-            {
-                userAvatar.setImageResource(EnterpriseAddrTools.getSystemIcon()[10]);
-            }
-            else
-            {
-                userAvatar.setImageResource(entAddressBookInfo.getSysIconID());
-            }
+            headIcon = HeadIconTools.getBitmapByIconId(entAddressBookInfo.getSysIconID());
         }
-        name.setText(entAddressBookInfo.getEaddrName());
+        circleAvatar.setBitmapParams(headIcon);
+        circleAvatar.invalidate();
+
+        name.setText(showContent(entAddressBookInfo.getEaddrName()));
         number.setVisibility(View.GONE);
         signature.setVisibility(View.VISIBLE);
-        signature.setText(entAddressBookInfo.getSignature());
-        account.setText(entAddressBookInfo.getEaddrAccount());
-        dept.setText(entAddressBookInfo.getEaddrDept());
-        title.setText(entAddressBookInfo.getTitle());
-        softPhone.setText(entAddressBookInfo.getTerminal());
-        mobile.setText(entAddressBookInfo.getMobile());
-        softVideoPhone.setText(entAddressBookInfo.getTerminal());
-        email.setText(entAddressBookInfo.getEmail());
-        address.setText(entAddressBookInfo.getAddress());
-        zip.setText(entAddressBookInfo.getZipCode());
+        signature.setText(showContent(entAddressBookInfo.getSignature()));
+        account.setText(showContent(entAddressBookInfo.getEaddrAccount()));
+        dept.setText(showContent(entAddressBookInfo.getEaddrDept()));
+        title.setText(showContent(entAddressBookInfo.getTitle()));
+        softPhone.setText(showContent(entAddressBookInfo.getTerminal()));
+        mobile.setText(showContent(entAddressBookInfo.getMobile()));
+        softVideoPhone.setText(showContent(entAddressBookInfo.getTerminal()));
+        email.setText(showContent(entAddressBookInfo.getEmail()));
+        address.setText(showContent(entAddressBookInfo.getAddress()));
+        zip.setText(showContent(entAddressBookInfo.getZipCode()));
 
         dept.setOnClickListener(this);
-        deleteFriend.setOnClickListener(this);
     }
 
     @Override
@@ -136,12 +134,6 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
         LocBroadcast.getInstance().registerBroadcast(this, eActions);
         Intent intent = getIntent();
         entAddressBookInfo = (EntAddressBookInfo) intent.getSerializableExtra(UIConstants.CONTACT_INFO);
-    }
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
     }
 
     /**
@@ -163,9 +155,19 @@ public class EnterpriseAddrInfoActivity extends BaseActivity implements View.OnC
     }
 
     /**
+     * This method is used to show what needs to be displayed.
+     * @param content Indicates show content
+     * @return
+     */
+    private String showContent(String content)
+    {
+        return TextUtils.isEmpty(content) ? (getString(R.string.none)) : content;
+    }
+
+    /**
      * This method is used to cancel Toast content.
      */
-    public void cancelToast()
+    private void cancelToast()
     {
         if (toast != null)
         {

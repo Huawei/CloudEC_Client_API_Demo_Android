@@ -89,7 +89,10 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
                 CustomBroadcastConstants.JOIN_CONF_FAILED,
                 CustomBroadcastConstants.ACTION_CALL_STATE_IDLE,
                 CustomBroadcastConstants.ACTION_CALL_STATE_RINGING,
-                CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK
+                CustomBroadcastConstants.ACTION_CALL_STATE_OFF_HOOK,
+                CustomBroadcastConstants.SET_SHARE_OWNER_FAILED,
+                CustomBroadcastConstants.START_SHARE_FAILED,
+                CustomBroadcastConstants.NO_STREAM_IND
         };
     }
 

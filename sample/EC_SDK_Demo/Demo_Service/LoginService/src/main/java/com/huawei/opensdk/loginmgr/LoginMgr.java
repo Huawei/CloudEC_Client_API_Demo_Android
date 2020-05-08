@@ -173,20 +173,24 @@ public class LoginMgr {
      * This method is used to reset local Ip address
      * 监测到网络变化重新设置本地IP地址
      * @param isVpn
+     * @param isFocus
      * @return
      */
-    public int resetConfig(boolean isVpn)
+    public int resetConfig(boolean isVpn, boolean isFocus)
     {
-        LogUtil.i(TAG, "resetConfig");
+        LogUtil.i(TAG, "resetConfig, isFocus: " + isFocus);
         int ret;
         String ipAddress = DeviceManager.getLocalIpAddress(isVpn);
-        if ("".equals(ipAddress) || localIpAddress.equals(ipAddress))
+        if ("".equals(ipAddress))
         {
             localIpAddress = ipAddress;
-            return -1;
+            if (!isFocus)
+            {
+                return -1;
+            }
         }
-        localIpAddress = ipAddress;
 
+        localIpAddress = ipAddress;
         TsdkLocalAddress localAddress = new TsdkLocalAddress();
         localAddress.setIpAddress(localIpAddress);
         localAddress.setIsTryResume(1);
@@ -455,7 +459,7 @@ public class LoginMgr {
      *                          [cn]响应结果
      */
     public void handLoginResumeResult(TsdkCommonResult result) {
-        LogUtil.i(TAG, "login resume result: " + result.getReasonDescription());
+        LogUtil.i(TAG, "login resume result: " + result.getResult());
         if (0 == result.getResult())
         {
             this.isLoginSuccess = true;

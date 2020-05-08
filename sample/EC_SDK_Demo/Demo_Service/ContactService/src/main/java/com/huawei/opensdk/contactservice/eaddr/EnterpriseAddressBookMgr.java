@@ -273,8 +273,7 @@ public class EnterpriseAddressBookMgr {
      */
     public int setDefinedIcon(String smallIconFilePath, String mediumIconFilePath, String largeIconFilePath)
     {
-//        TsdkIconInfo iconInfo = new TsdkIconInfo(smallIconFilePath, mediumIconFilePath, largeIconFilePath); 312
-        TsdkIconInfo iconInfo = new TsdkIconInfo(mediumIconFilePath, largeIconFilePath, smallIconFilePath);
+        TsdkIconInfo iconInfo = new TsdkIconInfo(smallIconFilePath, mediumIconFilePath, largeIconFilePath);
         String result = tsdkEAddrManager.setUserDefIcon(iconInfo);
 
         if (null != result)

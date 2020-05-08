@@ -44,18 +44,6 @@ public class ServiceMgr
     private static final ServiceMgr serviceMgr = new ServiceMgr();
 
     /**
-     * The context
-     * 上下文
-     */
-    private Context context;
-
-    /**
-     * The app path
-     * APP路径
-     */
-    private String appPath;
-
-    /**
      * The coding ability level
      * AVC视频编码能力级别
      */
@@ -69,7 +57,6 @@ public class ServiceMgr
 
     /**
      *
-     *
      */
     private TsdkManager tsdkManager;
 
@@ -82,7 +69,7 @@ public class ServiceMgr
     private boolean isSupportCTD = true;
     private boolean isSupportIM = false;
     private boolean isSupportRichMediaMessage = false;
-    private boolean isSupportAddressbook = true;
+    private boolean isSupportAddressbook = false;
 
     public int getVideoEncodeLeave() {
         return videoEncodeLeave;
@@ -159,25 +146,27 @@ public class ServiceMgr
         }
 
         //企业通讯录配置
-        TsdkAppFilePathInfo appFilePathInfo = new TsdkAppFilePathInfo();
-        File files = new File(CONTACT_FILE_PATH + File.separator + "dept" + File.separator);
-        if (!files.exists())
+        if (isSupportAddressbook)
         {
-            files.mkdirs();
-        }
-        appFilePathInfo.setDeptFilePath(CONTACT_FILE_PATH + File.separator + "dept" + File.separator);
-        File file = new File(CONTACT_FILE_PATH + File.separator + "icon" + File.separator);
-        if (!file.exists())
-        {
-            file.mkdirs();
-        }
-        appFilePathInfo.setIconFilePath(CONTACT_FILE_PATH + File.separator + "icon" + File.separator);
-        ret = tsdkManager.setConfigParam(appFilePathInfo);
-
-        if (ret != 0)
-        {
-            LogUtil.e(TAG, "config file path failed." + ret);
-            return false;
+            TsdkAppFilePathInfo appFilePathInfo = new TsdkAppFilePathInfo();
+            File files = new File(CONTACT_FILE_PATH + File.separator + "dept" + File.separator);
+            if (!files.exists())
+            {
+                files.mkdirs();
+            }
+            appFilePathInfo.setDeptFilePath(CONTACT_FILE_PATH + File.separator + "dept" + File.separator);
+            File file = new File(CONTACT_FILE_PATH + File.separator + "icon" + File.separator);
+            if (!file.exists())
+            {
+                file.mkdirs();
+            }
+            appFilePathInfo.setIconFilePath(CONTACT_FILE_PATH + File.separator + "icon" + File.separator);
+            ret = tsdkManager.setConfigParam(appFilePathInfo);
+            if (ret != 0)
+            {
+                LogUtil.e(TAG, "config file path failed." + ret);
+                return false;
+            }
         }
 
         /* Step 2, init sdk */
@@ -194,7 +183,7 @@ public class ServiceMgr
         appInfoParam.setSupportCtd(this.isSupportCTD?1:0);
         appInfoParam.setSupportEnterpriseAddressBook(this.isSupportAddressbook?1:0);
         appInfoParam.setSupportIm(this.isSupportIM?1:0);
-        appInfoParam.setSupportRichMediaMessage(0);
+        appInfoParam.setSupportRichMediaMessage(this.isSupportRichMediaMessage?1:0);
         appInfoParam.setSupportSvcConfCaps(1);
 
         ret = tsdkManager.init(appInfoParam);
@@ -213,13 +202,7 @@ public class ServiceMgr
         }
         LogUtil.i(TAG, "config service param is success.");
 
-        //IM init
-//        if (isSupportIM)
-//        {
-//            ImMgr.getInstance().sdkInit(context, appPath);
-//        }
         return true;
-
     }
 
     /**

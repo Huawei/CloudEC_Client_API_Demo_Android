@@ -495,12 +495,19 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtStatisticInfo(TsdkCall call, long signalStrength, TsdkCallStatisticInfo statisticInfo) {
+        LogUtil.i(TAG, "onEvtStatisticInfo notify.");
         CallMgr.getInstance().handleUpDateCallStatisticInfo(signalStrength, statisticInfo);
     }
 
     @Override
     public void onEvtMediaErrorInfo(TsdkCall tsdkCall, TsdkMediaErrorInfo tsdkMediaErrorInfo) {
 
+    }
+
+    @Override
+    public void onEvtNoStream(TsdkCall call, long duration) {
+        LogUtil.i(TAG, "onEvtNoStream notify.");
+        MeetingMgr.getInstance().handleNoStream(duration);
     }
 
     @Override
@@ -534,11 +541,13 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtConfSetShareOwnerFailed(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
-
+        LogUtil.i(TAG, "onEvtConfSetShareOwnerFailed notify.");
+        MeetingMgr.getInstance().handleConfSetShareOwnerFailed(tsdkConference, tsdkCommonResult);
     }
 
     @Override
     public void onEvtConfStartShareFailed(TsdkConference tsdkConference, TsdkCommonResult tsdkCommonResult) {
-
+        LogUtil.i(TAG, "onEvtConfStartShareFailed notify.");
+        MeetingMgr.getInstance().handleConfStartShareFailed(tsdkConference, tsdkCommonResult);
     }
 }

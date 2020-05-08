@@ -637,7 +637,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="personal_setting_addressbook_match">Phone Contacts Association</string>
     <string name="personal_setting_call_ringtone">Ringtone</string>
     <string name="personal_setting_choose_nf_ring">Select a ring tone.</string>
-    <string name="personal_setting_default_ring">None</string>
+    <string name="none">None</string>
     <string name="personal_setting_no_ring">No ring tone</string>
     <string name="personal_setting_show_all">Display All Phone Contacts</string>
     <string name="personal_setting_show_online_only">Display Online Contacts</string>
@@ -2248,6 +2248,7 @@ ekistan,998,218|Vanuatu,678,318|Vatican,379,298|Venezuela,58,213|Viet Nam,84,241
     <string name="conf_allow_unmute">Unmute Allowed</string>
     <string name="conf_all_mute_tip">All participants will be muted</string>
     <string name="conf_not_allow_unmute_tip">The current meeting Host did not allow the participants to unmute themselves.</string>
+    <string name="conf_no_stream_after_time">Poor network quality,Continuous %1$d seconds without stream</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>

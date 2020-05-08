@@ -129,6 +129,12 @@ public class ConfConstant {
 
         RENAME_SELF(),
 
+        SET_SHARE_OWNER_FAILED(),
+
+        START_SHARE_FAILED(),
+
+        NO_STREAM_IND(),
+
         BUTT()
     }
 

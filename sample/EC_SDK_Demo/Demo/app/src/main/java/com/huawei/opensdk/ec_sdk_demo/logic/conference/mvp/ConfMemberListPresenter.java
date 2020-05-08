@@ -330,6 +330,13 @@ public class ConfMemberListPresenter extends MVPBasePresenter<IAttendeeListContr
             return;
         }
 
+        ConfBaseInfo confBaseInfo = MeetingMgr.getInstance().getCurrentConferenceBaseInfo();
+        if (!confBaseInfo.isAllowUnMute() && self.isMute())
+        {
+            getView().showNotAllowUnmute();
+            return;
+        }
+
         boolean isMute = !self.isMute();
         int result = MeetingMgr.getInstance().muteAttendee(self, isMute);
         if (result != 0)

@@ -1,10 +1,13 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,7 +62,6 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
      * 等候查询联系人的标示，在本界面再次调用查询的时，必须保证在上次的查询结果出来之后进行
      */
     private boolean waitSearch = true;
-    private int[] sysIcon = EnterpriseAddrTools.getSystemIcon();  //System Avatar ID
 
     private String[] eActions = new String[]{
             CustomBroadcastConstants.ACTION_ENTERPRISE_GET_CONTACT_RESULT,
@@ -223,6 +225,8 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                     eaddrKeys.setText("");
                     break;
                 case UIConstants.ENTERPRISE_SEARCH_FAILED:
+                    list.clear();
+                    refreshEnterpriseList(list);
                     waitSearch = true;
                     showToast("Search contact failed!");
                     break;
@@ -235,7 +239,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                             if (list.get(i).getEaddrAccount().equals(iconInfo.getAccount()) && iconInfo.getIconId() >= 0)
                             {
                                 mIconId = iconInfo.getIconId();
-                                list.get(i).setSysIconID(sysIcon[mIconId]);
+                                list.get(i).setSysIconID(mIconId);
                                 break;
                             }
                         }
@@ -275,7 +279,7 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
                     {
                         if (list.get(w).getEaddrAccount().equals(defIconInfo.getAccount()))
                         {
-                            list.get(w).setSysIconID(sysIcon[10]);
+                            list.get(w).setSysIconID(10);
                         }
 
                         if (stopFlag >= 0 && stopFlag < list.size() - 1)
@@ -290,6 +294,23 @@ public class EnterpriseAddrBookActivity extends BaseActivity implements View.OnC
             }
         }
     };
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager methodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (event.getAction() == MotionEvent.ACTION_DOWN)
+        {
+            if (null != this.getCurrentFocus())
+            {
+                if (null != this.getCurrentFocus().getWindowToken())
+                {
+                    methodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken()
+                            , InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
+        }
+        return super.onTouchEvent(event);
+    }
 
     @Override
     public void onReceive(String broadcastName, Object obj) {

@@ -13,7 +13,6 @@ import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcast;
 import com.huawei.opensdk.commonservice.localbroadcast.LocBroadcastReceiver;
 import com.huawei.opensdk.commonservice.util.LogUtil;
-import com.huawei.opensdk.contactservice.eaddr.EnterpriseAddressBookMgr;
 import com.huawei.opensdk.ec_sdk_demo.common.UIConstants;
 import com.huawei.opensdk.ec_sdk_demo.ui.IntentConstant;
 import com.huawei.opensdk.ec_sdk_demo.ui.base.ActivityStack;
@@ -25,7 +24,6 @@ import com.huawei.opensdk.loginmgr.LoginMgr;
 import com.huawei.opensdk.servicemgr.ServiceMgr;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 
 public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
@@ -185,15 +183,6 @@ public class LoginFunc implements ILoginEventNotifyUI, LocBroadcastReceiver
                 {
                     Toast.makeText(LocContext.getContext(), ((String) msg.obj), Toast.LENGTH_SHORT).show();
                     ActivityUtil.startActivity(LocContext.getContext(), IntentConstant.MAIN_ACTIVITY_ACTION);
-                //CallMgr.getInstance().addDefaultAudioRoute();
-                    Executors.newSingleThreadExecutor().execute(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            EnterpriseAddressBookMgr.getInstance().searchSelfInfo(LoginMgr.getInstance().getAccount());
-                        }
-                    });
                 }
                 break;
             case AUTH_FAILED:

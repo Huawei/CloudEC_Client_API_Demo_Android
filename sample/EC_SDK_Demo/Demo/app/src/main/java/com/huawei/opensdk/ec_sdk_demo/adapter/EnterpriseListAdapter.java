@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.huawei.opensdk.contactservice.eaddr.EntAddressBookInfo;
 import com.huawei.opensdk.ec_sdk_demo.R;
-import com.huawei.opensdk.ec_sdk_demo.ui.eaddrbook.EnterpriseAddrTools;
+import com.huawei.opensdk.ec_sdk_demo.module.headphoto.HeadIconTools;
+import com.huawei.opensdk.ec_sdk_demo.widget.CircleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
     private Context context;
     private List<EntAddressBookInfo> data = new ArrayList<>();
     private EntAddressBookInfo entAddressBookInfo = new EntAddressBookInfo();
+    private Bitmap headBitmap;
 
     public EnterpriseListAdapter(Context context) {
         this.context = context;
@@ -46,7 +47,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
      */
     static class ContactViewHolder
     {
-        private ImageView ivHead;
+        private CircleView ivHead;
         private TextView tvName;
         private TextView tvDept;
     }
@@ -77,7 +78,7 @@ public class EnterpriseListAdapter extends BaseAdapter {
         {
             viewHolder = new ContactViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.activity_enterprise_list,parent, false);
-            viewHolder.ivHead = (ImageView) convertView.findViewById(R.id.head);
+            viewHolder.ivHead = (CircleView) convertView.findViewById(R.id.head);
             viewHolder.tvName = (TextView) convertView.findViewById(R.id.user_name);
             viewHolder.tvDept = (TextView) convertView.findViewById(R.id.dept);
             convertView.setTag(viewHolder);
@@ -89,17 +90,14 @@ public class EnterpriseListAdapter extends BaseAdapter {
         entAddressBookInfo = data.get(position);
         if (!entAddressBookInfo.getHeadIconPath().isEmpty())
         {
-            Bitmap headIcon = EnterpriseAddrTools.getBitmapByPath(entAddressBookInfo.getHeadIconPath());
-            viewHolder.ivHead.setImageBitmap(headIcon);
-        }
-        else if (entAddressBookInfo.getSysIconID() == 10)
-        {
-            viewHolder.ivHead.setImageResource(R.drawable.default_head);
+            headBitmap = HeadIconTools.getBitmapByPath(entAddressBookInfo.getHeadIconPath());
         }
         else
         {
-            viewHolder.ivHead.setImageResource(entAddressBookInfo.getSysIconID());
+            headBitmap = HeadIconTools.getBitmapByIconId(entAddressBookInfo.getSysIconID());
         }
+        viewHolder.ivHead.setBitmapParams(headBitmap);
+        viewHolder.ivHead.invalidate();
         viewHolder.tvName.setText(entAddressBookInfo.getEaddrName());
         viewHolder.tvDept.setText(entAddressBookInfo.getEaddrDept());
         return convertView;

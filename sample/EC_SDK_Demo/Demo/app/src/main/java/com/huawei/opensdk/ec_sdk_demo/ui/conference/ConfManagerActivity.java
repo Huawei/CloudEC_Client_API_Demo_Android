@@ -156,6 +156,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     private NetworkConnectivityListener networkConnectivityListener = new NetworkConnectivityListener();
 
     private boolean mCallByPhoneConf; // 是否处于第三方电话呼叫中，若是则静音、扬声器功能暂不可用
+    private boolean isResumeEnd = true; // 是否恢复会议结束
 
     private static final int START_SCREEN_SHARE_HANDLE = 666;
     private static final int STOP_SCREEN_SHARE_HANDLE = 888;
@@ -1159,6 +1160,10 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
     @Override
     public void refreshSvcWatchDisplayName(final String remote, final String small_01, final String small_02, final String small_03) {
+        if (!isVideo)
+        {
+            return;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1239,6 +1244,24 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
             @Override
             public void run() {
                 Toast.makeText(ConfManagerActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void showNoStreamDuration(final int seconds) {
+        if (30 == seconds)
+        {
+            mPresenter.configIpResume(true);
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(ConfManagerActivity.this,
+                        (getString(R.string.conf_no_stream_after_time, seconds)), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
             }
         });
     }
@@ -1374,6 +1397,11 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
         dialog.show();
     }
 
+    @Override
+    public void setResumeStatus(boolean isResumeEnd) {
+        this.isResumeEnd = isResumeEnd;
+    }
+
     private void showEndConfDialog()
     {
         TripleDialog dialog = new TripleDialog(this);
@@ -1406,16 +1434,22 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
 
     @Override
     protected void onBack() {
-        super.onBack();
-        mPresenter.closeConf();
-        mPresenter.unregisterBroadcast();
+        if (isResumeEnd)
+        {
+            super.onBack();
+            mPresenter.closeConf();
+            mPresenter.unregisterBroadcast();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        mPresenter.closeConf();
-        mPresenter.unregisterBroadcast();
+        if (isResumeEnd)
+        {
+            super.onBackPressed();
+            mPresenter.closeConf();
+            mPresenter.unregisterBroadcast();
+        }
     }
 
     @Override
@@ -2058,7 +2092,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                     }
                     else
                     {
-                        mPresenter.configIpResume();
+                        mPresenter.configIpResume(false);
                     }
 
                     mCurrentActivity = ActivityUtil.getCurrentActivity(ConfManagerActivity.this);

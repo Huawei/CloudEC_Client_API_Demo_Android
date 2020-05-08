@@ -37,6 +37,8 @@ public interface IConfManagerContract
 
         void showMessage(String message);
 
+        void showNoStreamDuration(int seconds);
+
         void confManagerActivityShare(boolean isShare,boolean isAllowAnnot);
 
         void jumpToHomeScreen();
@@ -66,6 +68,8 @@ public interface IConfManagerContract
         void setIsCallByPhone(boolean isCallByPhone);
 
         void showNotAllowUnmute();
+
+        void setResumeStatus(boolean isResumeEnd);
     }
 
     interface ConfManagerPresenter
@@ -174,7 +178,7 @@ public interface IConfManagerContract
 
         void showSvcWatchInfo(List<TsdkConfSvcWatchAttendee> watchAttendees);
 
-        void configIpResume();
+        void configIpResume(boolean isFocus);
 
         String getAttendeeName(List<Member> list);
     }

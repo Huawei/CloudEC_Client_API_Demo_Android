@@ -86,7 +86,6 @@ public class MeetingMgr implements IMeetingMgr{
     /**
      * 当前正在召开的会议
      */
-
     private TsdkConference currentConference;
 
 
@@ -228,7 +227,7 @@ public class MeetingMgr implements IMeetingMgr{
         {
             return null;
         }
-        if(self == null && getCurrentConferenceMemberList().size()>0){
+        if(self == null){
             for (Member member : getCurrentConferenceMemberList())
             {
                 if ( member.isSelf())
@@ -1593,19 +1592,6 @@ public class MeetingMgr implements IMeetingMgr{
         currentConference.getShareCodecInfo();
     }
 
-    /**
-     * 升级为数据会议前检查
-     */
-    public void checkUpgradeDataConf()
-    {
-        if (null == currentConference)
-        {
-            return;
-        }
-
-        //currentConference.checkUpgradeDataConf();
-    }
-
     public boolean judgeInviteFormMySelf(String confID)
     {
         if ((confID == null) || (confID.equals("")))
@@ -2154,7 +2140,9 @@ public class MeetingMgr implements IMeetingMgr{
 
         switch (TsdkConfShareState.enumOf(asStateInfo.getState()))
         {
-            // 开始共享
+            // 共享端:开始共享
+            case TSDK_E_CONF_AS_STATE_START:
+            // 观看端:收到开始共享
             case TSDK_E_CONF_AS_STATE_VIEW:
                 isShareAs = true;
                 mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_DATA_CONF_SHARE, asStateInfo);
@@ -2437,4 +2425,46 @@ public class MeetingMgr implements IMeetingMgr{
         mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.RESUME_JOIN_CONF_RESULT, result);
     }
 
+    /**
+     * This method is used to handle set share owner failed.
+     * 设置共享所有者失败
+     * @param tsdkConference
+     * @param commonResult
+     */
+    public void handleConfSetShareOwnerFailed(TsdkConference tsdkConference, TsdkCommonResult commonResult)
+    {
+        LogUtil.i(TAG, "handleConfSetShareOwnerFailed");
+        if (null == tsdkConference)
+        {
+            return;
+        }
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.SET_SHARE_OWNER_FAILED, commonResult.getReasonDescription());
+    }
+
+    /**
+     * This method is used to handle start share failed.
+     * 开始共享失败
+     * @param tsdkConference
+     * @param commonResult
+     */
+    public void handleConfStartShareFailed(TsdkConference tsdkConference, TsdkCommonResult commonResult)
+    {
+        LogUtil.i(TAG, "handleConfStartShareFailed");
+        if (null == tsdkConference)
+        {
+            return;
+        }
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.START_SHARE_FAILED, commonResult.getReasonDescription());
+    }
+
+    /**
+     * This method is used to handle the upper layer code less flow duration notification.
+     * 无码流上报
+     * @param duration
+     */
+    public void handleNoStream(long duration)
+    {
+        LogUtil.i(TAG, "handleNoStream");
+        mConfNotification.onConfEventNotify(ConfConstant.CONF_EVENT.NO_STREAM_IND, duration);
+    }
 }

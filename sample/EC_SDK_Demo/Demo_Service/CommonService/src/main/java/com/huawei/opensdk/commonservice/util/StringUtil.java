@@ -1,7 +1,5 @@
 package com.huawei.opensdk.commonservice.util;
 
-import java.util.Random;
-
 /**
  * This class is about the type String util.+
  */
@@ -131,6 +129,4 @@ public final class StringUtil
         }
         return bRet;
     }
-
-
 }

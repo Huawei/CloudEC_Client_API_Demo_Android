@@ -114,6 +114,7 @@
     <string name="broadcast_member">Broadcasting %1$s</string>
     <string name="request_chairman_success">Request chairman success</string>
     <string name="release_chairman_success">Release chairman success</string>
+    <string name="none">None</string>
 
     <string name="btn_sure">OK</string>
     <string name="info">Information</string>
@@ -340,6 +341,7 @@
     <string name="conf_allow_unmute">Unmute Allowed</string>
     <string name="conf_all_mute_tip">All participants will be muted</string>
     <string name="conf_not_allow_unmute_tip">The current meeting Host did not allow the participants to unmute themselves.</string>
+    <string name="conf_no_stream_after_time">Poor network quality,Continuous %1$d seconds without stream</string>
 
     <string name="encode_level">Encode Level</string>
     <string name="decode_level">Decode Level</string>

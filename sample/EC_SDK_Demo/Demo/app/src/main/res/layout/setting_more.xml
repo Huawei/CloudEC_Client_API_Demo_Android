@@ -25,38 +25,30 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_item_selector"
                 android:gravity="center_vertical"
-                android:paddingBottom="17.5dp"
+                android:paddingTop="17.5dp"
                 android:paddingRight="15dp"
-                android:paddingTop="17.5dp">
+                android:paddingBottom="17.5dp">
 
-                <TextView android:id="@+id/tv_head"
+                <TextView
+                    android:id="@+id/tv_head"
                     style="@style/setting_text_info"
                     android:layout_gravity="center_vertical"
                     android:text="@string/self_head"
-                    android:textColor="@color/textPrimary"/>
+                    android:textColor="@color/textPrimary" />
 
-                <!--<com.huawei.opensdk.ec_sdk_demo.widget.RoundCornerPhotoView-->
-                    <!--android:id="@+id/headImg"-->
-                    <!--android:layout_width="45dp"-->
-                    <!--android:layout_height="45dp"-->
-                    <!--android:layout_alignParentRight="true"-->
-                    <!--android:scaleType="fitXY"-->
-                    <!--android:src="@drawable/default_head"/>-->
-
-                <ImageView
-                    android:id="@+id/headImg"
+                <com.huawei.opensdk.ec_sdk_demo.widget.CircleView
+                    android:id="@+id/headImgCircle"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_alignParentRight="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/default_head"/>
+                    android:background="@drawable/shape_bg_head_middle" />
 
             </RelativeLayout>
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/personal_setting_divider_gray"/>
+                android:background="@color/personal_setting_divider_gray" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -74,6 +74,9 @@ public interface CustomBroadcastConstants
     String GET_SVC_WATCH_INFO = "com.huawei.opensdk.conf.getsvcwatchinfo";
     String RESUME_JOIN_CONF_RESULT = "com.huawei.opensdk.conf.resumejoinconfresult";
     String RESUME_JOIN_CONF_IND = "com.huawei.opensdk.conf.resumejoinconfind";
+    String SET_SHARE_OWNER_FAILED = "com.huawei.opensdk.conf.setshareownerfailed";
+    String START_SHARE_FAILED = "com.huawei.opensdk.conf.startsharefailed";
+    String NO_STREAM_IND = "com.huawei.opensdk.conf.nostreamind";
 
     //DataConf
     String CONF_INFO_PARAM = "com.huawei.opensdk.conf.dataconfparam";

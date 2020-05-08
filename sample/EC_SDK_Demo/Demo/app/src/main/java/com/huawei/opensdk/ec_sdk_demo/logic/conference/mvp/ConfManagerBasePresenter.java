@@ -57,6 +57,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
     private String smallDisplay_03 = "";
     private boolean isResuming = false; // 是否在重新login中
     private boolean isNeedConfigIp = false; // 是否需要重新配置本地ip
+    private boolean isSharing = false; // 是否有人正在共享(包括:观看共享和主动共享)
     private String currentBroadcastNumber = ""; // 当前被广播的用户号码
     private Map<String, Integer> watchMap = new IdentityHashMap<>();
 
@@ -170,45 +171,6 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     TsdkConfEndReason reasonCode = (TsdkConfEndReason) obj;
                     getView().showMessage(getReasonDescription(reasonCode));
                     getView().finishActivity();
-                    break;
-
-                case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
-                    if (obj instanceof TsdkConfAsStateInfo)
-                    {
-                        TsdkConfAsStateInfo asStartInfo = (TsdkConfAsStateInfo)obj;
-                        if (null != asStartInfo){
-                            boolean isAllowAnnot = asStartInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
-                            getView().confManagerActivityShare(true, isAllowAnnot);
-                        }else {
-                            getView().confManagerActivityShare(true, false);
-                        }
-                        return;
-                    }
-                    getView().confManagerActivityShare(true, false);
-                    break;
-
-                case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
-                    if (obj instanceof TsdkConfAsStateInfo)
-                    {
-                        TsdkConfAsStateInfo asStopInfo = (TsdkConfAsStateInfo)obj;
-                        if (null != asStopInfo){
-                            boolean isAllowAnnot = asStopInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
-                            getView().confManagerActivityShare(false,isAllowAnnot);
-                        }else {
-                            getView().confManagerActivityShare(false,false);
-                        }
-                    }
-
-                    if (obj instanceof TsdkWbDelDocInfo)
-                    {
-                        getView().confManagerActivityShare(false,false);
-                    }
-
-                    if (obj instanceof TsdkDocShareDelDocInfo)
-                    {
-                        getView().confManagerActivityShare(false,false);
-                    }
-                    getView().showCustomToast(R.string.share_end);
                     break;
 
                 // 升级会议结果
@@ -416,9 +378,57 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     getView().showMessage(speakerName[0] + " is speaking.");
                     break;
 
+                case CustomBroadcastConstants.DATE_CONFERENCE_START_SHARE_STATUS:
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStartInfo = (TsdkConfAsStateInfo)obj;
+
+                        if (!isSharing && asStartInfo.getState() == 2)
+                        {
+                            getView().jumpToHomeScreen();
+                            isSharing = true;
+                        }
+
+                        if (null != asStartInfo){
+                            boolean isAllowAnnot = asStartInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().confManagerActivityShare(true, isAllowAnnot);
+                        }else {
+                            getView().confManagerActivityShare(true, false);
+                        }
+                        return;
+                    }
+                    getView().confManagerActivityShare(true, false);
+                    break;
+
+                case CustomBroadcastConstants.DATE_CONFERENCE_END_SHARE_STATUS:
+                    isSharing = false;
+
+                    if (obj instanceof TsdkConfAsStateInfo)
+                    {
+                        TsdkConfAsStateInfo asStopInfo = (TsdkConfAsStateInfo)obj;
+                        if (null != asStopInfo){
+                            boolean isAllowAnnot = asStopInfo.getSubState() == TsdkConfShareSubState.TSDK_E_CONF_AS_SUB_STATE_ANNOTATION.getIndex()? true:false;
+                            getView().confManagerActivityShare(false,isAllowAnnot);
+                        }else {
+                            getView().confManagerActivityShare(false,false);
+                        }
+                    }
+
+                    if (obj instanceof TsdkWbDelDocInfo)
+                    {
+                        getView().confManagerActivityShare(false,false);
+                    }
+
+                    if (obj instanceof TsdkDocShareDelDocInfo)
+                    {
+                        getView().confManagerActivityShare(false,false);
+                    }
+                    getView().showCustomToast(R.string.share_end);
+                    break;
+
                 case CustomBroadcastConstants.SCREEN_SHARE_STATE:
                     TsdkConfAsActionType actionType = (TsdkConfAsActionType)obj;
-                    if(actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_ADD){
+                    if(actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_ADD && isSharing){
                         getView().jumpToHomeScreen();
                     }else if (actionType == TsdkConfAsActionType.TSDK_E_CONF_AS_ACTION_DELETE){
                         getView().removeAllScreenShareFloatWindow();
@@ -445,6 +455,8 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                 // 会议恢复中通知
                 case CustomBroadcastConstants.RESUME_JOIN_CONF_IND:
                     getView().showMessage(LocContext.getString(R.string.resume_join_conf));
+                    // 开始恢复会议
+                    getView().setResumeStatus(false);
 
                     //恢复会议时，SDK会自动停止共享，APP在收到这个消息时自动回到会议主界面
                     getView().removeAllScreenShareFloatWindow();
@@ -455,6 +467,8 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
 
                 // 重新加入会议结果
                 case CustomBroadcastConstants.RESUME_JOIN_CONF_RESULT:
+                    // 恢复会议结束，在此之前用户不要关闭会议界面
+                    getView().setResumeStatus(true);
                     if (0 != (int) obj)
                     {
                         failedConnectedAndExit(R.string.resume_join_failed);
@@ -476,7 +490,7 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                     isResuming = false;
                     if (isNeedConfigIp)
                     {
-                        configIpResume();
+                        configIpResume(false);
                     }
                     break;
 
@@ -516,6 +530,22 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
                 case CustomBroadcastConstants.ACTION_CALL_STATE_IDLE:
                     getView().setIsCallByPhone(false);
                     isCancelMuteMicAndSpeaker();
+                    break;
+
+                // 设置共享所有者超时
+                case CustomBroadcastConstants.SET_SHARE_OWNER_FAILED:
+                // 开始共享超时
+                case CustomBroadcastConstants.START_SHARE_FAILED:
+                    getView().showMessage(String.valueOf(obj));
+                    break;
+
+                // 无码流上报
+                case CustomBroadcastConstants.NO_STREAM_IND:
+                    int duration = Integer.parseInt(obj.toString());
+                    if (duration <= 30)
+                    {
+                        getView().showNoStreamDuration(duration);
+                    }
                     break;
                 default:
                     break;
@@ -690,12 +720,12 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
     }
 
     @Override
-    public void configIpResume() {
+    public void configIpResume(boolean isFocus) {
         // 如果收到重新登录通知还没有收到重新登录结果则不进行配置本地ip
         isNeedConfigIp = true;
         if (!isResuming)
         {
-            LoginMgr.getInstance().resetConfig(false);
+            LoginMgr.getInstance().resetConfig(false, isFocus);
             isNeedConfigIp = false;
         }
     }
