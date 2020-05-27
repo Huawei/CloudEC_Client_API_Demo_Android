@@ -14,9 +14,9 @@ public class CallConstant {
 
     /**
      * The constant CAMERA_NON.
-     * 无摄像头
+     * 关闭摄像头
      */
-    public static final int CAMERA_NON = -1;
+    public static final int CAMERA_CLOSE = -1;
 
     /**
      * Rear camera
@@ -35,6 +35,12 @@ public class CallConstant {
      * 前置摄像头
      */
     public static final int FRONT_CAMERA = 1;
+
+    /**
+     * NO camera
+     * 无摄像头
+     */
+    public static final int CAMERA_NON = 2;
 
     /**
      * Whether to use the SDK to provide methods to play.

@@ -106,6 +106,7 @@ public class VideoMgr {
     {
         if (null == cameraList || cameraList.isEmpty())
         {
+            setCurrentCameraIndex(CallConstant.CAMERA_NON);
             return;
         }
 
@@ -232,7 +233,7 @@ public class VideoMgr {
             if (result != 0) {
                 LogUtil.e(TAG, "setVideoCaptureFile is failed, result -->" + result);
             }
-            setCurrentCameraIndex(CallConstant.CAMERA_NON);
+            setCurrentCameraIndex(CallConstant.CAMERA_CLOSE);
         }
         return result;
     }

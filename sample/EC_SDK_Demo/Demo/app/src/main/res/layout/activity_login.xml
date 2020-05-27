@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="30dp"
                 android:layout_toRightOf="@+id/iv_user"
                 android:background="@null"
                 android:gravity="center"
@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="30dp"
                 android:layout_toRightOf="@+id/iv_key"
                 android:background="@null"
                 android:gravity="center"
@@ -75,6 +75,15 @@
                 android:singleLine="true"
                 android:textColor="@android:color/black"
                 android:textSize="16sp"/>
+
+            <ImageView android:id="@+id/iv_eye"
+                android:layout_width="@dimen/dp20"
+                android:layout_height="@dimen/dp20"
+                android:src="@drawable/icon_eye"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dp10"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <LinearLayout

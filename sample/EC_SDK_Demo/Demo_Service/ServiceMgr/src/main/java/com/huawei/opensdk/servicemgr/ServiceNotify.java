@@ -501,7 +501,7 @@ public class ServiceNotify implements TsdkNotify{
 
     @Override
     public void onEvtMediaErrorInfo(TsdkCall tsdkCall, TsdkMediaErrorInfo tsdkMediaErrorInfo) {
-
+        LogUtil.i(TAG, "onEvtMediaErrorInfo notify.");
     }
 
     @Override

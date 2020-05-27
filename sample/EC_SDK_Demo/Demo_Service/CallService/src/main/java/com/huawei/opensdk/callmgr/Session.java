@@ -86,7 +86,10 @@ public class Session {
         if (isVideo)
         {
             initVideoWindow();
-            VideoMgr.getInstance().setVideoOrient(getCallID(), VideoMgr.getInstance().getCurrentCameraIndex());
+            if (CallConstant.CAMERA_NON != VideoMgr.getInstance().getCurrentCameraIndex())
+            {
+                VideoMgr.getInstance().setVideoOrient(getCallID(), VideoMgr.getInstance().getCurrentCameraIndex());
+            }
         }
         int result = tsdkCall.answerCall(isVideo);
         if (result != 0)
