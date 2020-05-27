@@ -181,5 +181,7 @@ public interface IConfManagerContract
         void configIpResume(boolean isFocus);
 
         String getAttendeeName(List<Member> list);
+
+        boolean isHasCameraFromDevice();
     }
 }

@@ -11,7 +11,15 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -80,6 +88,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
 
     private CheckBox mAutoLoginBox;
     private ImageView mLoginSettingBtn;
+    private ImageView mEyeBtn;
 
     private ProgressDialog mDialog;
     private ConfirmSimpleDialog mSimpleDialog;
@@ -102,6 +111,7 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
         mAnonymousButton = (Button) findViewById(R.id.btn_anonymous);
         mLoginSettingBtn = (ImageView) findViewById(R.id.iv_login_setting);
         mAutoLoginBox = (CheckBox) findViewById(R.id.check_auto_login);
+        mEyeBtn = (ImageView) findViewById(R.id.iv_eye);
         mAutoLoginBox.setChecked(mSharedPreferences.getBoolean(LoginConstant.AUTO_LOGIN, false));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -150,6 +160,71 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
             {
                 ActivityUtil.startActivity(LoginActivity.this, IntentConstant.ANONYMOUS_CONF_ACTIVITY_ACTION,
                         new String[]{IntentConstant.DEFAULT_CATEGORY});
+            }
+        });
+
+        mEyeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEyeBtn.isSelected())
+                {
+                    mEyeBtn.setSelected(false);
+                    // 密码不可见
+                    mPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                else
+                {
+                    mEyeBtn.setSelected(true);
+                    // 密码可见
+                    mPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+            }
+        });
+
+        mPasswordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(s.toString()))
+                {
+                    mEyeBtn.setVisibility(View.GONE);
+                }
+                else
+                {
+                    mEyeBtn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // 禁止口令输入组件提供拷出功能
+        mPasswordEditText.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
             }
         });
 
@@ -223,6 +298,14 @@ public class LoginActivity extends MVPBaseActivity<ILoginContract.LoginBaseView,
     {
         mUsernameEditText.setText(account);
         mPasswordEditText.setText(password);
+        if (TextUtils.isEmpty(mPasswordEditText.getText().toString()))
+        {
+            mEyeBtn.setVisibility(View.GONE);
+        }
+        else
+        {
+            mEyeBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

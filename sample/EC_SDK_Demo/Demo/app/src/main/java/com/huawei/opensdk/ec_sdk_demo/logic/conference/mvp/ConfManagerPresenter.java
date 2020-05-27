@@ -201,7 +201,10 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
 
     @Override
     public void setAutoRotation(Object object, boolean isOpen, int orientation) {
-        VideoMgr.getInstance().setAutoRotation(object, isOpen, orientation);
+        if (isHasCameraFromDevice())
+        {
+            VideoMgr.getInstance().setAutoRotation(object, isOpen, orientation);
+        }
     }
 
     @Override
@@ -543,6 +546,19 @@ public class ConfManagerPresenter extends ConfManagerBasePresenter
             watchMemberList.add(watchMember);
         }
         return watchMemberList;
+    }
+
+    @Override
+    public boolean isHasCameraFromDevice() {
+        mCameraIndex = VideoMgr.getInstance().getCurrentCameraIndex();
+        if (CallConstant.CAMERA_NON == mCameraIndex)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private Member getSelf()

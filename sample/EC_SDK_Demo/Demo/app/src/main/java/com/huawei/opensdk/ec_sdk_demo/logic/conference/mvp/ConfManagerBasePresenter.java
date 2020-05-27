@@ -790,29 +790,36 @@ public abstract class ConfManagerBasePresenter extends MVPBasePresenter<IConfMan
         {
             for (String key : watchMap.keySet())
             {
-                if (member.getNumber().equals(key))
+                if (null != key && watchMap.containsKey(key))
                 {
-                    switch (watchMap.get(key))
-                    {
-                        case REMOTE_DISPLAY:
-                            remoteDisplay = member.getDisplayName();
-                            break;
-                        case SMALL_DISPLAY_01:
-                            smallDisplay_01 = member.getDisplayName();
-                            break;
-                        case SMALL_DISPLAY_02:
-                            smallDisplay_02 = member.getDisplayName();
-                            break;
-                        case SMALL_DISPLAY_03:
-                            smallDisplay_03 = member.getDisplayName();
-                            break;
-                        default:
-                            break;
-                    }
+                    setRemoteDisplay(member, key);
                 }
             }
-
             getView().refreshSvcWatchDisplayName(remoteDisplay, smallDisplay_01, smallDisplay_02, smallDisplay_03);
+        }
+    }
+
+    private void setRemoteDisplay(Member member, String key)
+    {
+        if (member.getNumber().equals(key))
+        {
+            switch (watchMap.get(key))
+            {
+                case REMOTE_DISPLAY:
+                    remoteDisplay = member.getDisplayName();
+                    break;
+                case SMALL_DISPLAY_01:
+                    smallDisplay_01 = member.getDisplayName();
+                    break;
+                case SMALL_DISPLAY_02:
+                    smallDisplay_02 = member.getDisplayName();
+                    break;
+                case SMALL_DISPLAY_03:
+                    smallDisplay_03 = member.getDisplayName();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

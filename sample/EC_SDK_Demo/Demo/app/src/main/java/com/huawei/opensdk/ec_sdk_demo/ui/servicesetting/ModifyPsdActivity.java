@@ -1,12 +1,17 @@
 package com.huawei.opensdk.ec_sdk_demo.ui.servicesetting;
 
 import android.graphics.Typeface;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.huawei.opensdk.commonservice.localbroadcast.CustomBroadcastConstants;
@@ -26,6 +31,9 @@ public class ModifyPsdActivity extends BaseActivity implements View.OnClickListe
     private EditText mOriginalPwdET;
     private EditText mNewPwdET;
     private EditText mNewPwdAgainET;
+    private ImageView mOriginalPwdIV;
+    private ImageView mNewPwdIV;
+    private ImageView mNewPwdAgainIV;
     private Button mModifyPwdBT;
     private InputFilter inputFilter;
 
@@ -42,6 +50,9 @@ public class ModifyPsdActivity extends BaseActivity implements View.OnClickListe
         mNewPwdET = (EditText) findViewById(R.id.new_pwd_et);
         mNewPwdAgainET = (EditText) findViewById(R.id.determine_pwd_et);
         mModifyPwdBT = (Button) findViewById(R.id.modify_pwd_btn);
+        mOriginalPwdIV = (ImageView) findViewById(R.id.iv_ori_eye);
+        mNewPwdIV = (ImageView) findViewById(R.id.iv_new_eye);
+        mNewPwdAgainIV = (ImageView) findViewById(R.id.iv_det_eye);
 
         mTitleTV.setText(getString(R.string.modify_password));
 
@@ -58,7 +69,14 @@ public class ModifyPsdActivity extends BaseActivity implements View.OnClickListe
         mNewPwdET.setTransformationMethod(new PasswordTransformationMethod());
         mNewPwdAgainET.setTransformationMethod(new PasswordTransformationMethod());
 
+        mOriginalPwdET.addTextChangedListener(new MyCustomTextWatcher(mOriginalPwdET));
+        mNewPwdET.addTextChangedListener(new MyCustomTextWatcher(mNewPwdET));
+        mNewPwdAgainET.addTextChangedListener(new MyCustomTextWatcher(mNewPwdAgainET));
+
         mModifyPwdBT.setOnClickListener(this);
+        mOriginalPwdIV.setOnClickListener(this);
+        mNewPwdIV.setOnClickListener(this);
+        mNewPwdAgainIV.setOnClickListener(this);
     }
 
     @Override
@@ -109,6 +127,42 @@ public class ModifyPsdActivity extends BaseActivity implements View.OnClickListe
                 newPassword = mNewPwdAgainET.getText().toString();
                 modifyPwdOpt();
                 break;
+            case R.id.iv_ori_eye:
+                if (mOriginalPwdIV.isSelected())
+                {
+                    mOriginalPwdIV.setSelected(false);
+                    mOriginalPwdET.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                else
+                {
+                    mOriginalPwdIV.setSelected(true);
+                    mOriginalPwdET.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                break;
+            case R.id.iv_new_eye:
+                if (mNewPwdIV.isSelected())
+                {
+                    mNewPwdIV.setSelected(false);
+                    mNewPwdET.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                else
+                {
+                    mNewPwdIV.setSelected(true);
+                    mNewPwdET.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                break;
+            case R.id.iv_det_eye:
+                if (mNewPwdAgainIV.isSelected())
+                {
+                    mNewPwdAgainIV.setSelected(false);
+                    mNewPwdAgainET.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                else
+                {
+                    mNewPwdAgainIV.setSelected(true);
+                    mNewPwdAgainET.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                }
+                break;
                 default:
                     break;
         }
@@ -150,6 +204,65 @@ public class ModifyPsdActivity extends BaseActivity implements View.OnClickListe
         if (CustomBroadcastConstants.MODIFY_PWD_SUCCESS == broadcastName)
         {
             showConfirmDialog(getString(R.string.modify_pwd_success));
+        }
+    }
+
+    class MyCustomTextWatcher implements TextWatcher {
+
+        private EditText currentEt;
+
+        public MyCustomTextWatcher(EditText currentEt) {
+            this.currentEt = currentEt;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            boolean isEmpty = TextUtils.isEmpty(s.toString());
+            switch (currentEt.getId())
+            {
+                case R.id.original_pwd_et:
+                    if (isEmpty)
+                    {
+                        mOriginalPwdIV.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        mOriginalPwdIV.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case R.id.new_pwd_et:
+                    if (isEmpty)
+                    {
+                        mNewPwdIV.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        mNewPwdIV.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case R.id.determine_pwd_et:
+                    if (isEmpty)
+                    {
+                        mNewPwdAgainIV.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        mNewPwdAgainIV.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

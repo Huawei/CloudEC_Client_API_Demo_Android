@@ -433,7 +433,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isVideo)
+        if (!isVideo || mPresenter.isHasCameraFromDevice())
         {
             return;
         }
@@ -447,7 +447,7 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
     @Override
     protected void onStop() {
         super.onStop();
-        if (isVideo)
+        if (isVideo && mPresenter.isHasCameraFromDevice())
         {
             if (!DeviceUtil.isAppForeground()) {
                 mPresenter.closeOrOpenLocalVideo(true);
@@ -1734,6 +1734,13 @@ public class ConfManagerActivity extends MVPBaseActivity<IConfManagerContract.Co
                 getString(R.string.close_local_camera));
         hideWindowTV.setText(isHideVideoWindow ? getString(R.string.show_video) : getString(R.string.hide_video));
         hideWindowIV.setImageResource(isHideVideoWindow ? R.drawable.conf_video_show : R.drawable.conf_video_hide);
+
+        // 无摄像头不可以切换、关闭摄像头
+        if (!mPresenter.isHasCameraFromDevice())
+        {
+            switchCameraBtn.setVisibility(View.GONE);
+            closeCameraBtn.setVisibility(View.GONE);
+        }
 
         // 主席：会场静音、锁定、释放主席权限； 普通与会者：举手、申请主席
         if (mPresenter.isChairMan())
